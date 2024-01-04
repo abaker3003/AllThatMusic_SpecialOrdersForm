@@ -1,0 +1,9 @@
+This project is specifically for the business All That Music & Video. 
+
+Users will ultimately be able to open up the GUI through a script that I will make and will be able to fill in the information necessary for creating a Special Order instead of handwritting the information. 
+
+The window will display the empty forms for the type of product, the artist, and the tilte of the album. It will, also, have the space to input the customer's information (name and address), as well as the deposit amount the customer is putting down for the special order.
+
+Additionally, the special order form will ask for the product's price value and the clerk's name who filled out the form.
+
+** This is subject to change through the course of the project's completion process **
