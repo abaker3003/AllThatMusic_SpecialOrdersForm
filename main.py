@@ -18,8 +18,6 @@ def save_checkbox_value():
     result = [var.get() for var in checkbox_vars]
     print(result)  # Example: Print the selected values to console
 
-'''window = tk.Tk()
-window.title("Checkbox List")'''
 checkbox_vars = []
 options = ["AEC", "SUD", "OOP"]  # Replace with your options
 
@@ -31,7 +29,7 @@ for option in options:
 
 save_button = tk.Button(window, text="Save", command=save_checkbox_value)
 save_button.pack()
-data.append(options[varOpt])
+
 
 xl.writeOnXL(data)
 
