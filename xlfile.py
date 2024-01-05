@@ -25,11 +25,5 @@ def writeOnXL(data):
     # Add new row to worksheet
     ws.append(data)
 
-    '''# Read data from a specific cell
-    cell_value = ws['A1'].value
-
-    # Write data to a specific cell
-    ws['B1'] = 'New Value'''
-
     # Save changes to the workbook
     wb.save('SO_Test.xlsx')
