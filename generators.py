@@ -2,6 +2,6 @@ import datetime
 
 def ticketnum():
     dt = datetime.datetime.now()
-    tckt = "SO" + dt.strftime("%y%m%d") + ["{%03d}"]
+    tckt = "SO" + dt.strftime("%y%m%d") + "{:03d}".format(3)
 
     return tckt
