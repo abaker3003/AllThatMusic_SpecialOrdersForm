@@ -1,17 +1,38 @@
 import openpyxl
 
-def openxl():
+def __init__(self):
+    this.file = 'SO_Test.xlsx'
+
+def openxl(self):
     # Open an existing workbook
-    workbook = openpyxl.load_workbook('SO_Test.xlsx')
+    workbook = openpyxl.load_workbook(this.file)
 
     # Select a specific worksheet
     worksheet = workbook['Sheet1']
 
-    # Read data from a specific cell
-    cell_value = worksheet['A1'].value
+    return workbook, worksheet
+
+def countRows(self):
+
+    # Open file and save workbook and worksheet
+    wb, ws = self.openxl()
+
+    # Count rows
+    return ws.max_rows
+
+def writeOnXL(self, data):
+
+    # Open file and save workbook and worksheet
+    wb, ws = self.openxl()
+
+    # Add new row to worksheet
+    ws.append(data)
+
+    '''# Read data from a specific cell
+    cell_value = ws['A1'].value
 
     # Write data to a specific cell
-    worksheet['B1'] = 'New Value'
+    ws['B1'] = 'New Value'''
 
     # Save changes to the workbook
-    workbook.save('SO_Test.xlsx')
+    wb.save(this.file)
