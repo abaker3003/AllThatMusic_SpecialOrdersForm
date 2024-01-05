@@ -12,6 +12,6 @@ ticket_num = gn.ticketnum()
 label = tk.Label(window, text=ticket_num)
 label.pack()
 
-x = xl.openxl()
+xl.writeOnXL([ticket_num])
 
 window.mainloop()
