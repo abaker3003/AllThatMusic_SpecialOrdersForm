@@ -17,55 +17,45 @@ label.pack()
 
 data = [ticket_num]
 
+
 def save_checkbox_value():
-    result = [var.get() for var in checkbox_vars]
-    idx = result.index(1)
-    data.append(options[idx])
-    result = [var.get() for var in checkbox_types]
-    idx = result.index(1)
-    data.append(types[idx])
+    data.append(opts.get())
+    data.append(typs.get())
+    data.append(cx_name_input.get())
+    data.append(cx_phone_input.get())
     xl_file.writeOnXL(data)
     xl_file.close_file()
+    save_button.config(text="Saved!")
+    save_button['state'] = DISABLED
 
-# Trying radio bottons to replace the checkboxex
-'''opts = StringVar(window, "Options")
-opt_values = {"AEC" : "1",
-              "SUD" : "2",
-              "OOP" : "3"}
-for (text, value) in opt_values.items(): 
-    Radiobutton(window, text = text, variable = opts, 
-        value = value).pack(side = TOP, ipady = 5)'''
-
-# Checkbox for Option AEC, SUD, OOP
-checkbox_vars = []
-options = ["AEC", "SUD", "OOP"]  
 
 option_text = Label(window, text="Option")
-option_text.config(font = ("Times New Roman", 14))
-option_text.pack()
+option_text.config(font=("Times New Roman", 14))
+option_text.grid(row=1, column=0, padx=10, pady=10, sticky='e')
 
-pos = 0
-for option in options:
-    varOpt = tk.IntVar(value=1)  
-    checkbox_vars.append(varOpt)
-    chk = tk.Checkbutton(window, text=option, variable=varOpt)
-    # Trying to position the checkbox
-    chk.pack(padx=pos, pady=1, side=tk.LEFT)
-    pos += 1
-
-# Checkbox for type
-checkbox_types = []
-types = ["CD", "DVD", "LP", "OTHER"]  
+opts = StringVar(window, "Options")
+opt_values = ["AEC", "SUD", "OOP"]
+for i, opt in enumerate(opt_values): 
+    rdio_opt = Radiobutton(window, text=opt, variable=opts, value=opt)
+    rdio_opt.grid(row=i+2, column=0, padx=10, pady=5, sticky='w')
 
 type_text = Label(window, text="Type")
-type_text.config(font = ("Times New Roman", 14))
-type_text.pack()
+type_text.config(font=("Times New Roman", 14))
+type_text.grid(row=1, column=1, padx=10, pady=10, sticky='e')
 
-for t in types:
-    varTypes = tk.IntVar(value=1)  
-    checkbox_types.append(varTypes)
-    chk = tk.Checkbutton(window, text=t, variable=varTypes)
-    chk.pack()
+typs = StringVar(window, "Type")
+typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
+for i, typ in enumerate(typ_values): 
+    rdio_typ = Radiobutton(window, text=typ, variable=typs, value=typ)
+    rdio_typ.grid(row=i+2, column=1, padx=10, pady=5, sticky='w')
+
+cx_name_title = Label(window, text="Name").grid(column=2, row=1)
+cx_name_input = Entry(window)
+cx_name_input.grid(column=3, row=1)
+
+cx_phone_title = Label(window, text="Phone").grid(column=2, row=2)
+cx_phone_input = Entry(window)
+cx_phone_input.grid(column=3, row=2)
 
 save_button = tk.Button(window, text="Save", command=save_checkbox_value)
 save_button.pack()
