@@ -41,13 +41,13 @@ for i, vender in enumerate(venders_values):
 
 type_text = Label(window, text="Type")
 type_text.config(font=("Times New Roman", 14))
-type_text.grid(row=2, column=0, padx=10, pady=10, sticky='e')
+type_text.grid(row=1, column=0, padx=10, pady=10, sticky='e')
 
 typs = StringVar(window, "Type")
 typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
 for i, typ in enumerate(typ_values): 
     rdio_typ = Radiobutton(window, text=typ, variable=typs, value=typ)
-    rdio_typ.grid(row=2, column=1 + i, padx=10, pady=5, sticky='w')
+    rdio_typ.grid(row=1, column=1 + i, padx=10, pady=5, sticky='w')
 
 cx_name_title = Label(window, text="Name").grid(column=2, row=1)
 cx_name_input = Entry(window)

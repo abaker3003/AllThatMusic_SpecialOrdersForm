@@ -10,3 +10,8 @@ def ticketnum(num):
     tckt = "SO" + dt.strftime("%y%m%d") + "{:03d}".format(num)
 
     return tckt
+
+def get_todays_date():
+     dt = datetime.datetime.now()
+
+     return dt.strftime("%d") + "/" + dt.strftime("%m") + "/" + dt.strftime("%Y")
