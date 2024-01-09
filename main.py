@@ -30,19 +30,19 @@ def save_checkbox_value():
     save_button['state'] = DISABLED
 
 
-venders_text = Label(window, text="Option")
+venders_text = Label(window, text="Venders")
 venders_text.config(font=("Times New Roman", 14))
-venders_text.grid(row=1, column=0, padx=10, pady=10, sticky='e')
+venders_text.grid(row=1, column=6, padx=10, pady=10, sticky='e')
 
-venders = StringVar(window, "Options")
+venders = StringVar(window, "Venders")
 venders_values = ["AEC", "SUD", "OOP"]
 for i, vender in enumerate(venders_values): 
     rdio_opt = Radiobutton(window, text=vender, variable=venders, value=vender)
-    rdio_opt.grid(row=1, column=1 + i, padx=10, pady=5, sticky='w')
+    rdio_opt.grid(row=1, column=7 + i, padx=10, pady=5, sticky='w')
 
 type_text = Label(window, text="Type")
 type_text.config(font=("Times New Roman", 14))
-type_text.grid(row=1, column=1, padx=10, pady=10, sticky='e')
+type_text.grid(row=2, column=0, padx=10, pady=10, sticky='e')
 
 typs = StringVar(window, "Type")
 typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
