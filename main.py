@@ -12,7 +12,7 @@ window.geometry("500x500")
 
 
 ticket_num = gn.ticketnum(xl_file.countRows())
-window.title("Special Order - ", ticket_num).grid
+window.title("Special Order - ", ticket_num)
 
 
 data = [ticket_num]
