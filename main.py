@@ -19,7 +19,7 @@ data = [ticket_num]
 
 
 def save_checkbox_value():
-    data.append(opts.get())
+    data.append(venders.get())
     data.append(typs.get())
     data.append(cx_name_input.get())
     data.append(cx_phone_input.get())
@@ -29,15 +29,15 @@ def save_checkbox_value():
     save_button['state'] = DISABLED
 
 
-option_text = Label(window, text="Option")
-option_text.config(font=("Times New Roman", 14))
-option_text.grid(row=1, column=0, padx=10, pady=10, sticky='e')
+venders_text = Label(window, text="Option")
+venders_text.config(font=("Times New Roman", 14))
+venders_text.grid(row=1, column=0, padx=10, pady=10, sticky='e')
 
-opts = StringVar(window, "Options")
-opt_values = ["AEC", "SUD", "OOP"]
-for i, opt in enumerate(opt_values): 
-    rdio_opt = Radiobutton(window, text=opt, variable=opts, value=opt)
-    rdio_opt.grid(row=i+2, column=0, padx=10, pady=5, sticky='w')
+venders = StringVar(window, "Options")
+venders_values = ["AEC", "SUD", "OOP"]
+for i, vender in enumerate(venders_values): 
+    rdio_opt = Radiobutton(window, text=vender, variable=venders, value=vender)
+    rdio_opt.grid(row=1, column=1 + i, padx=10, pady=5, sticky='w')
 
 type_text = Label(window, text="Type")
 type_text.config(font=("Times New Roman", 14))
@@ -47,15 +47,15 @@ typs = StringVar(window, "Type")
 typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
 for i, typ in enumerate(typ_values): 
     rdio_typ = Radiobutton(window, text=typ, variable=typs, value=typ)
-    rdio_typ.grid(row=i+2, column=1, padx=10, pady=5, sticky='w')
+    rdio_typ.grid(row=2, column=1 + i, padx=10, pady=5, sticky='w')
 
 cx_name_title = Label(window, text="Name").grid(column=2, row=1)
 cx_name_input = Entry(window)
-cx_name_input.grid(column=3, row=1)
+cx_name_input.grid(row=2, column=1)
 
 cx_phone_title = Label(window, text="Phone").grid(column=2, row=2)
 cx_phone_input = Entry(window)
-cx_phone_input.grid(column=3, row=2)
+cx_phone_input.grid(row=2, column=1)
 
 save_button = tk.Button(window, text="Save", command=save_checkbox_value)
 save_button.pack()
