@@ -9,11 +9,10 @@ import xlfile as xl
 xl_file = xl.open_excel_file()
 window = tk.Tk()
 window.geometry("500x500")
-window.title("Special Order")
+
 
 ticket_num = gn.ticketnum(xl_file.countRows())
-label = tk.Label(window, text=ticket_num)
-label.grid(row=0, column=4, padx=10, pady=10)
+window.title("Special Order - ", ticket_num).grid
 
 
 data = [ticket_num]
