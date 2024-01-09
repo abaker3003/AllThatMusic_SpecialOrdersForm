@@ -8,7 +8,7 @@ import xlfile as xl
 
 xl_file = xl.open_excel_file()
 window = tk.Tk()
-window.geometry("500x500")
+window.geometry("750x750")
 
 
 ticket_num = gn.ticketnum(xl_file.countRows())
@@ -104,13 +104,13 @@ price_input = Entry(window)
 price_input.grid(row=15, column=5)
 
 # Title input
-title_title = Label(window, text="Title").grid(row=16, column=2)
+title_title = Label(window, text="Title").grid(row=16, column=0)
 title_input = Entry(window)
-title_input.grid(row=18, column=0)
+title_input.grid(row=16, column=2)
 
 
 save_button = tk.Button(window, text="Save", command=save_checkbox_value)
-save_button.grid(row=15, column=2, columnspan=2, padx=10, pady=10)
+save_button.grid(row=20, column=3, columnspan=2, padx=20, pady=20)
 
 
 window.mainloop()
