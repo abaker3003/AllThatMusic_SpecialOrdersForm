@@ -13,7 +13,8 @@ window.title("Special Order")
 
 ticket_num = gn.ticketnum(xl_file.countRows())
 label = tk.Label(window, text=ticket_num)
-label.pack()
+label.grid(row=0, column=4, padx=10, pady=10)
+
 
 data = [ticket_num]
 
@@ -58,7 +59,7 @@ cx_phone_input = Entry(window)
 cx_phone_input.grid(row=2, column=1)
 
 save_button = tk.Button(window, text="Save", command=save_checkbox_value)
-save_button.pack()
+save_button.grid(row=len(typ_values)+3, column=0, columnspan=2, padx=10, pady=10)
 
 
 window.mainloop()
