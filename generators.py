@@ -15,4 +15,4 @@ def ticketnum(num):
 def get_todays_date():
      dt = datetime.datetime.now()
 
-     return dt.strftime("%d") + "/" + dt.strftime("%m") + "/" + dt.strftime("%Y")
+     return dt.strftime("%m") + "/" + dt.strftime("%d") + "/" + dt.strftime("%Y")
