@@ -22,7 +22,8 @@ def get_todays_date():
      return dt.strftime("%m") + "/" + dt.strftime("%d") + "/" + dt.strftime("%Y")
 
 def get_todays_entries_count(today, excel_file):
-    count = 0
+    # Set count to 1 to avoid triple 0 entry
+    count = 1
     for row in range(2, excel_file.countRows()+1):
         if excel_file.worksheet.cell(row=row, column=1).value == today:
             count += 1
