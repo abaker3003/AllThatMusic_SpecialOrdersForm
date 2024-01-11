@@ -2,184 +2,244 @@ import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.messagebox as msgbox
-
 from matplotlib import artist
 import generators as gn
 import xlfile as xl
 
-xl_file = xl.open_excel_file()
-window = tk.Tk()
-window.geometry("500x225")
+class Base(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.master = master
+        self.pack()
 
-# Generating current date
-todays_date = gn.get_todays_date()
+class SOForm(Base):
+    def __init__(self, master=None):
+        super().__init__(master)
+        xl_file = xl.open_excel_file()
 
-# Generating ticket number
-ticket_num = gn.ticketnum(xl_file)
-window.title(("Special Order - "+ ticket_num))
+        # Generating current date
+        todays_date = gn.get_todays_date()
 
-# Adding the current date and ticket number to data list
-data = [todays_date, ticket_num]
+        # Generating ticket number
+        ticket_num = gn.ticketnum(xl_file)
 
-# Checks if all input fields are filled
-def check_form_complete():
-    # Check if all required entries have text
-    if not cx_name_input.get() or not cx_phone_input.get() or not artist_input.get() or not title_input.get() or not deposit_input.get() or not price_input.get():
-        return False
+        if master is not None:
+            master.title(("Special Order - "+ ticket_num))
+        else:
+            self.Label(self, "Special Order - "+ ticket_num)
 
-    # Check if at least one vendor and type radio button is selected
-    if not vendors.get() or not typs.get():
-        return False
 
-    return True
+        # Adding the current date and ticket number to data list
+        data = [todays_date, ticket_num]
 
-# Checks to see if each field input is correct
-def check_proper_info():
-    proper = True
-    errormsg = ''
-    num_of_msgs = 1
-    if " " in cx_name_input.get():
-        cx_names = cx_name_input.get().split(" ")
-        for name in cx_names:
-            if not name.isalpha():
+        # Checks if all input fields are filled
+        def check_form_complete():
+            # Check if all required entries have text
+            if not cx_name_input.get() or not cx_phone_input.get() or not artist_input.get() or not title_input.get() or not deposit_input.get() or not price_input.get():
+                return False
+
+            # Check if at least one vendor and type radio button is selected
+            if not vendors.get() or not typs.get():
+                return False
+
+            return True
+
+        # Checks to see if each field input is correct
+        def check_proper_info():
+            proper = True
+            errormsg = ''
+            num_of_msgs = 1
+            if " " in cx_name_input.get():
+                cx_names = cx_name_input.get().split(" ")
+                for name in cx_names:
+                    if not name.isalpha():
+                        errormsg += str(num_of_msgs) + ': Customer name must be all letters.\n'
+                        proper = False
+                        num_of_msgs += 1
+                        break
+            elif not cx_name_input.get().isalpha():
                 errormsg += str(num_of_msgs) + ': Customer name must be all letters.\n'
                 proper = False
                 num_of_msgs += 1
-                break
-    elif not cx_name_input.get().isalpha():
-        errormsg += str(num_of_msgs) + ': Customer name must be all letters.\n'
-        proper = False
-        num_of_msgs += 1
-    if not cx_phone_input.get().isdigit():
-        errormsg += str(num_of_msgs) + ': Phone number must be numbers only.\n'
-        proper = False
-        num_of_msgs += 1
-    if len(cx_phone_input.get()) != 10:
-        errormsg += str(num_of_msgs) + ": Phone number must be exactly 10 digits long.\n"
-        proper = False
-        num_of_msgs += 1
-    if not deposit_input.get().isdigit() and '.' not in deposit_input.get():
-        errormsg += str(num_of_msgs) + ": Deposit amount should not contain any other symbols except decimal.\n"
-        proper = False
-        num_of_msgs += 1
-    if not price_input.get().isdigit() and '.' not in price_input.get():
-        errormsg += str(num_of_msgs) + ": Price amount should not contain any other symbols except decimal.\n"
-        proper = False
-        num_of_msgs += 1
-    return proper, errormsg
+            if not cx_phone_input.get().isdigit():
+                errormsg += str(num_of_msgs) + ': Phone number must be numbers only.\n'
+                proper = False
+                num_of_msgs += 1
+            if len(cx_phone_input.get()) != 10:
+                errormsg += str(num_of_msgs) + ": Phone number must be exactly 10 digits long.\n"
+                proper = False
+                num_of_msgs += 1
+            if not deposit_input.get().isdigit() and '.' not in deposit_input.get():
+                errormsg += str(num_of_msgs) + ": Deposit amount should not contain any other symbols except decimal.\n"
+                proper = False
+                num_of_msgs += 1
+            if not price_input.get().isdigit() and '.' not in price_input.get():
+                errormsg += str(num_of_msgs) + ": Price amount should not contain any other symbols except decimal.\n"
+                proper = False
+                num_of_msgs += 1
+            return proper, errormsg
 
-# Executes when save buton is clicked
-def save_checkbox_value():
+        # Executes when save buton is clicked
+        def save_checkbox_value():
 
-    if not check_form_complete():
-        msgbox.showerror("Error", "Please fill out the entire form.")
-        return
-    proper, msg = check_proper_info()
-    if not proper:
-        msgbox.showwarning("Error", msg)
-        return
+            if not check_form_complete():
+                msgbox.showerror("Error", "Please fill out the entire form.")
+                return
+            proper, msg = check_proper_info()
+            if not proper:
+                msgbox.showwarning("Error", msg)
+                return
+            
+            data.append(cx_name_input.get())
+            data.append(cx_phone_input.get())
+            data.append(artist_input.get())
+            data.append(title_input.get())
+            data.append(float(deposit_input.get()))
+            data.append(float(price_input.get()))
+            data.append(vendors.get())
+            data.append(typs.get())
+            data.append(clerk_input.get())
+            xl_file.writeOnXL(data)
+            xl_file.close_file()
+            save_button.config(text="Saved!")
+            save_button['state'] = DISABLED
+            back_button.config(text="Back")
+
+        #--> DISPLAYED <--#
+
+        # Date 
+        date_text = Label(self, text= "Date: " + todays_date)
+        date_text.grid(row=0, column=0)
+
+        # Clerk name input
+        clerk_text = Label(self, text= "Clerk")
+        clerk_text.grid(row=0, column=4)
+        clerk_input = Entry(self)
+        clerk_input.grid(row=0, column=5)
+
+        # Title for Vendors
+        vendors_text = Label(self, text="Vendors")
+        vendors_text.config(font=("Times New Roman", 14))
+        vendors_text.grid(row=2, column=4, sticky='e')
+
+        # Radio Button for Vendors
+        vendors = StringVar(self, "Vendors")
+        vendors_values = ["AEC", "AMS", "AMA"]
+
+        # Button positioning based on amount of options
+        for i, vendor in enumerate(vendors_values): 
+            if i < 2:
+                rdio_opt = Radiobutton(self, text=vendor, variable=vendors, value=vendor)
+                rdio_opt.grid(row=4, column= 4 + i, sticky='w')
+            else:
+                rdio_opt = Radiobutton(self, text=vendor, variable=vendors, value=vendor)
+                rdio_opt.grid(row=5, column= 2 + i, sticky='w')
+
+        # Title for Type
+        type_text = Label(self, text="Type")
+        type_text.config(font=("Times New Roman", 14))
+        type_text.grid(row=2, column=1, sticky='e')
+
+        # Radio Button for Type
+        typs = StringVar(self, "Type")
+        typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
+
+        # Button positioning based on amount of options
+        for i, typ in enumerate(typ_values): 
+            if i < 2:
+                rdio_typ = Radiobutton(self, text=typ, variable=typs, value=typ)
+                rdio_typ.grid(row=4, column=i, sticky='w')
+            else:
+                rdio_typ = Radiobutton(self, text=typ, variable=typs, value=typ)
+                rdio_typ.grid(row=5, column=i - 2, sticky='w')
+
+        # CX name inpput
+        cx_name_title = Label(self, text="Name")
+        cx_name_title.grid(row=6, column=0)
+        cx_name_input = Entry(self)
+        cx_name_input.grid(row=6, column=2)
+
+        # Deposit input
+        deposit_title = Label(self, text="Deposit")
+        deposit_title.grid(row=6, column=5)
+        deposit_input = Entry(self)
+        deposit_input.grid(row=7, column=5)
+
+        # CX phone number input
+        cx_phone_title = Label(self, text="Phone")
+        cx_phone_title.grid(row=7, column=0)
+        cx_phone_input = Entry(self)
+        cx_phone_input.grid(row=7, column=2)
+
+        # Artist input
+        artist_title = Label(self, text="Artist")
+        artist_title.grid(row=8, column=0)
+        artist_input = Entry(self)
+        artist_input.grid(row= 8, column=2)
+
+        # Price input
+        price_title = Label(self, text="Price")
+        price_title.grid(row=8, column=5)
+        price_input = Entry(self)
+        price_input.grid(row=9, column=5)
+
+        # Title input
+        title_title = Label(self, text="Title")
+        title_title.grid(row=9, column=0)
+        title_input = Entry(self)
+        title_input.grid(row=9, column=2)
+
+
+        save_button = tk.Button(self, text="Save", command=save_checkbox_value)
+        save_button.grid(row=10, column=2, columnspan=1, padx=20, pady=20)
+
+        back_button = tk.Button(self, text="Cancel", command=self.master.show_main_frame)
+        back_button.grid(row=10, column=1, columnspan=1, padx=20, pady=20)
+
+class PrevSO(Base):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.prev_so = tk.Label(self, text="Previous Special Orders")
+        self.prev_so.pack()
+
+class SOApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Special Order")
+        self.geometry("500x225")
+
+        self.special_order_form = SOForm(self)
+        self.previous_orders = PrevSO(self)
+
+        self.special_order_form_button = tk.Button(self, text="Special Order Form", command=self.show_special_order_form)
+        self.previous_orders_button = tk.Button(self, text="Previous Orders", command=self.show_special_order_form)
+
+        self.hide_all_frames()
+
+        self.special_order_form_button.pack()
+        self.previous_orders_button.pack()
+
+    def hide_all_frames(self):
+        for frame in [self.special_order_form, self.previous_orders]:
+            frame.pack_forget()
+        self.previous_orders_button.pack_forget()
+        self.special_order_form_button.pack_forget()
+
+    def show_special_order_form(self):
+        self.hide_all_frames()
+        self.special_order_form.pack()
+
+    def show_previous_orders(self):
+        self.hide_all_frames()
+        self.previous_orders.pack()
+
+    def show_main_frame(self):
+        self.hide_all_frames()
+        # Show the main application frame
+        self.previous_orders_button.pack()
+        self.special_order_form_button.pack()
     
-    data.append(cx_name_input.get())
-    data.append(cx_phone_input.get())
-    data.append(artist_input.get())
-    data.append(title_input.get())
-    data.append(float(deposit_input.get()))
-    data.append(float(price_input.get()))
-    data.append(vendors.get())
-    data.append(typs.get())
-    data.append(clerk_input.get())
-    xl_file.writeOnXL(data)
-    xl_file.close_file()
-    save_button.config(text="Saved!")
-    save_button['state'] = DISABLED
+    
 
-#--> DISPLAYED <--#
-
-# Date 
-date_text = Label(window, text= "Date: " + todays_date)
-date_text.grid(row=0, column=0)
-
-# Clerk name input
-clerk_text = Label(window, text= "Clerk")
-clerk_text.grid(row=0, column=4)
-clerk_input = Entry(window)
-clerk_input.grid(row=0, column=5)
-
-# Title for Vendors
-vendors_text = Label(window, text="Vendors")
-vendors_text.config(font=("Times New Roman", 14))
-vendors_text.grid(row=2, column=4, sticky='e')
-
-# Radio Button for Vendors
-vendors = StringVar(window, "Vendors")
-vendors_values = ["AEC", "AMS", "AMA"]
-
-# Button positioning based on amount of options
-for i, vendor in enumerate(vendors_values): 
-    if i < 2:
-        rdio_opt = Radiobutton(window, text=vendor, variable=vendors, value=vendor)
-        rdio_opt.grid(row=4, column= 4 + i, sticky='w')
-    else:
-        rdio_opt = Radiobutton(window, text=vendor, variable=vendors, value=vendor)
-        rdio_opt.grid(row=5, column= 2 + i, sticky='w')
-
-# Title for Type
-type_text = Label(window, text="Type")
-type_text.config(font=("Times New Roman", 14))
-type_text.grid(row=2, column=1, sticky='e')
-
-# Radio Button for Type
-typs = StringVar(window, "Type")
-typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
-
-# Button positioning based on amount of options
-for i, typ in enumerate(typ_values): 
-    if i < 2:
-        rdio_typ = Radiobutton(window, text=typ, variable=typs, value=typ)
-        rdio_typ.grid(row=4, column=i, sticky='w')
-    else:
-        rdio_typ = Radiobutton(window, text=typ, variable=typs, value=typ)
-        rdio_typ.grid(row=5, column=i - 2, sticky='w')
-
-# CX name inpput
-cx_name_title = Label(window, text="Name")
-cx_name_title.grid(row=6, column=0)
-cx_name_input = Entry(window)
-cx_name_input.grid(row=6, column=2)
-
-# Deposit input
-deposit_title = Label(window, text="Deposit")
-deposit_title.grid(row=6, column=5)
-deposit_input = Entry(window)
-deposit_input.grid(row=7, column=5)
-
-# CX phone number input
-cx_phone_title = Label(window, text="Phone")
-cx_phone_title.grid(row=7, column=0)
-cx_phone_input = Entry(window)
-cx_phone_input.grid(row=7, column=2)
-
-# Artist input
-artist_title = Label(window, text="Artist")
-artist_title.grid(row=8, column=0)
-artist_input = Entry(window)
-artist_input.grid(row= 8, column=2)
-
-# Price input
-price_title = Label(window, text="Price")
-price_title.grid(row=8, column=5)
-price_input = Entry(window)
-price_input.grid(row=9, column=5)
-
-# Title input
-title_title = Label(window, text="Title")
-title_title.grid(row=9, column=0)
-title_input = Entry(window)
-title_input.grid(row=9, column=2)
-
-
-save_button = tk.Button(window, text="Save", command=save_checkbox_value)
-save_button.grid(row=10, column=2, columnspan=2, padx=20, pady=20)
-
-
+window = SOApp()
 window.mainloop()
