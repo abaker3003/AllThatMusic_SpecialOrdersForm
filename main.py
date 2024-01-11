@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.messagebox as msgbox
+
+from matplotlib import artist
 import generators as gn
 import xlfile as xl
 
@@ -27,11 +29,32 @@ def check_form_complete():
 
     return True
 
+def check_proper_info():
+    proper = True
+    errormsg = ''
+    if not cx_name_input.get().isalpha():
+        errormsg += 'Customer name must be all letters.\n'
+        proper = False
+    if not cx_phone_input.get().isdigit():
+        errormsg += 'Phone number must be numbers only.\n'
+        proper = False
+    if not deposit_input.get().isdigit() and '.' not in deposit_input.get():
+        errormsg += "Deposit amount should not contain any other symbols except decimal.\n"
+        proper = False
+    if not price_input.get().isdigit() and '.' not in price_input.get():
+        errormsg += "Price amount should not contain any other symbols except decimal.\n"
+        proper = False
+    return proper, errormsg
+
 # Executes when save buton is clicked
 def save_checkbox_value():
 
     if not check_form_complete():
         msgbox.showerror("Error", "Please fill out the entire form.")
+        return
+    proper, msg = check_proper_info()
+    if not proper:
+        msgbox.showwarning("Error", msg)
         return
     
     data.append(cx_name_input.get())
