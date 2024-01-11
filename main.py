@@ -11,12 +11,12 @@ xl_file = xl.open_excel_file()
 window = tk.Tk()
 window.geometry("500x225")
 
+todays_date = gn.get_todays_date()
 
-ticket_num = gn.ticketnum(xl_file.countRows())
+ticket_num = gn.ticketnum(xl_file)
 window.title(("Special Order - "+ ticket_num))
 
-
-data = [ticket_num]
+data = [todays_date, ticket_num]
 
 def check_form_complete():
     # Check if all required entries have text
@@ -83,7 +83,7 @@ def save_checkbox_value():
 #--> DISPLAYED <--#
 
 # Date 
-date_text = Label(window, text= "Date: " + gn.get_todays_date())
+date_text = Label(window, text= "Date: " + todays_date)
 date_text.grid(row=0, column=0)
 
 # Clerk name input
