@@ -38,6 +38,9 @@ def check_proper_info():
     if not cx_phone_input.get().isdigit():
         errormsg += 'Phone number must be numbers only.\n'
         proper = False
+    if len(cx_phone_input.get()) != 10:
+        errormsg += "Phone number must be exactly 10 digits long.\n"
+        proper = False
     if not deposit_input.get().isdigit() and '.' not in deposit_input.get():
         errormsg += "Deposit amount should not contain any other symbols except decimal.\n"
         proper = False
