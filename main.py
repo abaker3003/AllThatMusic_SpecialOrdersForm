@@ -1,8 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
-import subprocess
-import datetime
+import tkinter.messagebox as msgbox
 import generators as gn
 import xlfile as xl
 
@@ -17,8 +16,24 @@ window.title(("Special Order - "+ ticket_num))
 
 data = [ticket_num]
 
+def check_form_complete():
+    # Check if all required entries have text
+    if not cx_name_input.get() or not cx_phone_input.get() or not artist_input.get() or not title_input.get() or not deposit_input.get() or not price_input.get():
+        return False
+
+    # Check if at least one vendor and type radio button is selected
+    if not vendors.get() or not typs.get():
+        return False
+
+    return True
+
 # Executes when save buton is clicked
 def save_checkbox_value():
+
+    if not check_form_complete():
+        msgbox.showerror("Error", "Please fill out the entire form.")
+        return
+    
     data.append(cx_name_input.get())
     data.append(cx_phone_input.get())
     data.append(artist_input.get())
