@@ -33,7 +33,15 @@ def check_proper_info():
     proper = True
     errormsg = ''
     num_of_msgs = 1
-    if not cx_name_input.get().isalpha():
+    if " " in cx_name_input.get():
+        cx_names = cx_name_input.get().split(" ")
+        for name in cx_names:
+            if not name.isalpha():
+                errormsg += str(num_of_msgs) + ': Customer name must be all letters.\n'
+                proper = False
+                num_of_msgs += 1
+                break
+    elif not cx_name_input.get().isalpha():
         errormsg += str(num_of_msgs) + ': Customer name must be all letters.\n'
         proper = False
         num_of_msgs += 1
