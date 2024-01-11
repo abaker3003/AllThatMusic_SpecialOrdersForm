@@ -11,13 +11,17 @@ xl_file = xl.open_excel_file()
 window = tk.Tk()
 window.geometry("500x225")
 
+# Generating current date
 todays_date = gn.get_todays_date()
 
+# Generating ticket number
 ticket_num = gn.ticketnum(xl_file)
 window.title(("Special Order - "+ ticket_num))
 
+# Adding the current date and ticket number to data list
 data = [todays_date, ticket_num]
 
+# Checks if all input fields are filled
 def check_form_complete():
     # Check if all required entries have text
     if not cx_name_input.get() or not cx_phone_input.get() or not artist_input.get() or not title_input.get() or not deposit_input.get() or not price_input.get():
@@ -29,6 +33,7 @@ def check_form_complete():
 
     return True
 
+# Checks to see if each field input is correct
 def check_proper_info():
     proper = True
     errormsg = ''
@@ -100,15 +105,16 @@ clerk_text.grid(row=0, column=4)
 clerk_input = Entry(window)
 clerk_input.grid(row=0, column=5)
 
-
-# Title for Venders
+# Title for Vendors
 vendors_text = Label(window, text="Vendors")
 vendors_text.config(font=("Times New Roman", 14))
 vendors_text.grid(row=2, column=4, sticky='e')
 
-# Radio Button for Venders
+# Radio Button for Vendors
 vendors = StringVar(window, "Vendors")
 vendors_values = ["AEC", "AMS", "AMA"]
+
+# Button positioning based on amount of options
 for i, vendor in enumerate(vendors_values): 
     if i < 2:
         rdio_opt = Radiobutton(window, text=vendor, variable=vendors, value=vendor)
@@ -125,6 +131,8 @@ type_text.grid(row=2, column=1, sticky='e')
 # Radio Button for Type
 typs = StringVar(window, "Type")
 typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
+
+# Button positioning based on amount of options
 for i, typ in enumerate(typ_values): 
     if i < 2:
         rdio_typ = Radiobutton(window, text=typ, variable=typs, value=typ)
