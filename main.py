@@ -32,21 +32,27 @@ def check_form_complete():
 def check_proper_info():
     proper = True
     errormsg = ''
+    num_of_msgs = 1
     if not cx_name_input.get().isalpha():
-        errormsg += 'Customer name must be all letters.\n'
+        errormsg += str(num_of_msgs) + ': Customer name must be all letters.\n'
         proper = False
+        num_of_msgs += 1
     if not cx_phone_input.get().isdigit():
-        errormsg += 'Phone number must be numbers only.\n'
+        errormsg += str(num_of_msgs) + ': Phone number must be numbers only.\n'
         proper = False
+        num_of_msgs += 1
     if len(cx_phone_input.get()) != 10:
-        errormsg += "Phone number must be exactly 10 digits long.\n"
+        errormsg += str(num_of_msgs) + ": Phone number must be exactly 10 digits long.\n"
         proper = False
+        num_of_msgs += 1
     if not deposit_input.get().isdigit() and '.' not in deposit_input.get():
-        errormsg += "Deposit amount should not contain any other symbols except decimal.\n"
+        errormsg += str(num_of_msgs) + ": Deposit amount should not contain any other symbols except decimal.\n"
         proper = False
+        num_of_msgs += 1
     if not price_input.get().isdigit() and '.' not in price_input.get():
-        errormsg += "Price amount should not contain any other symbols except decimal.\n"
+        errormsg += str(num_of_msgs) + ": Price amount should not contain any other symbols except decimal.\n"
         proper = False
+        num_of_msgs += 1
     return proper, errormsg
 
 # Executes when save buton is clicked
