@@ -232,7 +232,8 @@ class PrevSO(Base):
         values = self.tree.item(item, 'values')
 
         # Create a dialog with entry fields for each column
-        dialog = simpledialog.Dialog(self, title="Edit Order")
+        dialog = Toplevel(self)
+        dialog.title("Edit Order")
         entries = []
         for i, (column, value) in enumerate(zip(self.df.columns, values)):
             label = Label(dialog, text=column)
@@ -242,7 +243,6 @@ class PrevSO(Base):
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        # Create the save button
         self.save_changes_button = Button(dialog, text="Save", command=lambda: self.save(item, entries))
         self.save_changes_button.grid(row=len(self.df.columns), column=0, columnspan=2)
 
