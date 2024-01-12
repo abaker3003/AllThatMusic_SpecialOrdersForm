@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import simpledialog
 from tkinter import *
 from tkinter.ttk import *
+from tkinter.tix import *
 import tkinter.messagebox as msgbox
 from matplotlib import artist
 import generators as gn
@@ -200,13 +201,13 @@ class SOForm(Base):
 class PrevSO(Base):
     def __init__(self, master=None):
         super().__init__(master)
-        self.master.geometry("750x750")
+        #self.geometry("750x750")
         self.prev_so = tk.Label(self, text="Previous Special Orders")
         self.prev_so.grid(row=0, column=0, sticky='w')
 
         # Load the Excel file into a pandas DataFrame
         self.excel_file = xl.open_excel_file()
-        self.df = self.excel_file.read_into_dataframe()
+        self.df = self.excel_file.read_into_dataframe(dtype={'cx_phone_input': str})
 
         # Create the Treeview
         self.tree = Treeview(self, columns=list(self.df.columns), show="headings")

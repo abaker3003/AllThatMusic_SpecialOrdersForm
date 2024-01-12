@@ -18,15 +18,20 @@ class ExcelFile:
 
     def writeOnXL(self, data):
 
+        # Change dtype for phone number to string
+        print(data)
+
         # Add new row to worksheet
         self.worksheet.append(data)
 
         # Save changes to the workbook
-        self.workbook.save(self.filename)
+        self.workbook.save(self.filename)\
+        
+        self.workbook.close()
 
-    def read_into_dataframe(self):
+    def read_into_dataframe(self, dtype=None):
         # Read the Excel file into a pandas DataFrame
-        return pd.read_excel(self.filename)
+        return pd.read_excel(self.filename, dtype=None)
 
     def update_excel(self, row, new_values):
         # Update the Excel file with the new values
