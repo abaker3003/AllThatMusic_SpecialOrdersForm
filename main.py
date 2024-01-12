@@ -200,54 +200,70 @@ class SOForm(Base):
 class PrevSO(Base):
     def __init__(self, master=None):
         super().__init__(master)
+        self.master.geometry("750x750")
         self.prev_so = tk.Label(self, text="Previous Special Orders")
-        self.prev_so.pack()
+        self.prev_so.grid(row=0, column=0, sticky='w')
 
         # Load the Excel file into a pandas DataFrame
         self.excel_file = xl.open_excel_file()
         self.df = self.excel_file.read_into_dataframe()
 
         # Create the Treeview
-        self.tree = Treeview(self)
-        self.tree['columns'] = list(self.df.columns)
+        self.tree = Treeview(self, columns=list(self.df.columns), show="headings")
         for column in self.df.columns:
             self.tree.heading(column, text=column)
-        self.tree.pack(side='left', fill='both', expand=True)
-
+            self.tree.column(column, width=100, minwidth=50)  # Adjust width as needed
+            self.tree.grid(row=1, column=0, sticky='nsew')
         # Add the data to the Treeview
-        for index, row in self.df.iterrows():
+        for _, row in self.df.iterrows():
             self.tree.insert('', 'end', values=list(row))
 
         # Create the Scrollbar
-        self.scrollbar = Scrollbar(self, orient='vertical', command=self.tree.yview)
-        self.tree.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.pack(side='right', fill='y')
+        self.scrollbar_y = Scrollbar(self, orient='vertical', command=self.tree.yview)
+        self.scrollbar_y.grid(row=1, column=1, sticky='ns')
+        self.scrollbar_x = Scrollbar(self, orient='horizontal', command=self.tree.xview)
+        self.scrollbar_x.grid(row=2, column=0, sticky='ew')
+        self.tree.configure(yscrollcommand=self.scrollbar_y.set, xscrollcommand=self.scrollbar_x.set)
+
+        self.cancel_changes_button = Button(self, text="Back", command=self.master.show_main_frame)
+        self.cancel_changes_button.grid(row=10, column=0, columnspan=2, padx=20, pady=20, sticky='s')
 
         # Bind the double-click event
-        self.tree.bind('<Double-1>', self.on_double_click)
+        self.tree.bind('<Double-1>', lambda event: self.on_double_click())
 
-    def on_double_click(self, event):
+        self.dialog = None
+        self.save_changes_button = None
+
+    def on_double_click(self):
         # Get the selected item
         item = self.tree.selection()[0]
         values = self.tree.item(item, 'values')
 
         # Create a dialog with entry fields for each column
-        dialog = Toplevel(self)
-        dialog.title("Edit Order")
+        self.dialog = Toplevel(self)
+        self.dialog.title("Edit Order")
         entries = []
         for i, (column, value) in enumerate(zip(self.df.columns, values)):
-            label = Label(dialog, text=column)
+            label = Label(self.dialog, text=column)
             label.grid(row=i, column=0)
-            entry = Entry(dialog)
+            entry = Entry(self.dialog)
             entry.insert(0, value)
             entry.grid(row=i, column=1)
             entries.append(entry)
 
-        self.save_changes_button = Button(dialog, text="Save", command=lambda: self.save(item, entries))
+        self.save_changes_button = Button(self.dialog, text="Save", command=lambda: self.save(item, entries))
         self.save_changes_button.grid(row=len(self.df.columns), column=0, columnspan=2)
 
-        self.cancel_changes_button = Button(self, text="Cancel", command=self.master.show_main_frame)
-        self.cancel_changes_button.grid(row=10, column=1, columnspan=1, padx=20, pady=20)
+
+    def on_edit(self):
+        # Get the edited item and column
+        item = self.tree.selection()[0]
+        column = self.tree.focus_column()
+        new_value = self.tree.set(item, column)
+
+        # Update the DataFrame and the Excel file
+        self.df.loc[int(item), column] = new_value
+        self.excel_file.update_excel(int(item) + 1, [new_value])
 
     def save(self, item, entries):
         # Update the Treeview and the DataFrame with the new values
@@ -259,9 +275,12 @@ class PrevSO(Base):
         # Write the DataFrame back to the Excel file
         self.excel_file.update_excel(int(item) + 1, new_values)
 
-        self.save_changes_button.config(text="Saved!")
-        self.save_changes_button['state'] = DISABLED
+        self.save_changes_button.config(text="Saved!", state=DISABLED)
         self.cancel_changes_button.config(text="Back")
+
+        # Destroy the dialog
+        self.dialog.destroy()
+        self.dialog = None
 
 
 class SOApp(tk.Tk):
