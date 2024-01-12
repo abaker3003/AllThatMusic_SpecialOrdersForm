@@ -107,6 +107,11 @@ class SOForm(Base):
             save_button['state'] = DISABLED
             back_button.config(text="Back")
 
+        def go_back():
+            xl_file.close_file()
+            self.master.show_main_frame()
+
+
         #--> DISPLAYED <--#
 
         # Date 
@@ -195,7 +200,7 @@ class SOForm(Base):
         save_button = tk.Button(self, text="Save", command=save_checkbox_value)
         save_button.grid(row=10, column=2, columnspan=1, padx=20, pady=20)
 
-        back_button = tk.Button(self, text="Cancel", command=self.master.show_main_frame)
+        back_button = tk.Button(self, text="Cancel", command=go_back)
         back_button.grid(row=10, column=1, columnspan=1, padx=20, pady=20)
 
 class PrevSO(Base):
@@ -207,13 +212,13 @@ class PrevSO(Base):
 
         # Load the Excel file into a pandas DataFrame
         self.excel_file = xl.open_excel_file()
-        self.df = self.excel_file.read_into_dataframe(dtype={'cx_phone_input': str})
+        self.df = self.excel_file.read_into_dataframe()
 
         # Create the Treeview
         self.tree = Treeview(self, columns=list(self.df.columns), show="headings")
         for column in self.df.columns:
             self.tree.heading(column, text=column)
-            self.tree.column(column, width=100, minwidth=50)  # Adjust width as needed
+            self.tree.column(column, width=50, minwidth=20)  # Adjust width as needed
             self.tree.grid(row=1, column=0, sticky='nsew')
         # Add the data to the Treeview
         for _, row in self.df.iterrows():
@@ -227,7 +232,7 @@ class PrevSO(Base):
         self.tree.configure(yscrollcommand=self.scrollbar_y.set, xscrollcommand=self.scrollbar_x.set)
 
         self.cancel_changes_button = Button(self, text="Back", command=self.master.show_main_frame)
-        self.cancel_changes_button.grid(row=10, column=0, columnspan=2, padx=20, pady=20, sticky='s')
+        self.cancel_changes_button.grid(row=10, column=0, columnspan=2, padx=10, pady=10, sticky='s')
 
         # Bind the double-click event
         self.tree.bind('<Double-1>', lambda event: self.on_double_click())
@@ -288,7 +293,7 @@ class SOApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Special Order")
-        self.geometry("500x225")
+        self.geometry("550x325")
 
         self.special_order_form = SOForm(self)
         self.previous_orders = PrevSO(self)

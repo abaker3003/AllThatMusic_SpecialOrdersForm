@@ -21,23 +21,27 @@ class ExcelFile:
         # Change dtype for phone number to string
         print(data)
 
+        phne = data[3]
+        data[3] = str(phne)[:11]
+
         # Add new row to worksheet
         self.worksheet.append(data)
 
         # Save changes to the workbook
-        self.workbook.save(self.filename)\
+        self.workbook.save(self.filename)
         
         self.workbook.close()
 
-    def read_into_dataframe(self, dtype=None):
+    def read_into_dataframe(self):
         # Read the Excel file into a pandas DataFrame
-        return pd.read_excel(self.filename, dtype=None)
+        return pd.read_excel(self.filename)
 
     def update_excel(self, row, new_values):
         # Update the Excel file with the new values
         for i, value in enumerate(new_values, start=1):
             self.worksheet.cell(row=row, column=i, value=value)
         self.workbook.save(self.filename)
+        self.close_file()
 
 
 
