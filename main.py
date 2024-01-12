@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import simpledialog
 from tkinter import *
 from tkinter.ttk import *
 import tkinter.messagebox as msgbox
@@ -202,6 +203,67 @@ class PrevSO(Base):
         self.prev_so = tk.Label(self, text="Previous Special Orders")
         self.prev_so.pack()
 
+        # Load the Excel file into a pandas DataFrame
+        self.excel_file = xl.open_excel_file()
+        self.df = self.excel_file.read_into_dataframe()
+
+        # Create the Treeview
+        self.tree = Treeview(self)
+        self.tree['columns'] = list(self.df.columns)
+        for column in self.df.columns:
+            self.tree.heading(column, text=column)
+        self.tree.pack(side='left', fill='both', expand=True)
+
+        # Add the data to the Treeview
+        for index, row in self.df.iterrows():
+            self.tree.insert('', 'end', values=list(row))
+
+        # Create the Scrollbar
+        self.scrollbar = Scrollbar(self, orient='vertical', command=self.tree.yview)
+        self.tree.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.pack(side='right', fill='y')
+
+        # Bind the double-click event
+        self.tree.bind('<Double-1>', self.on_double_click)
+
+    def on_double_click(self, event):
+        # Get the selected item
+        item = self.tree.selection()[0]
+        values = self.tree.item(item, 'values')
+
+        # Create a dialog with entry fields for each column
+        dialog = simpledialog.Dialog(self, title="Edit Order")
+        entries = []
+        for i, (column, value) in enumerate(zip(self.df.columns, values)):
+            label = Label(dialog, text=column)
+            label.grid(row=i, column=0)
+            entry = Entry(dialog)
+            entry.insert(0, value)
+            entry.grid(row=i, column=1)
+            entries.append(entry)
+
+        # Create the save button
+        self.save_changes_button = Button(dialog, text="Save", command=lambda: self.save(item, entries))
+        self.save_changes_button.grid(row=len(self.df.columns), column=0, columnspan=2)
+
+        self.cancel_changes_button = Button(self, text="Cancel", command=self.master.show_main_frame)
+        self.cancel_changes_button.grid(row=10, column=1, columnspan=1, padx=20, pady=20)
+
+    def save(self, item, entries):
+        # Update the Treeview and the DataFrame with the new values
+        new_values = [entry.get() for entry in entries]
+        self.tree.item(item, values=new_values)
+        for column, value in zip(self.df.columns, new_values):
+            self.df.loc[self.df[column] == value, column] = value
+
+        # Write the DataFrame back to the Excel file
+        self.excel_file.update_excel(int(item) + 1, new_values)
+
+        self.save_changes_button.config(text="Saved!")
+        self.save_changes_button['state'] = DISABLED
+        self.cancel_changes_button.config(text="Back")
+
+
 class SOApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -212,7 +274,7 @@ class SOApp(tk.Tk):
         self.previous_orders = PrevSO(self)
 
         self.special_order_form_button = tk.Button(self, text="Special Order Form", command=self.show_special_order_form)
-        self.previous_orders_button = tk.Button(self, text="Previous Orders", command=self.show_special_order_form)
+        self.previous_orders_button = tk.Button(self, text="Previous Orders", command=self.show_previous_orders)
 
         self.hide_all_frames()
 

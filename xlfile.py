@@ -1,5 +1,6 @@
 import openpyxl
 import os
+import pandas as pd
 
 class ExcelFile:
 
@@ -22,6 +23,17 @@ class ExcelFile:
 
         # Save changes to the workbook
         self.workbook.save(self.filename)
+
+    def read_into_dataframe(self):
+        # Read the Excel file into a pandas DataFrame
+        return pd.read_excel(self.filename)
+
+    def update_excel(self, row, new_values):
+        # Update the Excel file with the new values
+        for i, value in enumerate(new_values, start=1):
+            self.worksheet.cell(row=row, column=i, value=value)
+        self.workbook.save(self.filename)
+
 
 
 def open_excel_file(): 
