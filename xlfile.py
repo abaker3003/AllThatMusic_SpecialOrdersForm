@@ -19,12 +19,6 @@ class ExcelFile:
     def writeOnXL(self, data):
 
         # Change dtype for phone number to string
-
-        phne = data[3]
-        print(phne)
-        data[3] = str(phne)[:11]
-        print(data[3])
-
         # Add new row to worksheet
         self.worksheet.append(data)
 
