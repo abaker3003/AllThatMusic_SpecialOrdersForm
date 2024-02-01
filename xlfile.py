@@ -29,7 +29,7 @@ class ExcelFile:
 
     def read_into_dataframe(self):
         # Read the Excel file into a pandas DataFrame
-        return pd.read_excel(self.filename)
+        return pd.read_excel(self.filename,  dtype={'PHONE': str})
 
     def update_excel(self, row, new_values):
         # Update the Excel file with the new values

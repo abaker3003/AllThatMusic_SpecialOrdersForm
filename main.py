@@ -260,6 +260,8 @@ class PrevSO(Base):
         self.save_changes_button = Button(self.dialog, text="Save", command=lambda: self.save(item, entries))
         self.save_changes_button.grid(row=len(self.df.columns), column=0, columnspan=2)
 
+        #self.df['PHONE'] = self.df['PHONE'].astype(str).round()
+
 
     def on_edit(self):
         # Get the edited item and column
@@ -278,8 +280,11 @@ class PrevSO(Base):
         for column, value in zip(self.df.columns, new_values):
             self.df.loc[self.df[column] == value, column] = value
 
+        # Convert the item variable to an integer
+        item = int(item)
+
         # Write the DataFrame back to the Excel file
-        self.excel_file.update_excel(int(item) + 1, new_values)
+        self.excel_file.update_excel(item + 1, new_values)
 
         self.save_changes_button.config(text="Saved!", state=DISABLED)
         self.cancel_changes_button.config(text="Back")
