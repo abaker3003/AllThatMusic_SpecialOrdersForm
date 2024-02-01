@@ -4,13 +4,14 @@ from tkinter import *
 from tkinter.ttk import *
 from tkinter.tix import *
 import tkinter.messagebox as msgbox
+import customtkinter as ctk
 from matplotlib import artist
 import generators as gn
 import xlfile as xl
 
-class Base(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
+class Base(ctk.CTkToplevel):
+    def __init__(self, toplevel = ctk.CTkToplevel(app) *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.master = master
         self.pack()
 
@@ -294,17 +295,18 @@ class PrevSO(Base):
         self.dialog = None
 
 
-class SOApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
+class SOApp(ctk.CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.title("Special Order")
         self.geometry("550x325")
+        self.set_default_color_theme("dark-blue")
 
         self.special_order_form = SOForm(self)
         self.previous_orders = PrevSO(self)
 
-        self.special_order_form_button = tk.Button(self, text="Special Order Form", command=self.show_special_order_form)
-        self.previous_orders_button = tk.Button(self, text="Previous Orders", command=self.show_previous_orders)
+        self.special_order_form_button = ctk.CTkButton(self, text="Special Order Form", command=self.show_special_order_form, fg_color="#000000")
+        self.previous_orders_button = ctk.CTkButton(self, text="Previous Orders", command=self.show_previous_orders, fg_color="#000000")
 
         self.hide_all_frames()
 
