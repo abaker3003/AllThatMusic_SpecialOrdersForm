@@ -10,14 +10,14 @@ import generators as gn
 import xlfile as xl
 
 class Base(ctk.CTkToplevel):
-    def __init__(self, toplevel = ctk.CTkToplevel(app) *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, master=None):
+        super().__init__()
         self.master = master
         self.pack()
 
 class SOForm(Base):
     def __init__(self, master=None):
-        super().__init__(master)
+        super().__init__()
         xl_file = xl.open_excel_file()
 
         # Generating current date
@@ -206,7 +206,7 @@ class SOForm(Base):
 
 class PrevSO(Base):
     def __init__(self, master=None):
-        super().__init__(master)
+        super().__init__()
         #self.geometry("750x750")
         self.prev_so = tk.Label(self, text="Previous Special Orders")
         self.prev_so.grid(row=0, column=0, sticky='w')
@@ -296,17 +296,16 @@ class PrevSO(Base):
 
 
 class SOApp(ctk.CTk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
         self.title("Special Order")
         self.geometry("550x325")
-        self.set_default_color_theme("dark-blue")
 
         self.special_order_form = SOForm(self)
         self.previous_orders = PrevSO(self)
 
-        self.special_order_form_button = ctk.CTkButton(self, text="Special Order Form", command=self.show_special_order_form, fg_color="#000000")
-        self.previous_orders_button = ctk.CTkButton(self, text="Previous Orders", command=self.show_previous_orders, fg_color="#000000")
+        self.special_order_form_button = ctk.CTkButton(self, text="Special Order Form", command=self.show_special_order_form, fg_color="#000000", border_color="red")
+        self.previous_orders_button = ctk.CTkButton(self, text="Previous Orders", command=self.show_previous_orders, fg_color="#000000", border_color="red")
 
         self.hide_all_frames()
 
