@@ -231,7 +231,6 @@ class SOForm(Base):
 class PrevSO(Base):
     def __init__(self, master=None):
         super().__init__(master)
-        #self.geometry("750x750")
         self.configure(background="white")
         self.prev_so = ctk.CTkLabel(self, text="Previous Special Orders", text_color="black", font=("Arial", 16))
         self.prev_so.grid(row=0, column=0, columnspan=2, sticky='w', pady=(10, 20), padx=10)
@@ -272,12 +271,12 @@ class PrevSO(Base):
 
         
         # Bind the double-click event
-        self.tree.bind('<Double-1>', lambda event: self.on_double_click())
+        self.tree.bind('<Double-1>', self.on_double_click)
 
         self.dialog = None
         self.save_changes_button = None
 
-    def on_double_click(self):
+    def on_double_click(self, event):
         # Get the selected item
         item = self.tree.selection()[0]
         values = self.tree.item(item, 'values')
@@ -287,15 +286,23 @@ class PrevSO(Base):
         self.dialog.title("Edit Order")
         entries = {}
         for i, column in enumerate(self.df.columns):
-            ctk.CTkLabel(self.dialog, text=column, text_font=("Arial", 10)).grid(row=i, column=0, padx=10, pady=5)
+            ctk.CTkLabel(self.dialog, text=column, font=("Arial", 10)).grid(row=i, column=0, padx=10, pady=5)
             entry = ctk.CTkEntry(self.dialog)
-            entry.insert(0, values)
+            entry.insert(0, values[i])
             entry.grid(row=i, column=1, padx=10, pady=5)
+
+            if column not in set(["CX NAME", "PHONE"]):
+                entry.configure(state='disabled')
+            
             entries[column] = entry
+
         self.save_changes_button = ctk.CTkButton(self.dialog,
                                                 text="Save",
                                                 command=lambda: self.save(item, entries))
         self.save_changes_button.grid(row=len(self.df.columns), column=0, columnspan=2, pady=20)
+
+        self.cancel_changes_button = ctk.CTkButton(self.dialog, text="Back", command=self.dialog.destroy)
+        self.cancel_changes_button.grid(row=len(self.df.columns) + 1, column=0, columnspan=2, pady=20)
 
     def on_edit(self):
         # Get the edited item and column
@@ -309,19 +316,25 @@ class PrevSO(Base):
 
     def save(self, item, entries):
         # Update the Treeview and the DataFrame with the new values
-        new_values = [entry.get() for entry in entries]
+        new_values = [entries[column].get() for column in self.df.columns]
         self.tree.item(item, values=new_values)
-        for column, value in zip(self.df.columns, new_values):
-            self.df.loc[self.df[column] == value, column] = value
+        
+        # Assuming that 'I004' format means 'I' followed by an actual index number
+        if item.startswith('I') and item[1:].isdigit():
+            item_index = int(item[1:])
+        else:
+            # Handle the case where item does not follow the expected format
+            raise ValueError(f"The item identifier {item} is not in the expected format.")
 
-        # Convert the item variable to an integer
-        item = int(item)
+        
+        for column, new_value in zip(self.df.columns, new_values):
+            self.df.at[item_index, column] = new_value  # Make sure to use at[item_index, column]
 
         # Write the DataFrame back to the Excel file
-        self.excel_file.update_excel(item + 1, new_values)
+        self.excel_file.update_excel(item_index + 1, new_values)  # Add 1 if necessary for Excel indexing
 
-        self.save_changes_button.config(text="Saved!", state=DISABLED)
-        self.cancel_changes_button.config(text="Back")
+        self.save_changes_button.configure(text="Saved!", state=DISABLED)
+        self.cancel_changes_button.configure(text="Back")
 
         # Destroy the dialog
         self.dialog.destroy()
