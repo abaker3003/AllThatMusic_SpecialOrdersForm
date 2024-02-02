@@ -165,12 +165,12 @@ class SOForm(Base):
 
         # Button positioning based on amount of options
         for i, typ in enumerate(typ_values): 
-            if i < 2:
+            if i < 3:
                 rdio_typ = ctk.CTkRadioButton(self, text=typ, variable=typs, value=typ, text_color="#000", font=("Roboto", 16))
                 rdio_typ.grid(row=row_offset, column=i, sticky='w')
             else:
                 rdio_typ = ctk.CTkRadioButton(self, text=typ, variable=typs, value=typ, text_color="#000", font=("Roboto", 16))
-                rdio_typ.grid(row=row_offset + 1, column=i - 2, sticky='w')
+                rdio_typ.grid(row=row_offset + 1, column=i - 3, sticky='w')
 
         row_offset += 2  # Increment row offset 
 
@@ -285,13 +285,27 @@ class PrevSO(Base):
         self.dialog = ctk.CTkToplevel(self)
         self.dialog.title("Edit Order")
         entries = {}
+
+        typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
+        vendors_values = ["AEC", "AMS", "AMA"]
+
         for i, column in enumerate(self.df.columns):
             ctk.CTkLabel(self.dialog, text=column, font=("Arial", 10)).grid(row=i, column=0, padx=10, pady=5)
-            entry = ctk.CTkEntry(self.dialog)
-            entry.insert(0, values[i])
-            entry.grid(row=i, column=1, padx=10, pady=5)
+                
+            if column == "VENDOR":
+                entry = ctk.CTkOptionMenu(self.dialog, values=vendors_values)
+                entry.set(values[i])  # Set to current value or default one
+                entry.grid(row=i, column=1, padx=10, pady=5)
+            elif column == "TYPE":
+                entry = ctk.CTkOptionMenu(self.dialog, values=typ_values)
+                entry.set(values[i])  # Set to current value or default one
+                entry.grid(row=i, column=1, padx=10, pady=5)
+            else:
+                entry = ctk.CTkEntry(self.dialog)
+                entry.insert(0, values[i])
+                entry.grid(row=i, column=1, padx=10, pady=5)
 
-            if column not in set(["CX NAME", "PHONE"]):
+            if column in set(["REF NUM", "DATE", "CLERK NAME"]):
                 entry.configure(state='disabled')
             
             entries[column] = entry
