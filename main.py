@@ -359,8 +359,12 @@ class SOApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Special Order")
-        self.geometry("700x400")
+        self.geometry("1200x680")
         self.configure(background="#350909")
+
+        self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=0)
+        self.sidebar_menu.grid(row=0, column=0, sticky='nsew', rowspan=4)
+        self.sidebar_menu.grid_rowconfigure(4, weight=1)
 
         self.special_order_form = SOForm(self)
         self.previous_orders = PrevSO(self)
@@ -370,29 +374,29 @@ class SOApp(tk.Tk):
 
         self.hide_all_frames()
 
-        self.special_order_form_button.pack(side="top", fill="both")
-        self.previous_orders_button.pack(side="top", fill="both")
+        self.special_order_form_button.grid(row=2,column=0)
+        self.previous_orders_button.grid(row=3,column=0)
 
     def hide_all_frames(self):
         for frame in [self.special_order_form, self.previous_orders]:
-            frame.pack_forget()
-        self.previous_orders_button.pack_forget()
-        self.special_order_form_button.pack_forget()
+            frame.grid_forget()
+        self.previous_orders_button.grid_forget()
+        self.special_order_form_button.grid_forget()
 
     def show_special_order_form(self):
         self.configure(background="#ffced0")
         self.hide_all_frames()
-        self.special_order_form.pack()
+        self.special_order_form.grid()
 
     def show_previous_orders(self):
         self.hide_all_frames()
-        self.previous_orders.pack()
+        self.previous_orders.grid()
 
     def show_main_frame(self):
         self.hide_all_frames()
         # Show the main application frame
-        self.previous_orders_button.pack()
-        self.special_order_form_button.pack()
+        self.previous_orders_button.grid()
+        self.special_order_form_button.grid()
     
     
 
