@@ -20,7 +20,7 @@ class Base(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        self.pack()
+        self.grid()
 
 class DescriptionInputFrame(Base):
     def __init__(self, master=None):
@@ -105,7 +105,7 @@ class DescriptionInputFrame(Base):
             severity_list = ["subtle", "faint", "barely-visible", "light", "minor", "occassional", "stray", "scattered", "mild", "moderate", "typical", "pronounced", "considerable", "severe"]
             for j, severity in enumerate(severity_list):
                 severity_opt = tk.Radiobutton(severity_frame, text=severity, variable=severity_var, value=severity)
-                severity_opt.pack(anchor="w")
+                severity_opt.grid(row=j, column=0, sticky="w")
 
             self.severity_frames.append(severity_frame)
             severity_frame.grid_remove()
@@ -200,18 +200,18 @@ class DescriptionInputFrame(Base):
         self.AIDescriptionDiag.geometry("500x500")
 
         self.AIDescription_label = tk.Label(self.AIDescriptionDiag, text="AI Description")
-        self.AIDescription_label.pack(pady=20)
+        self.AIDescription_label.grid(row=0, column=0, pady=20)
 
         self.AIDescription_text = tk.Text(self.AIDescriptionDiag, height=10, width=50)
         self.AIDescription_text.config(state="normal")
         self.AIDescription_text.insert("1.0", ai_description)
-        self.AIDescription_text.pack(pady=20)
+        self.AIDescription_text.grid(row=1, column=0, pady=20)
 
         self.AIDescription_button = ttk.Button(self.AIDescriptionDiag, text="Generate", command=NONE)
-        self.AIDescription_button.pack(pady=50, padx=50)
+        self.AIDescription_button.grid(row=2, column=0, pady=50, padx=50)
 
         self.AIDescription_button = ttk.Button(self.AIDescriptionDiag, text="Save", command=NONE)
-        self.AIDescription_button.pack(pady=20, padx=50)
+        self.AIDescription_button.grid(row=3, column=0, pady=20, padx=50)
 
 
 class AIApp(tk.Tk):
@@ -219,8 +219,4 @@ class AIApp(tk.Tk):
         super().__init__()
         self.title("AI Chatbot")
         self.description_frame = DescriptionInputFrame(self)
-        self.description_frame.pack()
-
-
-window = AIApp()
-window.mainloop()
+        self.description_frame.grid()
