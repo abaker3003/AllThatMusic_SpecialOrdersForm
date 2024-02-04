@@ -8,6 +8,7 @@ import customtkinter as ctk
 from matplotlib import artist
 import generators as gn
 import xlfile as xl
+import ai_project as ai
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -368,7 +369,7 @@ class SOApp(tk.Tk):
 
         self.special_order_form = SOForm(self)
         self.previous_orders = PrevSO(self)
-        self.ai_form = NONE
+        self.ai_form = ai(self)
         self.reconciliation_form = NONE
 
         self.special_order_form_button = ctk.CTkButton(self, text="Special Order Form", command=self.show_special_order_form, fg_color="#000000", border_color="red", font=("Arial", 30))
@@ -386,27 +387,25 @@ class SOApp(tk.Tk):
     def hide_all_frames(self):
         for frame in [self.special_order_form, self.previous_orders]:
             frame.grid_forget()
-        self.previous_orders_button.grid_forget()
-        self.special_order_form_button.grid_forget()
 
     def show_special_order_form(self):
         self.configure(background="#ffced0")
-        #self.hide_all_frames()
+        self.hide_all_frames()
         self.special_order_form.grid()
         self.special_order_form_button["state"]="disabled"
 
     def show_previous_orders(self):
-        #self.hide_all_frames()
+        self.hide_all_frames()
         self.previous_orders.grid()
         self.previous_orders_button["state"]="disabled"
 
     def show_ai_form(self):
-        #self.hide_all_frames()
+        self.hide_all_frames()
         self.ai_form.grid()
         self.ai_form_button["state"]="disabled"
 
     def show_reconciliation_form(self):
-        #self.hide_all_frames()
+        self.hide_all_frames()
         self.reconciliation_form.grid()
         self.reconciliation_form_button["state"]="disabled"
 
