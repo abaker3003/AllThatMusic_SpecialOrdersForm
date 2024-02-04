@@ -9,7 +9,6 @@ from matplotlib import artist
 import generators as gn
 import xlfile as xl
 import ai_project as ai
-from ai_project import DescriptionInputFrame
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
