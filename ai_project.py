@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from main import Base
 import xlfile as xl
 import nltk
 from nltk.corpus import stopwords
@@ -16,11 +17,11 @@ from tkinter import ttk
 import tkinter.messagebox as msgbox
 from matplotlib import artist
 
-class Base(tk.Frame):
+'''class Base(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        self.grid()
+        self.grid()'''
 
 class DescriptionInputFrame(Base):
     def __init__(self, master=None):
@@ -214,9 +215,9 @@ class DescriptionInputFrame(Base):
         self.AIDescription_button.grid(row=3, column=0, pady=20, padx=50)
 
 
-class AIApp(tk.Tk):
+'''class AIApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("AI Chatbot")
         self.description_frame = DescriptionInputFrame(self)
-        self.description_frame.grid()
+        self.description_frame.grid()'''

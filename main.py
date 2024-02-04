@@ -8,7 +8,8 @@ import customtkinter as ctk
 from matplotlib import artist
 import generators as gn
 import xlfile as xl
-from ai_project import *
+import ai_project as ai
+from ai_project import DescriptionInputFrame
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -369,7 +370,7 @@ class SOApp(tk.Tk):
 
         self.special_order_form = SOForm(self)
         self.previous_orders = PrevSO(self)
-        self.ai_form = DescriptionInputFrame(self)
+        self.ai_form = ai.DescriptionInputFrame(self)
         self.reconciliation_form = NONE
 
         self.special_order_form_button = ctk.CTkButton(self, text="Special Order Form", command=self.show_special_order_form, fg_color="#000000", border_color="red", font=("Arial", 30))
