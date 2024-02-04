@@ -127,7 +127,7 @@ class DescriptionInputFrame(Base):
         nltk.download('stopwords')
 
         # ---> FILE HANDLING <--- #
-        xl_file = xl.open_excel_file()
+        xl_file = xl.open_excel_file('WebLP Master NEW.xlsx')
         df = xl_file.read_into_dataframe()
         filtered_df = df[df['Cond'] == self.selected_condition]
 

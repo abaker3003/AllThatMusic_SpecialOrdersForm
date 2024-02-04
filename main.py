@@ -21,7 +21,7 @@ class Base(tk.Frame):
 class SOForm(Base):
     def __init__(self, master=None):
         super().__init__(master)
-        xl_file = xl.open_excel_file()
+        xl_file = xl.open_excel_file('SO_Test.xlsx')
 
         # Generating current date
         todays_date = gn.get_todays_date()
@@ -237,8 +237,8 @@ class PrevSO(Base):
         self.prev_so.grid(row=0, column=0, columnspan=2, sticky='w', pady=(10, 20), padx=10)
 
         # Load the Excel file into a pandas DataFrame
-        self.excel_file = xl.open_excel_file()
-        self.df = self.excel_file.read_into_dataframe()
+        self.excel_file = xl.open_excel_file('SO_Test.xlsx')
+        self.df = self.excel_file.read_into_dataframe_SO()
 
         # Create the Treeview
         self.tree = Treeview(self, columns=list(self.df.columns), show="headings")
