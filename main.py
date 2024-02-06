@@ -105,6 +105,9 @@ class SOForm(Base):
             data.append(vendors.get())
             data.append(typs.get())
             data.append(clerk_input.get())
+            if ship_var.get() == 1:
+                data.append("Yes")
+                data.extend(self.shipping_data)
             xl_file.writeOnXL(data)
             xl_file.close_file()
             save_button.config(text="Saved!")
@@ -134,6 +137,50 @@ class SOForm(Base):
             shipping_window = ctk.CTkToplevel(self)
             shipping_window.title("Shipping Information")
 
+            def check_shipping_info_complete():
+                if not address_input.get() or not city_input.get() or not zipcode_input.get() or not state_select.get():
+                    return False
+                return True
+            
+            def check_proper_info():
+                proper = True
+                errormsg = ''
+                num_of_msgs = 1
+                if not address_input.get():
+                    errormsg += str(num_of_msgs) + ': Address cannot be empty.\n'
+                    proper = False
+                    num_of_msgs += 1
+                if not city_input.get().isalpha():
+                    errormsg += str(num_of_msgs) + ': City input is invalid.\n'
+                    proper = False
+                    num_of_msgs += 1
+                if not zipcode_input.get().isdigit():
+                    errormsg += str(num_of_msgs) + ': Zip code must be numbers only.\n'
+                    proper = False
+                    num_of_msgs += 1
+                if len(zipcode_input.get()) != 5:
+                    errormsg += str(num_of_msgs) + ": Zip code must be exactly 5 digits long.\n"
+                    proper = False
+                    num_of_msgs += 1
+                if not state_select.get():
+                    errormsg += str(num_of_msgs) + ': State cannot be empty.\n'
+                    proper = False
+                    num_of_msgs += 1
+                return proper, errormsg
+            
+            def save_shipping_info():
+                if not check_shipping_info_complete():
+                    msgbox.showerror("Error", "Please fill out the entire form.")
+                    return
+                proper, msg = check_proper_info()
+                if not proper:
+                    msgbox.showwarning("Error", msg)
+                    return
+                self.shipping_data = [address_input.get(), city_input.get(), state_select.get(), zipcode_input.get()]
+                shipping_window.destroy()
+            
+            addr_frame = ctk.CTkFrame(shipping_window)
+
             # Address
             address_text = ctk.CTkLabel(shipping_window, text= "Address", text_color="#000", font=("Roboto", 16))
             address_text.grid(row=0, column=0, pady=(10, 0))
@@ -154,7 +201,10 @@ class SOForm(Base):
             state_text.grid(row=3, column=0)
             state_select = ctk.CTkEntry(shipping_window)
             state_select.grid(row=3, column=1, sticky="ew", padx=10)
-            submit_button = ctk.CTkButton(shipping_window, text="Submit", command=shipping_window.destroy, text_color="#000", font=("Roboto", 16))
+            
+            # Submit button
+            submit_button = ctk.CTkButton(shipping_window, text="Submit", command=save_shipping_info, text_color="#000", font=("Roboto", 16))
+            submit_button.grid(row=4, column=0, columnspan=2, pady=20, sticky='ew')
 
         # Shipping Option checkbox
         shipping_text = ctk.CTkLabel(self, text="Shipping?", text_color="#000", font=("Roboto", 16))
