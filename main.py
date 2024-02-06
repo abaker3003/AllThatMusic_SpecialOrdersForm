@@ -385,7 +385,7 @@ class SOApp(tk.Tk):
         self.reconciliation_form_button.grid(row=5,column=0)
 
     def hide_all_frames(self):
-        for frame in [self.special_order_form, self.previous_orders]:
+        for frame in [self.special_order_form, self.previous_orders, self.ai_form]:
             frame.grid_forget()
 
     def show_special_order_form(self):
