@@ -316,6 +316,7 @@ class SOForm(Base):
 class PrevSO(Base):
     def __init__(self, master=None):
         super().__init__(master)
+        self.grid_propagate(False)
         self.configure(background="white")
         self.prev_so = ctk.CTkLabel(self, text="Previous Special Orders", text_color="black", font=("Arial", 16))
         self.prev_so.grid(row=0, column=0, columnspan=2, sticky='w', pady=(10, 20), padx=10)
@@ -475,21 +476,21 @@ class SOApp(tk.Tk):
     def show_special_order_form(self):
         self.configure(background="#ffced0")
         self.hide_all_frames()
-        self.special_order_form.grid()
+        self.special_order_form.grid(row=0, column=1, sticky='nsew')
         self.special_order_form_button["state"]="disabled"
 
     def show_previous_orders(self):
         self.hide_all_frames()
-        self.previous_orders.grid()
+        self.previous_orders.grid(row=0, column=1, sticky='nsew')
         self.previous_orders_button["state"]="disabled"
 
     def show_ai_form(self):
         self.hide_all_frames()
-        self.ai_form.grid()
+        self.ai_form.grid(row=0, column=1, sticky='nsew')
         self.ai_form_button["state"]="disabled"
 
     def show_reconciliation_form(self):
-        self.hide_all_frames()
+        self.hide_all_frames(row=0, column=1, sticky='nsew')
         self.reconciliation_form.grid()
         self.reconciliation_form_button["state"]="disabled"
 
