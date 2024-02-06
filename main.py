@@ -110,9 +110,9 @@ class SOForm(Base):
                 data.extend(self.shipping_data)
             xl_file.writeOnXL(data)
             xl_file.close_file()
-            save_button.config(text="Saved!")
+            save_button.configure(text="Saved!")
             save_button['state'] = DISABLED
-            back_button.config(text="Back")
+            back_button.configure(text="Back")
 
         def go_back():
             xl_file.close_file()
@@ -179,8 +179,6 @@ class SOForm(Base):
                 self.shipping_data = [address_input.get(), city_input.get(), state_select.get(), zipcode_input.get()]
                 shipping_window.destroy()
             
-            addr_frame = ctk.CTkFrame(shipping_window)
-
             # Address
             address_text = ctk.CTkLabel(shipping_window, text= "Address", text_color="#000", font=("Roboto", 16))
             address_text.grid(row=0, column=0, pady=(10, 0))
@@ -209,8 +207,8 @@ class SOForm(Base):
         # Shipping Option checkbox
         shipping_text = ctk.CTkLabel(self, text="Shipping?", text_color="#000", font=("Roboto", 16))
         shipping_text.grid(row=row_offset, column=5)
-        ship_var = tk.BooleanVar()
-        shipping_checkb = ctk.CTkCheckButton(self, variable=ship_var, text_color="#000", font=("Roboto", 16))
+        ship_var = ctk.BooleanVar()
+        shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var, text_color="#000", font=("Roboto", 16))
         shipping_checkb.grid(row=row_offset, column=6, sticky="ew", padx=10)
         
         # Bind the open_shipping_window function to the checkbox
