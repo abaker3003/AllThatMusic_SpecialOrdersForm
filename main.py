@@ -272,9 +272,9 @@ class SOForm(Base):
 
         # CX phone number input
         cx_phone_title = ctk.CTkLabel(self, text="Phone", text_color="#000", font=("Roboto", 16))
-        cx_phone_title.grid(row=row_offset, column=3)
+        cx_phone_title.grid(row=row_offset, column=4)
         cx_phone_input = ctk.CTkEntry(self)
-        cx_phone_input.grid(row=row_offset + 1, column=5, padx=10)
+        cx_phone_input.grid(row=row_offset + 1, column=4, padx=10)
 
         row_offset += 2  # Increment row offset
 
