@@ -130,6 +130,42 @@ class SOForm(Base):
         clerk_input = ctk.CTkEntry(self)
         clerk_input.grid(row=row_offset, column=4, sticky="ew", padx=10)
 
+        def open_shipping_window():
+            shipping_window = ctk.CTkToplevel(self)
+            shipping_window.title("Shipping Information")
+
+            # Address
+            address_text = ctk.CTkLabel(shipping_window, text= "Address", text_color="#000", font=("Roboto", 16))
+            address_text.grid(row=0, column=0, pady=(10, 0))
+            address_input = ctk.CTkEntry(shipping_window)
+            address_input.grid(row=0, column=1, sticky="ew", padx=10)
+            # City
+            city_text = ctk.CTkLabel(shipping_window, text= "City", text_color="#000", font=("Roboto", 16))
+            city_text.grid(row=1, column=0, pady=(10, 0))
+            city_input = ctk.CTkEntry(shipping_window)
+            city_input.grid(row=1, column=1)
+            # Zip Code
+            zipcode_text = ctk.CTkLabel(shipping_window, text= "Zip Code", text_color="#000", font=("Roboto", 16))
+            zipcode_text.grid(row=2, column=0, pady=(10, 0))
+            zipcode_input = ctk.CTkEntry(shipping_window)
+            zipcode_input.grid(row=2, column=1)
+            # State
+            state_text = ctk.CTkLabel(shipping_window, text= "State", text_color="#000", font=("Roboto", 16))
+            state_text.grid(row=3, column=0)
+            state_select = ctk.CTkEntry(shipping_window)
+            state_select.grid(row=3, column=1, sticky="ew", padx=10)
+            submit_button = ctk.CTkButton(shipping_window, text="Submit", command=shipping_window.destroy, text_color="#000", font=("Roboto", 16))
+
+        # Shipping Option checkbox
+        shipping_text = ctk.CTkLabel(self, text="Shipping?", text_color="#000", font=("Roboto", 16))
+        shipping_text.grid(row=row_offset, column=5)
+        ship_var = tk.BooleanVar()
+        shipping_checkb = ctk.CTkCheckButton(self, variable=ship_var, text_color="#000", font=("Roboto", 16))
+        shipping_checkb.grid(row=row_offset, column=6, sticky="ew", padx=10)
+        
+        # Bind the open_shipping_window function to the checkbox
+        shipping_checkb.bind("<Button-1>", lambda event: open_shipping_window())
+
         row_offset += 1  # Increment row offset 
 
         # Divider
