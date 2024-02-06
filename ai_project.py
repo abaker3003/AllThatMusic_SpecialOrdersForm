@@ -167,11 +167,8 @@ class DescriptionInputFrame(Base):
 
         # ---> CHAT-3 AI <--- #
         # -->--> Set up GPT API key <--<-- #
-        with open('api.txt', 'r') as key:
-            apikey = key.read()
-
         client = OpenAI(
-            api_key=apikey,
+            api_key=OPENAI_API_KEY,
             organization='org-kcRkG3XdvJvZ7n96rmg9do6k'
         )
         headers = {
