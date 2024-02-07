@@ -15,6 +15,7 @@ from tkinter import *
 from tkinter import ttk
 import tkinter.messagebox as msgbox
 from matplotlib import artist
+import os
 
 class Base(tk.Frame):
     def __init__(self, master=None):
@@ -161,18 +162,16 @@ class DescriptionInputFrame(Base):
         mean_tfidf_scores = tfidf_matrix.mean(axis=0)
         mean_tfidf_scores = mean_tfidf_scores.tolist()[0] 
 
-        word_tfidf_scores = dict(zip(feature_names, mean_tfidf_scores))
-        self.top_words_tfidf = sorted(word_tfidf_scores.items(), key=lambda x: x[1], reverse=True)[:10]
-
-
         # ---> CHAT-3 AI <--- #
         # -->--> Set up GPT API key <--<-- #
+        OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
         client = OpenAI(
             api_key=OPENAI_API_KEY,
             organization='org-kcRkG3XdvJvZ7n96rmg9do6k'
         )
         headers = {
-            "Authorization": f"Bearer {apikey}"
+            "Authorization": f"Bearer {OPENAI_API_KEY}"
         }
         response_api = requests.get("http://api.openai.com/v1/chat/completions", headers=headers)
 
