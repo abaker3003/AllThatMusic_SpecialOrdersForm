@@ -212,7 +212,8 @@ class SO_Form(ctk.CTkFrame):
         row_offset += 1  # Increment row offset 
 
         # Divider
-        divider = ttk.Separator(self, orient='horizontal')
+        #divider = ttk.Separator(self, orient='horizontal')
+        divider = ctk.CTkFrame(self, height=2, fg_color="gray")
         divider.grid(row=row_offset, column=1, columnspan=6, sticky='ew', pady=10)
 
         row_offset += 1  # Increment row offset 
@@ -255,7 +256,8 @@ class SO_Form(ctk.CTkFrame):
         row_offset += 2  # Increment row offset 
 
         # Divider
-        divider = ttk.Separator(self, orient='horizontal')
+        #divider = ttk.Separator(self, orient='horizontal')
+        divider = ctk.CTkFrame(self, height=2, fg_color="gray")
         divider.grid(row=row_offset, column=0, columnspan=7, sticky='ew', pady=10)
         row_offset += 2  # Increment row offset
 
@@ -452,10 +454,13 @@ class SO_App(ctk.CTk):
         self.ai_form = ai.DescriptionInputFrame(self)
         self.reconciliation_form = None
 
-        self.special_order_form_button = ctk.CTkButton(self, text="Special Order Form", command=self.show_special_order_form, fg_color="#FFFFFF000", border_color="red", font=("Arial", 30))
-        self.previous_orders_button = ctk.CTkButton(self, text="Previous Orders", command=self.show_previous_orders, fg_color="#FFFFFF000", border_color="red", font=("Arial", 30))
-        self.ai_form_button = ctk.CTkButton(self, text="AI Form", command=self.show_ai_form, fg_color="#FFFFFF000", border_color="red", font=("Arial", 30))
-        self.reconciliation_form_button = ctk.CTkButton(self, text="Reconciliation Form", command=self.show_reconciliation_form, fg_color="#FFFFFF000", border_color="red", font=("Arial", 30))
+        self.special_order_form_button = ctk.CTkButton(self.sidebar_menu, text="Special Order Form", command=self.show_special_order_form, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
+
+        self.previous_orders_button = ctk.CTkButton(self.sidebar_menu, text="Previous Orders", command=self.show_previous_orders, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
+
+        self.ai_form_button = ctk.CTkButton(self.sidebar_menu, text="AI Form", command=self.show_ai_form, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
+
+        self.reconciliation_form_button = ctk.CTkButton(self.sidebar_menu, text="Reconciliation Form", command=self.show_reconciliation_form, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
 
         self.hide_all_frames()
 
