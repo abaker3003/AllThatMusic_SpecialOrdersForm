@@ -13,72 +13,72 @@ import tkinter as tk
 from tkinter import simpledialog
 from tkinter import *
 from tkinter import ttk
+import customtkinter as ctk
 import tkinter.messagebox as msgbox
 from matplotlib import artist
 import os
 
-class Base(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
+class Base(ctk.CTkFrame):
+    def __init__(self, *args, header_name="Prep crate with AI", **kwargs):
+        super().__init__(*args, **kwargs)
         self.grid()
 
 class DescriptionInputFrame(Base):
-    def __init__(self, master=None):
-        super().__init__(master)
+    def __init__(self, *args, header_name="Prep crate with AI", **kwargs):
+        super().__init__(*args, **kwargs)
 
         def save():
             self.selected_condition = conditions.get()
             self.selected_damages = {self.dmg_texts[i]: self.severity_vars[i].get() for i, dmg in enumerate(self.dmgs) if dmg.get()}
-            save_button['state'] = DISABLED
+            save_button['state'] = "DISABLED"
             self.AIDescriptionFrame()
 
         # ---> ARTIST INPUT <--- #
-        artist_label = tk.Label(self, text="Artist:")
+        artist_label = ctk.CTkLabel(self, text="Artist:")
         #artist_label.grid(row=1, column=2, padx=5, pady=10)
         artist_label.grid(row=1, column=2)
 
-        artist_text = tk.Text(self, height=1, width=30)
+        artist_text = ctk.CTkEntry(self, height=1, width=30)
         artist_text.grid(row=1, column=3, padx=20, pady=20, columnspan=3)
 
         # ---> TITLE INPUT <--- #
-        title_label = tk.Label(self, text="Title:")
+        title_label = ctk.CTkLabel(self, text="Title:")
         #title_label.grid(row=2, column=2, padx=5, pady=10)
         title_label.grid(row=2, column=2)
 
-        title_text = tk.Text(self, height=1, width=30)
+        title_text = ctk.CTkEntry(self, height=1, width=30)
         title_text.grid(row=2, column=3, padx=20, pady=20, columnspan=3)
 
         # ---> TYPE RADIO BUTTONS <--- #
-        type_label = tk.Label(self, text="Type:")
+        type_label = ctk.CTkLabel(self, text="Type:")
         type_label.grid(row=2, column=7)
 
         types_list = ["LP", "12\"", "ABC2", "2xLP", "EP", "ABC3", "3xLP", "ABC1", "BOX"]
-        types = StringVar(self, "Type")
+        types = ctk.StringVar(self, "Type")
 
         r, c = 0,0
         for i, type in enumerate(types_list):
             if i % 3 == 0:
                 r += 1
                 c = 0
-            type_opt = Radiobutton(self, text=type, variable=types, value=type)
+            type_opt = ctk.CTkRadioButton(self, text=type, variable=types, value=type)
             type_opt.grid(row=r, column=c+8, padx=10)
             c += 1
 
         # ---> DIVIDER <--- #
-        divider = tk.Frame(self, height=2, bd=1, relief="sunken")
+        divider = ctk.CTkFrame(self, height=2, fg_color="gray")
         divider.grid(row=4, column=0, columnspan=17, sticky='we', padx=5, pady=5)
 
         # ---> DIVIDER <--- #
-        divider = tk.Frame(self, height=2, bd=1, relief="sunken")
+        divider = ctk.CTkFrame(self, height=2, fg_color="gray")
         divider.grid(row=8, column=0, columnspan=17, sticky='we', padx=5, pady=5)
 
         # ---> DESCRIPTION INPUT <--- #
         conditions_list = ["Good", "Very Good", "Fairly Good", "Fair", "New", "Poor"]
-        conditions = StringVar(self, "Condition")
+        conditions = ctk.StringVar(self, "Condition")
 
         for i, cond in enumerate(conditions_list):
-            cond_opt = Radiobutton(self, text=cond, variable=conditions, value=cond)
+            cond_opt = ctk.CTkRadioButton(self, text=cond, variable=conditions, value=cond)
             cond_opt.grid(row=9, column=i+4)
 
         damage_dict = {}
@@ -91,29 +91,29 @@ class DescriptionInputFrame(Base):
 
 
         for i, dmg in enumerate(damage_set_vinyl):
-            damages = tk.IntVar()
-            dmg_opt = tk.Checkbutton(self, text=dmg, variable=damages)
+            damages = ctk.IntVar()
+            dmg_opt = ctk.CTkCheckBox(self, text=dmg, variable=damages)
             dmg_opt.grid(row=10, column=i, padx=10, pady=20)
             self.dmgs.append(damages)
             self.dmg_texts.append(dmg)
 
 
-            severity_var = tk.StringVar()
+            severity_var = ctk.StringVar()
             self.severity_vars.append(severity_var)
-            severity_frame = tk.Frame(self)
+            severity_frame = ctk.CTkFrame(self)
             severity_frame.grid(row=11, column=i, padx=5, pady=5)
 
             severity_list = ["subtle", "faint", "barely-visible", "light", "minor", "occassional", "stray", "scattered", "mild", "moderate", "typical", "pronounced", "considerable", "severe"]
             for j, severity in enumerate(severity_list):
-                severity_opt = tk.Radiobutton(severity_frame, text=severity, variable=severity_var, value=severity)
+                severity_opt = ctk.CTkRadioButton(severity_frame, text=severity, variable=severity_var, value=severity)
                 severity_opt.grid(row=j, column=0, sticky="w")
 
             self.severity_frames.append(severity_frame)
             severity_frame.grid_remove()
 
-            dmg_opt.config(command=lambda i=i: self.radio_show_hide(i))
+            dmg_opt.configure(command=lambda i=i: self.radio_show_hide(i))
 
-        save_button = ttk.Button(self, text="Save", command=save)
+        save_button = ctk.CTkButton(self, text="Save", command=save)
         save_button.grid(row=15, column=7, columnspan=1, padx=20, pady=20)
 
     def radio_show_hide(self, i):
@@ -191,26 +191,26 @@ class DescriptionInputFrame(Base):
 
     def AIDescriptionFrame(self):
         ai_description = self.AIDescription()
-        self.AIDescriptionDiag = tk.Toplevel(self.master)
+        self.AIDescriptionDiag = ctk.CTkToplevel(self)
         self.AIDescriptionDiag.title("AI Description")
         self.AIDescriptionDiag.geometry("500x500")
 
-        self.AIDescription_label = tk.Label(self.AIDescriptionDiag, text="AI Description")
+        self.AIDescription_label = ctk.CTkLabel(self.AIDescriptionDiag, text="AI Description")
         self.AIDescription_label.grid(row=0, column=0, pady=20)
 
-        self.AIDescription_text = tk.Text(self.AIDescriptionDiag, height=10, width=50)
-        self.AIDescription_text.config(state="normal")
+        self.AIDescription_text = ctk.CTkEntry(self.AIDescriptionDiag, height=10, width=50)
+        self.AIDescription_text.configure(state="normal")
         self.AIDescription_text.insert("1.0", ai_description)
         self.AIDescription_text.grid(row=1, column=0, pady=20)
 
-        self.AIDescription_button = ttk.Button(self.AIDescriptionDiag, text="Generate", command=NONE)
+        self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag, text="Generate", command=NONE)
         self.AIDescription_button.grid(row=2, column=0, pady=50, padx=50)
 
-        self.AIDescription_button = ttk.Button(self.AIDescriptionDiag, text="Save", command=NONE)
+        self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag, text="Save", command=NONE)
         self.AIDescription_button.grid(row=3, column=0, pady=20, padx=50)
 
-
-class AIApp(tk.Tk):
+'''
+class AIApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("AI Chatbot")
@@ -219,4 +219,4 @@ class AIApp(tk.Tk):
 
 if __name__ == "__main__":
     app = AIApp()
-    app.mainloop()
+    app.mainloop()'''
