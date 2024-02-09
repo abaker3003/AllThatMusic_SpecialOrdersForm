@@ -21,7 +21,7 @@ class Base(ctk.CTkFrame):
             idx = self.options.index(self.box_var.get())
             self.options.pop(idx)
             print(idx)
-            #self.box_var.
+            self.box_option.configure(values=self.options) 
             self.box_var.set("")
             self.box_var2.set("")
 
@@ -30,27 +30,26 @@ class Base(ctk.CTkFrame):
             self.add_btn.configure(state="disabled")
 
 
-            
-        while self.continue_adding:
-            self.box_var = ctk.StringVar()
-            box_option = ctk.CTkComboBox(self, values=self.options, variable=self.box_var)
-            box_option.grid(row=0, column=0, columnspan=2, sticky='w', pady=(10, 20), padx=10)
-            self.box_var2 = ctk.StringVar()
-            box_option2 = ctk.CTkComboBox(self, values=self.second_options, variable=self.box_var2)
-            box_option2.grid(row=0, column=2, columnspan=2, sticky='w', pady=(10, 20), padx=10)
+        
+        self.box_var = ctk.StringVar()
+        self.box_option = ctk.CTkComboBox(self, values=self.options, variable=self.box_var)
+        self.box_option.grid(row=0, column=0, columnspan=2, sticky='w', pady=(10, 20), padx=10)
+        self.box_var2 = ctk.StringVar()
+        box_option2 = ctk.CTkComboBox(self, values=self.second_options, variable=self.box_var2)
+        box_option2.grid(row=0, column=2, columnspan=2, sticky='w', pady=(10, 20), padx=10)
 
 
-            self.display_box = ctk.CTkFrame(self, height=500, width=300)
-            self.display_box.grid(row=0, column=4, sticky='w', pady=(10, 20), padx=10)
+        self.display_box = ctk.CTkFrame(self, height=500, width=300)
+        self.display_box.grid(row=0, column=4, sticky='w', pady=(10, 20), padx=10)
 
-            self.selected_options = ctk.CTkTextbox(self.display_box, height=400, width=250, state="disabled")
+        self.selected_options = ctk.CTkTextbox(self.display_box, height=400, width=250, state="disabled")
 
-            self.add_btn = ctk.CTkButton(self, text="Add", command=box_selected)
-            self.add_btn.grid(row=1, column=0, columnspan=2, sticky='w')
+        self.add_btn = ctk.CTkButton(self, text="Add", command=box_selected)
+        self.add_btn.grid(row=1, column=0, columnspan=2, sticky='w')
 
-            self.selected_options.grid(row=0, column=0, sticky='w', pady=(10, 20), padx=10)
+        self.selected_options.grid(row=0, column=0, sticky='w', pady=(10, 20), padx=10)
 
-            done_btn = ctk.CTkButton(self, text="Done", command=all_done)
+        done_btn = ctk.CTkButton(self, text="Done", command=all_done)
     
 class Test(ctk.CTk):
     def __init__(self):
