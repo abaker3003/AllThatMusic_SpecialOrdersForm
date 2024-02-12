@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class Base(ctk.CTkFrame):
+class Damage_Selection(ctk.CTkFrame):
     def __init__(self, *args, header_name="Add Damages", **kwargs):
         super().__init__(*args, **kwargs)
         self.options = ["A", "B", "C", "D", "E"]
@@ -147,7 +147,7 @@ class Test(ctk.CTk):
         super().__init__()
         self.title("Testing")
         self.geometry("800x500")
-        self.test_base = Base(self)
+        self.test_base = Damage_Selection(self)
         self.test_base.grid()
 
 window = Test()
