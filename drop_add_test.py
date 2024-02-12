@@ -10,8 +10,9 @@ class Base(ctk.CTkFrame):
         self.second_options = ["1", "2", "3", "4", "5"]
 
         self.selections = {}
+        self.main_func()
 
-        self.continue_adding = True
+    def main_func(self):
         
         self.box_var = ctk.StringVar()
         self.box_option = ctk.CTkComboBox(self, values=self.options, variable=self.box_var)
@@ -52,34 +53,38 @@ class Base(ctk.CTkFrame):
         self.box_var2.set("")
 
     def close_dialog_and_reset(self):
+        print("close_dialog_and_reset()")
         self.edit.destroy()
         self.delete.destroy()
+        print("Delete Button and Edit Button Destroyed")
         self.add_btn.configure(state="normal")
+        print("Add Button Re-enabled")
         self.tree.bind('<<TreeviewSelect>>', self.on_select)
         self.edit = None
         self.delete = None
+        print("Edit button and Delete button are None")
 
     def close_dialog(self):
+        print("close_dialog()")
         self.tree.unbind('<<TreeviewSelect>>')
         self.close_dialog_and_reset()
 
     def edit_option(self):
 
         def done():
+            print("done()")
             self.confirm_edit.destroy()
-            self.cancel_edit.destroy()
+            self.confirm_edit = None
             self.dialog.destroy()
+            print("Edit Dialog Destroyed")
             self.close_dialog()
+            
 
-        def confirm():
+        def confirm_or_cancel():
             self.selections[option1] = self.box_option2_edit_val.get()
             tree_item = self.tree.selection()[0]
             self.tree.delete(tree_item)
             self.tree.insert('', 'end', values=(option1, self.box_option2_edit_val.get()))
-            done()
-
-
-        def cancel():
             done()
 
             
@@ -99,10 +104,8 @@ class Base(ctk.CTkFrame):
         self.box_option2_edit = ctk.CTkComboBox(self.dialog, values=self.second_options, variable=self.box_option2_edit_val)
         self.box_option2_edit.set(option2)
         self.box_option2_edit.grid(row=0, column=1, pady=20)
-        self.confirm_edit = ctk.CTkButton(self.dialog, text="Confirm Edit", command=confirm)
+        self.confirm_edit = ctk.CTkButton(self.dialog, text="Done", command=confirm_or_cancel)
         self.confirm_edit.grid(row=1, column=0)
-        self.cancel_edit = ctk.CTkButton(self.dialog, text="Cancel", command=cancel)
-        self.cancel_edit.grid(row=1, column=1)
 
     def delete_option(self):
         selected_item = self.tree.selection()[0]
@@ -115,7 +118,11 @@ class Base(ctk.CTkFrame):
         self.close_dialog()
 
     def on_select(self, event):
+        print("Add Button Disabled")
         self.add_btn.configure(state="disabled")
+
+        print("Edit and Delete buttons created")
+
         self.edit = ctk.CTkButton(self.display_box, text="Edit", command=self.edit_option)
         self.edit.grid(row=1, column=0, pady=20)
 
@@ -128,7 +135,7 @@ class Test(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Testing")
-        self.geometry("800x900")
+        self.geometry("800x500")
         self.test_base = Base(self)
         self.test_base.grid()
 
