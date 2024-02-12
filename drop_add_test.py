@@ -3,6 +3,7 @@ from customtkinter import *
 import tkinter as tk
 from tkinter import ttk
 
+
 class Base(ctk.CTkFrame):
     def __init__(self, *args, header_name="Add Damages", **kwargs):
         super().__init__(*args, **kwargs)
@@ -10,6 +11,7 @@ class Base(ctk.CTkFrame):
         self.second_options = ["1", "2", "3", "4", "5"]
 
         self.selections = {}
+        self.is_option_selected = False
         self.main_func()
 
     def main_func(self):
@@ -62,6 +64,7 @@ class Base(ctk.CTkFrame):
         self.edit = None
         self.delete = None
         print("Edit button and Delete button are None")
+        self.is_option_selected = True
 
     def close_dialog(self):
         print("close_dialog()")
@@ -75,6 +78,7 @@ class Base(ctk.CTkFrame):
             self.confirm_edit = None
             self.dialog.destroy()
             print("Edit Dialog Destroyed")
+            self.is_option_selected = True
             self.close_dialog()
             
 
@@ -85,6 +89,7 @@ class Base(ctk.CTkFrame):
             self.tree.unbind('<<TreeviewSelect>>')
             self.tree.insert('', 'end', values=(option1, self.box_option2_edit_val.get()))
             self.tree.bind('<<TreeviewSelect>>', self.on_select)
+            self.is_option_selected = True
             done()
 
             
@@ -115,9 +120,13 @@ class Base(ctk.CTkFrame):
         self.options.sort()
         self.box_option.configure(values=self.options)
         self.selections.pop(option1)
+        self.is_option_selected = False
         self.close_dialog()
 
     def on_select(self, event):
+        if self.is_option_selected:
+            self.is_option_selected = False
+            return
         print("Add Button Disabled")
         self.add_btn.configure(state="disabled")
 
@@ -128,6 +137,8 @@ class Base(ctk.CTkFrame):
 
         self.delete = ctk.CTkButton(self.display_box, text="Delete", command=self.delete_option)
         self.delete.grid(row=1, column=1, pady=20)
+
+        self.is_option_selected = True
 
 
     
