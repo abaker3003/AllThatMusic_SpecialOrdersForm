@@ -59,14 +59,12 @@ class Base(ctk.CTkFrame):
         print("Delete Button and Edit Button Destroyed")
         self.add_btn.configure(state="normal")
         print("Add Button Re-enabled")
-        self.tree.bind('<<TreeviewSelect>>', self.on_select)
         self.edit = None
         self.delete = None
         print("Edit button and Delete button are None")
 
     def close_dialog(self):
         print("close_dialog()")
-        self.tree.unbind('<<TreeviewSelect>>')
         self.close_dialog_and_reset()
 
     def edit_option(self):
@@ -84,7 +82,9 @@ class Base(ctk.CTkFrame):
             self.selections[option1] = self.box_option2_edit_val.get()
             tree_item = self.tree.selection()[0]
             self.tree.delete(tree_item)
+            self.tree.unbind('<<TreeviewSelect>>')
             self.tree.insert('', 'end', values=(option1, self.box_option2_edit_val.get()))
+            self.tree.bind('<<TreeviewSelect>>', self.on_select)
             done()
 
             
