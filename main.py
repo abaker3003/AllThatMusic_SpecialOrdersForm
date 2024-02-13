@@ -497,8 +497,7 @@ class SOApp(tk.Tk):
     def show_main_frame(self):
         self.hide_all_frames()
         # Show the main application frame
-        self.previous_orders_button.grid()
-        self.special_order_form_button.grid()
+        self.sidebar_menu.grid()
     
     
 
