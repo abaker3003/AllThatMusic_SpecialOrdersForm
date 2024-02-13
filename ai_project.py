@@ -58,40 +58,33 @@ class Damage_Selection(ctk.CTkFrame):
 
         self.tree.bind('<<TreeviewSelect>>', self.on_select)
 
+
     def box_selected(self):
         self.selections[self.box_var.get()] = self.box_var2.get()
         self.tree.insert('', 'end', values=(self.box_var.get(), self.box_var2.get()))
         idx = self.options.index(self.box_var.get())
         self.options.pop(idx)
-        print(idx)
         self.box_option.configure(values=self.options) 
         self.box_var.set("")
         self.box_var2.set("")
 
     def close_dialog_and_reset(self):
-        print("close_dialog_and_reset()")
         self.edit.destroy()
         self.delete.destroy()
-        print("Delete Button and Edit Button Destroyed")
         self.add_btn.configure(state="normal")
-        print("Add Button Re-enabled")
         self.edit = None
         self.delete = None
-        print("Edit button and Delete button are None")
         self.is_option_selected = True
 
     def close_dialog(self):
-        print("close_dialog()")
         self.close_dialog_and_reset()
 
     def edit_option(self):
 
         def done():
-            print("done()")
             self.confirm_edit.destroy()
             self.confirm_edit = None
             self.dialog.destroy()
-            print("Edit Dialog Destroyed")
             self.is_option_selected = True
             self.close_dialog()
             
@@ -141,10 +134,7 @@ class Damage_Selection(ctk.CTkFrame):
         if self.is_option_selected:
             self.is_option_selected = False
             return
-        print("Add Button Disabled")
         self.add_btn.configure(state="disabled")
-
-        print("Edit and Delete buttons created")
 
         self.edit = ctk.CTkButton(self.display_box, text="Edit", command=self.edit_option)
         self.edit.grid(row=1, column=0, pady=20)
@@ -167,8 +157,12 @@ class DescriptionInputFrame(Base):
     def __init__(self, *args, header_name="Prep crate with AI", **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.selected_condition = ""
+        self.damage_dictionary = {}
+        
         def save():
             self.selected_condition = conditions.get()
+            self.damage_dictionary = self.dmgs.get_selection()
             save_button['state'] = "DISABLED"
             self.AIDescriptionFrame()
 
@@ -222,7 +216,6 @@ class DescriptionInputFrame(Base):
 
         self.dmgs = Damage_Selection(self)
         self.dmgs.grid(row=10, column=0, columnspan=17, sticky='we', padx=5, pady=5)
-        self.damage_dictionary = self.dmgs.get_selection()
 
 
         save_button = ctk.CTkButton(self, text="Save", command=save)
