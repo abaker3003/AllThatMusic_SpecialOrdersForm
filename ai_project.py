@@ -21,8 +21,8 @@ import os
 class Damage_Selection(ctk.CTkFrame):
     def __init__(self, *args, header_name="Add Damages", **kwargs):
         super().__init__(*args, **kwargs)
-        self.options = ["A", "B", "C", "D", "E"]
-        self.second_options = ["1", "2", "3", "4", "5"]
+        self.options = ["traces", "handling traces", "hairline", "hairlines", "sleeve dust", "sleeve rubs", "scuffings", "scuffs", "markings", "marks", "blemishing", "blemishes", "prints", "spindle marks", "ring wear", "corner wear"]
+        self.second_options = ["subtle", "faint", "barely-visible", "light", "minor", "occassional", "stray", "scattered", "mild", "moderate", "typical", "pronounced", "considerable", "severe"]
 
         self.selections = {}
         self.is_option_selected = False
@@ -154,6 +154,8 @@ class Damage_Selection(ctk.CTkFrame):
 
         self.is_option_selected = True
 
+    def get_selection(self):
+        return self.selections
 
 
 class Base(ctk.CTkFrame):
@@ -167,7 +169,6 @@ class DescriptionInputFrame(Base):
 
         def save():
             self.selected_condition = conditions.get()
-            self.selected_damages = {self.dmg_texts[i]: self.severity_vars[i].get() for i, dmg in enumerate(self.dmgs) if dmg.get()}
             save_button['state'] = "DISABLED"
             self.AIDescriptionFrame()
 
@@ -219,46 +220,13 @@ class DescriptionInputFrame(Base):
             cond_opt = ctk.CTkRadioButton(self, text=cond, variable=conditions, value=cond)
             cond_opt.grid(row=9, column=i+4)
 
-        damage_dict = {}
-        damage_set_vinyl = ["traces", "handling traces", "hairline", "hairlines", "sleeve dust", "sleeve rubs", "scuffings", "scuffs", "markings", "marks", "blemishing", "blemishes", "prints", "spindle marks", "ring wear", "corner wear"]
-        self.dmgs = []
-        self.dmg_texts = []
+        self.dmgs = Damage_Selection(self)
+        self.dmgs.grid(row=10, column=0, columnspan=17, sticky='we', padx=5, pady=5)
+        self.damage_dictionary = self.dmgs.get_selection()
 
-        self.severity_frames = []
-        self.severity_vars = []
-
-
-        for i, dmg in enumerate(damage_set_vinyl):
-            damages = ctk.IntVar()
-            dmg_opt = ctk.CTkCheckBox(self, text=dmg, variable=damages)
-            dmg_opt.grid(row=10, column=i, padx=10, pady=20)
-            self.dmgs.append(damages)
-            self.dmg_texts.append(dmg)
-
-
-            severity_var = ctk.StringVar()
-            self.severity_vars.append(severity_var)
-            severity_frame = ctk.CTkFrame(self)
-            severity_frame.grid(row=11, column=i, padx=5, pady=5)
-
-            severity_list = ["subtle", "faint", "barely-visible", "light", "minor", "occassional", "stray", "scattered", "mild", "moderate", "typical", "pronounced", "considerable", "severe"]
-            for j, severity in enumerate(severity_list):
-                severity_opt = ctk.CTkRadioButton(severity_frame, text=severity, variable=severity_var, value=severity)
-                severity_opt.grid(row=j, column=0, sticky="w")
-
-            self.severity_frames.append(severity_frame)
-            severity_frame.grid_remove()
-
-            dmg_opt.configure(command=lambda i=i: self.radio_show_hide(i))
 
         save_button = ctk.CTkButton(self, text="Save", command=save)
         save_button.grid(row=15, column=7, columnspan=1, padx=20, pady=20)
-
-    def radio_show_hide(self, i):
-        if self.dmgs[i].get() == 1:
-            self.severity_frames[i].grid()
-        else:
-            self.severity_frames[i].grid_remove()
 
     def AIDescription(self):
 
@@ -299,6 +267,7 @@ class DescriptionInputFrame(Base):
 
         mean_tfidf_scores = tfidf_matrix.mean(axis=0)
         mean_tfidf_scores = mean_tfidf_scores.tolist()[0] 
+        self.top_words_tfidf = [(feature_names[i], mean_tfidf_scores[i]) for i in range(len(mean_tfidf_scores))]
 
         # ---> CHAT-3 AI <--- #
         # -->--> Set up GPT API key <--<-- #
@@ -314,7 +283,7 @@ class DescriptionInputFrame(Base):
         response_api = requests.get("http://api.openai.com/v1/chat/completions", headers=headers)
 
         # -->--> Prompt usng the common words/phrases <--<-- #
-        prompt = "PLEASE LEAVE DESCRIPTION IN 2 SENTENCES: Based on the commonly used words and phrases in the dataset for the condition '" + self.selected_condition + "', please generate a general description for the corresponding vinyl: " + "".join([word for word, _ in self.top_words_tfidf]) + "\nMake sure the first sentence is about the vinyl and the second sentence is about the jacket. Also, use this python dictionary to write an accurate decription on the condition: " + str(self.selected_damages)
+        prompt = "PLEASE LEAVE DESCRIPTION IN 2 SENTENCES: Based on the commonly used words and phrases in the dataset for the condition '" + self.selected_condition + "', please generate a general description for the corresponding vinyl: " + "".join([word for word, _ in self.top_words_tfidf]) + "\nMake sure the first sentence is about the vinyl and the second sentence is about the jacket. Also, use this python dictionary to write an accurate decription on the condition: " + str(self.damage_dictionary)
         messages = [
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt}
