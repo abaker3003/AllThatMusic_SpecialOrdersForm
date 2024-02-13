@@ -124,11 +124,11 @@ class SOForm(Base):
         row_offset = 0  # Initialize row offset for better readability
 
         # Date 
-        date_text = ctk.CTkLabel(self, text= "Date: " + todays_date, text_color="#FFFFFF", font=("Roboto", 16))
+        date_text = ctk.CTkLabel(self, text= "Date: " + todays_date, text_color="#000", font=("Roboto", 16))
         date_text.grid(row=row_offset, column=2, columnspan=1, pady=(10, 0))
 
         # Clerk name input
-        clerk_text = ctk.CTkLabel(self, text= "Clerk", text_color="#FFFFFF", font=("Roboto", 16))
+        clerk_text = ctk.CTkLabel(self, text= "Clerk", text_color="#000", font=("Roboto", 16))
         clerk_text.grid(row=row_offset, column=3)
         clerk_input = ctk.CTkEntry(self)
         clerk_input.grid(row=row_offset, column=4, sticky="ew", padx=10)
@@ -207,9 +207,9 @@ class SOForm(Base):
             submit_button.grid(row=4, column=0, columnspan=2, pady=20, sticky='ew')
 
         # Shipping Option checkbox
-        shipping_text = ctk.CTkLabel(self, text="Shipping?", text_color="#FFFFFF", font=("Roboto", 16))
+        shipping_text = ctk.CTkLabel(self, text="Shipping?", text_color="#000", font=("Roboto", 16))
         shipping_text.grid(row=row_offset, column=5)
-        ship_var = ctk.BooleanVar()
+        ship_var = ctk.BooleanVar(self)
         shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var)
         shipping_checkb.grid(row=row_offset, column=6, sticky="ew", padx=10)
         
@@ -220,12 +220,12 @@ class SOForm(Base):
 
         # Divider
         divider = Separator(self, orient='horizontal')
-        divider.grid(row=row_offset, column=1, columnspan=6, sticky='ew', pady=10)
+        divider.grid(row=row_offset, column=0, columnspan=6, sticky='ew', pady=10)
 
         row_offset += 1  # Increment row offset 
 
         self.radio_buttons = ctk.CTkFrame(self)
-        self.radio_buttons.grid(row=row_offset, column=1, columnspan=6, sticky='ew', pady=10)
+        self.radio_buttons.grid(row=row_offset, column=0, columnspan=7, sticky='ew', pady=10)
 
         # Title for Vendors
         vendors_text = ctk.CTkLabel(self.radio_buttons, text="Vendors",font=("Roboto", 16), text_color="#FFFFFF")
@@ -243,6 +243,9 @@ class SOForm(Base):
                 rdio_opt = ctk.CTkRadioButton(self.radio_buttons, text=vendor, variable=vendors, value=vendor, text_color="#FFFFFF", font=("Roboto", 16))
                 rdio_opt.grid(row=2, column= i - 2, sticky='w')
 
+        divider = Separator(self.radio_buttons, orient='vertical')
+        divider.grid(row=0, column=3, rowspan=3, sticky='ns', pady=10)
+
         # Title for Type
         type_text = ctk.CTkLabel(self.radio_buttons, text="Type", font=("Roboto", 16), text_color="#FFFFFF")
         type_text.grid(row=0, column=4, pady=(10, 0))
@@ -255,10 +258,10 @@ class SOForm(Base):
         for i, typ in enumerate(typ_values): 
             if i < 3:
                 rdio_typ = ctk.CTkRadioButton(self.radio_buttons, text=typ, variable=typs, value=typ, text_color="#FFFFFF", font=("Roboto", 16))
-                rdio_typ.grid(row=1, column=i + 4, sticky='w')
+                rdio_typ.grid(row=1, column=i + 4, sticky='e')
             else:
                 rdio_typ = ctk.CTkRadioButton(self.radio_buttons, text=typ, variable=typs, value=typ, text_color="#FFFFFF", font=("Roboto", 16))
-                rdio_typ.grid(row=2, column=i + 1, sticky='w')
+                rdio_typ.grid(row=2, column=i + 1, sticky='e')
 
         row_offset += 1  # Increment row offset 
 
