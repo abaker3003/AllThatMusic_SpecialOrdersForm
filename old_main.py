@@ -1,9 +1,9 @@
 import tkinter as tk
-from tkinter import ttk
-'''from tkinter import *
+from tkinter import simpledialog
+from tkinter import *
 from tkinter.ttk import *
 from tkinter.tix import *
-import tkinter.messagebox as msgbox'''
+import tkinter.messagebox as msgbox
 import customtkinter as ctk
 from matplotlib import artist
 import generators as gn
@@ -12,11 +12,15 @@ import ai_project as ai
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+class Base(tk.Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.master = master
+        self.grid()
 
-class SO_Form(ctk.CTkFrame):
-    def __init__(self, *args, header_name="Special Order Form", **kwargs):
-        super().__init__(*args, **kwargs)
-
+class SOForm(Base):
+    def __init__(self, master=None):
+        super().__init__(master)
         xl_file = xl.open_excel_file('SO_Test.xlsx')
 
         # Generating current date
@@ -25,10 +29,10 @@ class SO_Form(ctk.CTkFrame):
         # Generating ticket number
         ticket_num = gn.ticketnum(xl_file)
 
-        self.header_name = header_name + " - " + ticket_num
-
-        self.header = ctk.CTkLabel(self, text=self.header_name, font=("Arial", 20))
-        self.header.grid(row=0, column=1, columnspan=2, sticky='w', pady=(10, 20), padx=10)
+        if master is not None:
+            master.title(("Special Order - "+ ticket_num))
+        else:
+            self.Label(self, "Special Order - "+ ticket_num)
 
 
         # Adding the current date and ticket number to data list
@@ -45,7 +49,7 @@ class SO_Form(ctk.CTkFrame):
                 return False
 
             return True
-        
+
         # Checks to see if each field input is correct
         def check_proper_info():
             proper = True
@@ -80,16 +84,16 @@ class SO_Form(ctk.CTkFrame):
                 proper = False
                 num_of_msgs += 1
             return proper, errormsg
-        
+
         # Executes when save buton is clicked
         def save_checkbox_value():
 
             if not check_form_complete():
-                ctk.msgbox.showerror("Error", "Please fill out the entire form.")
+                msgbox.showerror("Error", "Please fill out the entire form.")
                 return
             proper, msg = check_proper_info()
             if not proper:
-                ctk.msgbox.showwarning("Error", msg)
+                msgbox.showwarning("Error", msg)
                 return
             
             data.append(cx_name_input.get())
@@ -107,26 +111,29 @@ class SO_Form(ctk.CTkFrame):
             xl_file.writeOnXL(data)
             xl_file.close_file()
             save_button.configure(text="Saved!")
-            save_button['state'] = "DISABLED"
+            save_button['state'] = DISABLED
             back_button.configure(text="Back")
 
         def go_back():
             xl_file.close_file()
             self.master.show_main_frame()
 
+
         #--> DISPLAYED <--#
         
-        row_offset = 1  # Initialize row offset for better readability
+        row_offset = 0  # Initialize row offset for better readability
 
         # Date 
-        date_text = ctk.CTkLabel(self, text= "Date: " + todays_date, text_color="#FFFFFF", font=("Roboto", 16))
+        date_text = ctk.CTkLabel(self, text= "Date: " + todays_date, text_color="#000", font=("Roboto", 16))
         date_text.grid(row=row_offset, column=2, columnspan=1, pady=(10, 0))
 
         # Clerk name input
-        clerk_text = ctk.CTkLabel(self, text= "Clerk", text_color="#FFFFFF", font=("Roboto", 16))
+        clerk_text = ctk.CTkLabel(self, text= "Clerk", text_color="#000", font=("Roboto", 16))
         clerk_text.grid(row=row_offset, column=3)
         clerk_input = ctk.CTkEntry(self)
         clerk_input.grid(row=row_offset, column=4, sticky="ew", padx=10)
+
+        self.shipping_data = []
 
         def open_shipping_window():
             shipping_window = ctk.CTkToplevel(self)
@@ -165,11 +172,11 @@ class SO_Form(ctk.CTkFrame):
             
             def save_shipping_info():
                 if not check_shipping_info_complete():
-                    ctk.msgbox.showerror("Error", "Please fill out the entire form.")
+                    msgbox.showerror("Error", "Please fill out the entire form.")
                     return
                 proper, msg = check_proper_info()
                 if not proper:
-                    ctk.msgbox.showwarning("Error", msg)
+                    msgbox.showwarning("Error", msg)
                     return
                 self.shipping_data = [address_input.get(), city_input.get(), state_select.get(), zipcode_input.get()]
                 shipping_window.destroy()
@@ -200,10 +207,10 @@ class SO_Form(ctk.CTkFrame):
             submit_button.grid(row=4, column=0, columnspan=2, pady=20, sticky='ew')
 
         # Shipping Option checkbox
-        shipping_text = ctk.CTkLabel(self, text="Shipping?", text_color="#FFFFFF", font=("Roboto", 16))
+        shipping_text = ctk.CTkLabel(self, text="Shipping?", text_color="#000", font=("Roboto", 16))
         shipping_text.grid(row=row_offset, column=5)
-        ship_var = ctk.BooleanVar()
-        shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var, text_color="#FFFFFF", font=("Roboto", 16))
+        ship_var = ctk.BooleanVar(self)
+        shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var)
         shipping_checkb.grid(row=row_offset, column=6, sticky="ew", padx=10)
         
         # Bind the open_shipping_window function to the checkbox
@@ -212,52 +219,54 @@ class SO_Form(ctk.CTkFrame):
         row_offset += 1  # Increment row offset 
 
         # Divider
-        #divider = ttk.Separator(self, orient='horizontal')
-        divider = ctk.CTkFrame(self, height=2, fg_color="gray")
-        divider.grid(row=row_offset, column=1, columnspan=6, sticky='ew', pady=10)
+        divider = Separator(self, orient='horizontal')
+        divider.grid(row=row_offset, column=0, columnspan=6, sticky='ew', pady=10)
 
         row_offset += 1  # Increment row offset 
 
-        # Title for Vendors
-        vendors_text = ctk.CTkLabel(self, text="Vendors",font=("Roboto", 16), text_color="#FFFFFF")
-        vendors_text.grid(row=row_offset, column=4, pady=(10, 0))
-        # Radio Button for Vendors
-        vendors = ctk.StringVar(self, "Vendors")
-        vendors_values = ["AEC", "AMS", "AMA"]
+        self.radio_buttons = ctk.CTkFrame(self)
+        self.radio_buttons.grid(row=row_offset, column=0, columnspan=7, sticky='ew', pady=10)
 
-        row_offset += 1  # Increment row offset
+        # Title for Vendors
+        vendors_text = ctk.CTkLabel(self.radio_buttons, text="Vendors",font=("Roboto", 16), text_color="#FFFFFF")
+        vendors_text.grid(row=0, column=0, pady=(10, 0))
+        # Radio Button for Vendors
+        vendors = StringVar(self.radio_buttons, "Vendors")
+        vendors_values = ["AEC", "AMS", "AMA"]
 
         # Button positioning based on amount of options
         for i, vendor in enumerate(vendors_values): 
             if i < 2:
-                rdio_opt = ctk.CTkRadioButton(self, text=vendor, variable=vendors, value=vendor, text_color="#FFFFFF", font=("Roboto", 16))
-                rdio_opt.grid(row=row_offset, column= 4 + i, sticky='w')
+                rdio_opt = ctk.CTkRadioButton(self.radio_buttons, text=vendor, variable=vendors, value=vendor, text_color="#FFFFFF", font=("Roboto", 16))
+                rdio_opt.grid(row=1, column= i, sticky='w')
             else:
-                rdio_opt = ctk.CTkRadioButton(self, text=vendor, variable=vendors, value=vendor, text_color="#FFFFFF", font=("Roboto", 16))
-                rdio_opt.grid(row=row_offset + 1, column= 3 + i, sticky='w')
+                rdio_opt = ctk.CTkRadioButton(self.radio_buttons, text=vendor, variable=vendors, value=vendor, text_color="#FFFFFF", font=("Roboto", 16))
+                rdio_opt.grid(row=2, column= i - 2, sticky='w')
+
+        divider = Separator(self.radio_buttons, orient='vertical')
+        divider.grid(row=0, column=3, rowspan=3, sticky='ns', pady=10)
 
         # Title for Type
-        type_text = ctk.CTkLabel(self, text="Type", font=("Roboto", 16), text_color="#FFFFFF")
-        type_text.grid(row=row_offset - 1, column=2, pady=(10, 0))
+        type_text = ctk.CTkLabel(self.radio_buttons, text="Type", font=("Roboto", 16), text_color="#FFFFFF")
+        type_text.grid(row=0, column=4, pady=(10, 0))
 
         # Radio Button for Type
-        typs = ctk.StringVar(self, "Type")
+        typs = StringVar(self.radio_buttons, "Type")
         typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
 
         # Button positioning based on amount of options
         for i, typ in enumerate(typ_values): 
             if i < 3:
-                rdio_typ = ctk.CTkRadioButton(self, text=typ, variable=typs, value=typ, text_color="#FFFFFF", font=("Roboto", 16))
-                rdio_typ.grid(row=row_offset, column=i + 1, sticky='w')
+                rdio_typ = ctk.CTkRadioButton(self.radio_buttons, text=typ, variable=typs, value=typ, text_color="#FFFFFF", font=("Roboto", 16))
+                rdio_typ.grid(row=1, column=i + 4, sticky='e')
             else:
-                rdio_typ = ctk.CTkRadioButton(self, text=typ, variable=typs, value=typ, text_color="#FFFFFF", font=("Roboto", 16))
-                rdio_typ.grid(row=row_offset + 1, column=i - 2, sticky='w')
+                rdio_typ = ctk.CTkRadioButton(self.radio_buttons, text=typ, variable=typs, value=typ, text_color="#FFFFFF", font=("Roboto", 16))
+                rdio_typ.grid(row=2, column=i + 1, sticky='e')
 
-        row_offset += 2  # Increment row offset 
+        row_offset += 1  # Increment row offset 
 
         # Divider
-        #divider = ttk.Separator(self, orient='horizontal')
-        divider = ctk.CTkFrame(self, height=2, fg_color="gray")
+        divider = Separator(self, orient='horizontal')
         divider.grid(row=row_offset, column=0, columnspan=7, sticky='ew', pady=10)
         row_offset += 2  # Increment row offset
 
@@ -310,20 +319,20 @@ class SO_Form(ctk.CTkFrame):
         back_button = ctk.CTkButton(self, text="Cancel", command=go_back, text_color="#FFFFFF", font=("Roboto", 16))
         back_button.grid(row=row_offset, column=4, pady=20, sticky='ew')
 
-
-class Prev_SO(ctk.CTkFrame):
-    def __init__(self, *args, header_name="Previous Special Orders", **kwargs):
-        super().__init__(*args, **kwargs)
-        self.header_name = header_name
-        self.header = ctk.CTkLabel(self, text=header_name, font=("Roboto", 20))
-        self.header.grid(row=0, column=0, sticky='nsew', rowspan=8)
+class PrevSO(Base):
+    def __init__(self, master=None):
+        super().__init__(master)
+        self.grid_propagate(False)
+        self.configure(background="white")
+        self.prev_so = ctk.CTkLabel(self, text="Previous Special Orders", text_color="black", font=("Arial", 16))
+        self.prev_so.grid(row=0, column=0, columnspan=2, sticky='w', pady=(10, 20), padx=10)
 
         # Load the Excel file into a pandas DataFrame
         self.excel_file = xl.open_excel_file('SO_Test.xlsx')
         self.df = self.excel_file.read_into_dataframe_SO()
 
         # Create the Treeview
-        self.tree = ttk.Treeview(self, columns=list(self.df.columns), show="headings")
+        self.tree = Treeview(self, columns=list(self.df.columns), show="headings")
         for column in self.df.columns:
             self.tree.heading(column, text=column)
             self.tree.column(column, width=100, anchor='center')  # Adjust width and centering as needed
@@ -339,9 +348,9 @@ class Prev_SO(ctk.CTkFrame):
 
 
         # Create the Scrollbar
-        self.scrollbar_y = ttk.Scrollbar(self, orient='vertical', command=self.tree.yview)
+        self.scrollbar_y = Scrollbar(self, orient='vertical', command=self.tree.yview)
         self.scrollbar_y.grid(row=1, column=1, sticky='ns', padx=(0, 10), pady=5)
-        self.scrollbar_x = ttk.Scrollbar(self, orient='horizontal', command=self.tree.xview)
+        self.scrollbar_x = Scrollbar(self, orient='horizontal', command=self.tree.xview)
         self.scrollbar_x.grid(row=2, column=0, sticky='ew', padx=10, pady=(0, 10))
         self.tree.configure(yscrollcommand=self.scrollbar_y.set, xscrollcommand=self.scrollbar_x.set)
         
@@ -430,7 +439,7 @@ class Prev_SO(ctk.CTkFrame):
         # Write the DataFrame back to the Excel file
         self.excel_file.update_excel(item_index + 1, new_values)  # Add 1 if necessary for Excel indexing
 
-        self.save_changes_button.configure(text="Saved!", state="DISABLED")
+        self.save_changes_button.configure(text="Saved!", state="disabled")
         self.cancel_changes_button.configure(text="Back")
 
         # Destroy the dialog
@@ -438,69 +447,74 @@ class Prev_SO(ctk.CTkFrame):
         self.dialog = None
 
 
-class SO_App(ctk.CTk):
+class SOApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Special Order")
-        self.geometry("1200x680")
+        self.geometry("900x450")
         self.configure(background="#350909")
 
         self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_menu.grid(row=0, column=0, sticky='nsew', rowspan=8)
         self.sidebar_menu.grid_rowconfigure(4, weight=1)
 
-        self.special_order_form = SO_Form(self)
-        self.previous_orders = Prev_SO(self)
+        self.special_order_form = SOForm(self)
+        self.previous_orders = PrevSO(self)
         self.ai_form = ai.DescriptionInputFrame(self)
-        self.reconciliation_form = None
+        self.reconciliation_form = NONE
 
-        self.special_order_form_button = ctk.CTkButton(self.sidebar_menu, text="Special Order Form", command=self.show_special_order_form, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
-
-        self.previous_orders_button = ctk.CTkButton(self.sidebar_menu, text="Previous Orders", command=self.show_previous_orders, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
-
-        self.ai_form_button = ctk.CTkButton(self.sidebar_menu, text="AI Form", command=self.show_ai_form, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
-
-        self.reconciliation_form_button = ctk.CTkButton(self.sidebar_menu, text="Reconciliation Form", command=self.show_reconciliation_form, fg_color="#990000", border_color="red", font=("Arial", 30), text_color="#FFFFFF")
+        self.special_order_form_button = ctk.CTkButton(self.sidebar_menu, text="Special Order Form", command=self.show_special_order_form, fg_color="#000", border_color="red", font=("Arial", 30))
+        self.previous_orders_button = ctk.CTkButton(self.sidebar_menu, text="Previous Orders", command=self.show_previous_orders, fg_color="#000", border_color="red", font=("Arial", 30))
+        self.ai_form_button = ctk.CTkButton(self.sidebar_menu, text="AI Form", command=self.show_ai_form, fg_color="#000", border_color="red", font=("Arial", 30))
+        self.reconciliation_form_button = ctk.CTkButton(self.sidebar_menu, text="Reconciliation Form", command=self.show_reconciliation_form, fg_color="#000", border_color="red", font=("Arial", 30))
 
         self.hide_all_frames()
 
-        self.special_order_form_button.grid(row=2,column=0)
-        self.previous_orders_button.grid(row=3,column=0)
-        self.ai_form_button.grid(row=4,column=0)
-        self.reconciliation_form_button.grid(row=5,column=0)
+        self.special_order_form_button.grid(row=0,column=0)
+        self.previous_orders_button.grid(row=1,column=0)
+        self.ai_form_button.grid(row=2,column=0)
+        self.reconciliation_form_button.grid(row=3,column=0)
 
     def hide_all_frames(self):
         for frame in [self.special_order_form, self.previous_orders, self.ai_form]:
             frame.grid_forget()
 
+    def enable_buttons(self):
+        for buttons in [self.special_order_form_button, self.previous_orders_button, self.ai_form_button, self.reconciliation_form_button]:
+            buttons.configure(state="normal")
+
     def show_special_order_form(self):
         self.configure(background="#ffced0")
         self.hide_all_frames()
-        self.special_order_form.grid(row=3, column=1, sticky='nsew')
-        self.special_order_form_button["state"]="disabled"
+        self.enable_buttons()
+        self.special_order_form.grid(row=0, column=1, sticky='nsew')
+        self.special_order_form_button.configure(state="disabled")
 
     def show_previous_orders(self):
         self.hide_all_frames()
-        self.previous_orders.grid(row=3, column=1, sticky='nsew')
-        self.previous_orders_button["state"]="disabled"
+        self.enable_buttons()
+        self.previous_orders.grid(row=0, column=1, sticky='nsew')
+        self.previous_orders_button.configure(state="disabled")
 
     def show_ai_form(self):
         self.hide_all_frames()
-        self.ai_form.grid(row=3, column=1, sticky='nsew')
-        self.ai_form_button["state"]="disabled"
+        self.enable_buttons()
+        self.ai_form.grid(row=0, column=1, sticky='nsew')
+        self.ai_form_button.configure(state="disabled")
 
     def show_reconciliation_form(self):
-        self.hide_all_frames(row=0, column=1, sticky='nsew')
-        self.reconciliation_form.grid()
-        self.reconciliation_form_button["state"]="disabled"
+        self.hide_all_frames()
+        self.enable_buttons()
+        self.reconciliation_form.grid(row=0, column=1, sticky='nsew')
+        self.reconciliation_form_button.configure(state="disabled")
 
     def show_main_frame(self):
         self.hide_all_frames()
         # Show the main application frame
-        self.previous_orders_button.grid()
-        self.special_order_form_button.grid()
+        self.sidebar_menu.grid()
+        self.enable_buttons()
+    
+    
 
-
-
-window = SO_App()
+window = SOApp()
 window.mainloop()
