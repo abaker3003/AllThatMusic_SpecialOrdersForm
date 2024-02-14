@@ -14,6 +14,7 @@ from tkinter import simpledialog
 from tkinter import *
 from tkinter import ttk
 import customtkinter as ctk
+import CTkScrollableDropdown
 import tkinter.messagebox as msgbox
 from matplotlib import artist
 import os
@@ -42,8 +43,8 @@ class Damage_Selection(ctk.CTkFrame):
   def main_func(self):
 
     self.box_var = ctk.StringVar()
-    self.box_option = ctk.CTkComboBox(self,values=self.options, variable=self.box_var, state="readonly")
-    #self.box_option.configure(l)
+    self.box_option = ctk.CTkComboBox(self, variable=self.box_var, state="readonly")
+    self.box_option_scroll = CTkScrollableDropdown.CTkScrollableDropdown(self.box_option, values=self.options)
     self.box_option.grid(row=0,
                          column=0,
                          columnspan=2,
@@ -52,10 +53,10 @@ class Damage_Selection(ctk.CTkFrame):
                          padx=10)
     
     self.box_var2 = ctk.StringVar()
-    box_option2 = ctk.CTkComboBox(self,
-                                  values=self.second_options,
-                                  variable=self.box_var2)
-    box_option2.grid(row=0,
+    self.box_option2 = ctk.CTkComboBox(self,
+                                  variable=self.box_var2, state="readonly")
+    self.box_option2_scroll = CTkScrollableDropdown.CTkScrollableDropdown(self.box_option2, values=self.second_options)
+    self.box_option2.grid(row=0,
                      column=2,
                      columnspan=2,
                      sticky='w',
@@ -95,7 +96,7 @@ class Damage_Selection(ctk.CTkFrame):
                      values=(self.box_var.get(), self.box_var2.get()))
     idx = self.options.index(self.box_var.get())
     self.options.pop(idx)
-    self.box_option.configure(values=self.options)
+    self.box_option_scroll.configure(values=self.options)
     self.box_var.set("")
     self.box_var2.set("")
 
@@ -160,7 +161,7 @@ class Damage_Selection(ctk.CTkFrame):
     self.tree.delete(selected_item)
     self.options.append(option1)
     self.options.sort()
-    self.box_option.configure(values=self.options)
+    self.box_option_scroll.configure(values=self.options)
     self.selections.pop(option1)
     self.is_option_selected = False
     self.close_dialog()
