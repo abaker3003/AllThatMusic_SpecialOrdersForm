@@ -481,6 +481,7 @@ class Prev_SO(ctk.CTkFrame):
     item = self.tree.selection()[0]
     values = self.tree.item(item, 'values')
 
+
     # Create a dialog with entry fields for each column
     self.dialog = ctk.CTkToplevel(self)
     self.dialog.geometry("350x580")
@@ -512,40 +513,43 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=["YES", "NO"])
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
+        entries[column] = entry
+
         shipping_entries = []
 
         def show_shipping_info():
-          for entry in shipping_entries:
-            entry.grid()
+          for shipping_widget in shipping_entries:
+            shipping_widget.grid()
 
         def hide_shipping_info():
-          for entry in shipping_entries:
-            entry.grid_remove()
+          for shipping_widget in shipping_entries:
+            shipping_widget.grid_remove()
 
-        def on_shipping_option_change(option):
-          if option == "YES":
-            show_shipping_info()
+        def on_shipping_option_change(self, event=None):
+          self.entries["SHIPPING?"].bind("<<OptionmenuSelected>>", self.on_shipping_option_changed)
+
+        def on_shipping_option_changed(self, event):
+          selected_option = self.entries["SHIPPING?"].get()
+          if selected_option == "YES":
+            self.show_shipping_info()
           else:
-            hide_shipping_info()
+            self.hide_shipping_info()
 
-        shipping_option = entries["SHIPPING?"]
-        shipping_option.trace("w", lambda : on_shipping_option_change(shipping_option.get()))
+        entry.configure(postcommand=self.on_shipping_option_change)
 
-        # Create shipping info entries
-        self.ship_diag = ctk.CTkToplevel(self)
-        shipping_info_title = ctk.CTkLabel(self.dialog, text="Shipping Info", font=("Roboto", 16))
-        shipping_info_title.grid(row=len(self.df.columns), column=0, padx=10, pady=5)
+        # Start index for shipping info elements
+        start_row_index = i + 1
 
         shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
-
-        for i, info in enumerate(shipping_info_entries):
-          label = ctk.CTkLabel(self.dialog, text=info, font=("Roboto", 12))
-          label.grid(row=len(self.df.columns) + i + 1, column=0, padx=10, pady=5)
-          shipping_entry = ctk.CTkEntry(self.dialog)
-          shipping_entry.grid(row=len(self.df.columns) + i + 1, column=1, padx=10, pady=5)
-          shipping_entries.append(entry)
+        for j, info in enumerate(shipping_info_entries):
+          label = ctk.CTkLabel(self.scroll_diag, text=info, font=("Roboto", 12))
+          label.grid(row=start_row_index + j, column=0, padx=10, pady=5)
+          shipping_entry = ctk.CTkEntry(self.scroll_diag)
+          shipping_entry.grid(row=start_row_index + j, column=1, padx=10, pady=5)
+          shipping_entries.append(shipping_entry)
 
         hide_shipping_info()
+        break
 
       else:
         entry = ctk.CTkEntry(self.scroll_diag)
@@ -557,17 +561,18 @@ class Prev_SO(ctk.CTkFrame):
 
       entries[column] = entry
 
+    button_start_row_index = start_row_index + len(shipping_info_entries) + 1
+
     self.save_changes_button = ctk.CTkButton(
         self.dialog, text="Save", command=lambda: self.save(item, entries))
-    self.save_changes_button.grid(row=2,
+    self.save_changes_button.grid(row=button_start_row_index,
                                   column=0,
                                   columnspan=2,
                                   pady=20)
 
-    self.cancel_changes_button = ctk.CTkButton(self.dialog,
-                                               text="Back",
-                                               command=self.dialog.destroy)
-    self.cancel_changes_button.grid(row=3,
+    self.cancel_changes_button = ctk.CTkButton(
+        self.dialog, text="Cancel", command=self.dialog.destroy)
+    self.cancel_changes_button.grid(row=button_start_row_index + 1,
                                     column=0,
                                     columnspan=2,
                                     pady=20)
