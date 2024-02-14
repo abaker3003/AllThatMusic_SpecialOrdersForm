@@ -66,7 +66,6 @@ class Damage_Selection(ctk.CTkFrame):
     self.display_box = ctk.CTkFrame(self, height=500, width=300)
     self.display_box.grid(row=0, column=4, sticky='w', pady=(10, 20), padx=10)
 
-    #self.selected_options = ctk.CTkTextbox(self.display_box, height=400, width=250, state="disabled")
     self.tree = ttk.Treeview(self.display_box,
                              columns=('Damage', 'Severity'),
                              show='headings')
@@ -76,7 +75,6 @@ class Damage_Selection(ctk.CTkFrame):
     self.add_btn = ctk.CTkButton(self, text="Add", command=self.box_selected)
     self.add_btn.grid(row=1, column=0, columnspan=2, sticky='w')
 
-    #self.selected_options.grid(row=0, column=0, sticky='w', pady=(10, 20), padx=10)
 
     self.tree.grid(row=0,
                    column=0,
@@ -84,8 +82,6 @@ class Damage_Selection(ctk.CTkFrame):
                    sticky='w',
                    pady=(10, 20),
                    padx=10)
-
-    #self.selected_options.bind("<Button-1>", lambda e: self.tree.focus_set(self.tree.nearest(e.y)))
 
     self.tree.bind('<<TreeviewSelect>>', self.on_select)
 

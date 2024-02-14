@@ -251,7 +251,7 @@ class SO_Form(ctk.CTkFrame):
                                  font=("Roboto", 16))
     shipping_text.grid(row=row_offset, column=5)
     ship_var = ctk.BooleanVar(self)
-    shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var)
+    shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var, text=None)
     shipping_checkb.grid(row=row_offset, column=6, sticky="ew", padx=10)
 
     # Bind the open_shipping_window function to the checkbox
@@ -282,13 +282,15 @@ class SO_Form(ctk.CTkFrame):
                               sticky='e',
                               pady=10,
                               padx=40)
-
+    
+    self.venders_title = ctk.CTkFrame(self.vendors_buttons)
+    self.venders_title.grid(row=0, column=0, pady=(10, 0), sticky='ew')
     # Title for Vendors
-    vendors_text = ctk.CTkLabel(self.vendors_buttons,
+    vendors_text = ctk.CTkLabel(self.venders_title,
                                 text="Vendors",
-                                font=("Roboto", 16),
+                                font=("Roboto", 20),
                                 text_color="#FFFFFF")
-    vendors_text.grid(row=0, column=0, pady=(10, 0))
+    vendors_text.grid(row=0, column=0, pady=(10, 0), sticky='ew')
     # Radio Button for Vendors
     vendors = ctk.StringVar(self.vendors_buttons, "Vendors")
     vendors_values = ["AEC", "AMS", "AMA"]
@@ -317,7 +319,7 @@ class SO_Form(ctk.CTkFrame):
     # Title for Type
     type_text = ctk.CTkLabel(self.type_buttons,
                              text="Type",
-                             font=("Roboto", 16),
+                             font=("Roboto", 20),
                              text_color="#FFFFFF")
     type_text.grid(row=0, column=1, pady=(10, 0))
 
