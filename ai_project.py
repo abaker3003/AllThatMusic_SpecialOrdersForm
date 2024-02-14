@@ -44,7 +44,7 @@ class Damage_Selection(ctk.CTkFrame):
 
     self.box_var = ctk.StringVar()
     self.box_option = ctk.CTkComboBox(self, variable=self.box_var, state="readonly")
-    self.box_option_scroll = CTkScrollableDropdown.CTkScrollableDropdown(self, self.box_option, values=self.options)
+    self.box_option_scroll = CTkScrollableDropdown.CTkScrollableDropdown(attach=self.box_option, values=self.options)
     self.box_option.grid(row=0,
                          column=0,
                          columnspan=2,
@@ -55,7 +55,7 @@ class Damage_Selection(ctk.CTkFrame):
     self.box_var2 = ctk.StringVar()
     self.box_option2 = ctk.CTkComboBox(self,
                                   variable=self.box_var2, state="readonly")
-    self.box_option2_scroll = CTkScrollableDropdown.CTkScrollableDropdown(self, self.box_option2, values=self.second_options)
+    self.box_option2_scroll = CTkScrollableDropdown.CTkScrollableDropdown(attach=self.box_option2, values=self.second_options)
     self.box_option2.grid(row=0,
                      column=2,
                      columnspan=2,
