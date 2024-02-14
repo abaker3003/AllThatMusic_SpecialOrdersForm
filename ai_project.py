@@ -42,15 +42,15 @@ class Damage_Selection(ctk.CTkFrame):
   def main_func(self):
 
     self.box_var = ctk.StringVar()
-    self.box_option = ctk.CTkComboBox(self,
-                                      values=self.options,
-                                      variable=self.box_var)
+    self.box_option = ctk.CTkComboBox(self,values=self.options, variable=self.box_var, state="readonly")
+    #self.box_option.configure(l)
     self.box_option.grid(row=0,
                          column=0,
                          columnspan=2,
                          sticky='w',
                          pady=(10, 20),
                          padx=10)
+    
     self.box_var2 = ctk.StringVar()
     box_option2 = ctk.CTkComboBox(self,
                                   values=self.second_options,
