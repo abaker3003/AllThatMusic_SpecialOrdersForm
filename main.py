@@ -118,6 +118,9 @@ class SO_Form(ctk.CTkFrame):
       if ship_var.get() == 1:
         data.append("Yes")
         data.extend(self.shipping_data)
+      else:
+        data.append("No")
+        data.extend(["N/A"] * len(self.shipping_data))
       xl_file.writeOnXL(data)
       xl_file.close_file()
       save_button.configure(text="Saved!")
@@ -282,37 +285,26 @@ class SO_Form(ctk.CTkFrame):
                               sticky='e',
                               pady=10,
                               padx=40)
-    
-    self.venders_title = ctk.CTkFrame(self.vendors_buttons)
-    self.venders_title.grid(row=0, column=0, pady=(10, 0), sticky='ew')
     # Title for Vendors
-    vendors_text = ctk.CTkLabel(self.venders_title,
+    vendors_text = ctk.CTkLabel(self.vendors_buttons,
                                 text="Vendors",
                                 font=("Roboto", 20),
                                 text_color="#FFFFFF")
-    vendors_text.grid(row=0, column=0, pady=(10, 0), sticky='ew')
+    vendors_text.grid(row=0, column=1, pady=(10, 0), sticky='ew')
     # Radio Button for Vendors
     vendors = ctk.StringVar(self.vendors_buttons, "Vendors")
     vendors_values = ["AEC", "AMS", "AMA"]
 
     # Button positioning based on amount of options
     for i, vendor in enumerate(vendors_values):
-      if i < 2:
-        rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
+      rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
                                       text=vendor,
                                       variable=vendors,
                                       value=vendor,
                                       text_color="#FFFFFF",
                                       font=("Roboto", 16))
-        rdio_opt.grid(row=1, column=i, sticky='w')
-      else:
-        rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                      text=vendor,
-                                      variable=vendors,
-                                      value=vendor,
-                                      text_color="#FFFFFF",
-                                      font=("Roboto", 16))
-        rdio_opt.grid(row=2, column=i - 2, sticky='w')
+      rdio_opt.grid(row=1, column=i, sticky='ew')
+      
 
     self.type_buttons = ctk.CTkFrame(self)
     self.type_buttons.grid(row=row_offset, column=3, columnspan=3, sticky='ew')
@@ -491,6 +483,9 @@ class Prev_SO(ctk.CTkFrame):
 
     # Create a dialog with entry fields for each column
     self.dialog = ctk.CTkToplevel(self)
+    self.scroll_diag = ctk.CTkScrollableFrame(self.dialog)
+
+
     self.dialog.title("Edit Order")
     entries = {}
 
@@ -580,7 +575,7 @@ class SO_App(ctk.CTk):
   def __init__(self):
     super().__init__()
     self.title("Special Order")
-    self.geometry("1200x680")
+    self.geometry("500x500")
     self.configure(background="#350909")
 
     self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=0)
@@ -647,18 +642,21 @@ class SO_App(ctk.CTk):
       buttons.configure(state="normal")
 
   def show_special_order_form(self):
+    self.geometry("1050x500")
     self.configure(background="#ffced0")
     self.hide_all_frames()
     self.special_order_form.grid(row=3, column=1, sticky='nsew')
     self.special_order_form_button.configure(state="disabled")
 
   def show_previous_orders(self):
+    self.geometry("1200x500")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
     self.previous_orders_button.configure(state="disabled")
 
   def show_ai_form(self):
     self.hide_all_frames()
+    self.geometry("1100x600")
     self.ai_form.grid(row=0, column=1, sticky='nsew')
     self.ai_form_button.configure(state="disabled")
 
@@ -669,6 +667,7 @@ class SO_App(ctk.CTk):
 
   def show_main_frame(self):
     self.hide_all_frames()
+    self.geometry("500x500")
     # Show the main application frame
     self.enable_buttons()
 
