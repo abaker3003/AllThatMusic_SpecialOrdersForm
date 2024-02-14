@@ -483,7 +483,9 @@ class Prev_SO(ctk.CTkFrame):
 
     # Create a dialog with entry fields for each column
     self.dialog = ctk.CTkToplevel(self)
-    self.scroll_diag = ctk.CTkScrollableFrame(self.dialog)
+    self.dialog.geometry("350x580")
+    self.scroll_diag = ctk.CTkScrollableFrame(self.dialog, height=400, width=280)
+    self.scroll_diag.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
 
     self.dialog.title("Edit Order")
@@ -493,21 +495,60 @@ class Prev_SO(ctk.CTkFrame):
     vendors_values = ["AEC", "AMS", "AMA"]
 
     for i, column in enumerate(self.df.columns):
-      ctk.CTkLabel(self.dialog, text=column, font=("Arial", 10)).grid(row=i,
+      ctk.CTkLabel(self.scroll_diag, text=column, font=("Arial", 10)).grid(row=i,
                                                                       column=0,
                                                                       padx=10,
                                                                       pady=5)
 
       if column == "VENDOR":
-        entry = ctk.CTkOptionMenu(self.dialog, values=vendors_values)
+        entry = ctk.CTkOptionMenu(self.scroll_diag, values=vendors_values)
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
       elif column == "TYPE":
-        entry = ctk.CTkOptionMenu(self.dialog, values=typ_values)
+        entry = ctk.CTkOptionMenu(self.scroll_diag, values=typ_values)
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
+      elif column == "SHIPPING?": 
+        entry = ctk.CTkOptionMenu(self.scroll_diag, values=["YES", "NO"])
+        entry.set(values[i])  # Set to current value or default one
+        entry.grid(row=i, column=1, padx=10, pady=5)
+        shipping_entries = []
+
+        def show_shipping_info():
+          for entry in shipping_entries:
+            entry.grid()
+
+        def hide_shipping_info():
+          for entry in shipping_entries:
+            entry.grid_remove()
+
+        def on_shipping_option_change(option):
+          if option == "YES":
+            show_shipping_info()
+          else:
+            hide_shipping_info()
+
+        shipping_option = entries["SHIPPING?"]
+        shipping_option.trace("w", lambda : on_shipping_option_change(shipping_option.get()))
+
+        # Create shipping info entries
+        self.ship_diag = ctk.CTkToplevel(self)
+        shipping_info_title = ctk.CTkLabel(self.dialog, text="Shipping Info", font=("Roboto", 16))
+        shipping_info_title.grid(row=len(self.df.columns), column=0, padx=10, pady=5)
+
+        shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
+
+        for i, info in enumerate(shipping_info_entries):
+          label = ctk.CTkLabel(self.dialog, text=info, font=("Roboto", 12))
+          label.grid(row=len(self.df.columns) + i + 1, column=0, padx=10, pady=5)
+          shipping_entry = ctk.CTkEntry(self.dialog)
+          shipping_entry.grid(row=len(self.df.columns) + i + 1, column=1, padx=10, pady=5)
+          shipping_entries.append(entry)
+
+        hide_shipping_info()
+
       else:
-        entry = ctk.CTkEntry(self.dialog)
+        entry = ctk.CTkEntry(self.scroll_diag)
         entry.insert(0, values[i])
         entry.grid(row=i, column=1, padx=10, pady=5)
 
@@ -518,7 +559,7 @@ class Prev_SO(ctk.CTkFrame):
 
     self.save_changes_button = ctk.CTkButton(
         self.dialog, text="Save", command=lambda: self.save(item, entries))
-    self.save_changes_button.grid(row=len(self.df.columns),
+    self.save_changes_button.grid(row=2,
                                   column=0,
                                   columnspan=2,
                                   pady=20)
@@ -526,7 +567,7 @@ class Prev_SO(ctk.CTkFrame):
     self.cancel_changes_button = ctk.CTkButton(self.dialog,
                                                text="Back",
                                                command=self.dialog.destroy)
-    self.cancel_changes_button.grid(row=len(self.df.columns) + 1,
+    self.cancel_changes_button.grid(row=3,
                                     column=0,
                                     columnspan=2,
                                     pady=20)
