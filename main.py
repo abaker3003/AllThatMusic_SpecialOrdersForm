@@ -515,15 +515,27 @@ class Prev_SO(ctk.CTkFrame):
         entry.grid(row=i, column=1, padx=10, pady=5)
         entries[column] = entry
 
+        shipping_labels = []
+
         shipping_entries = []
 
-        def show_shipping_info():
-          for shipping_widget in shipping_entries:
-            shipping_widget.grid()
+        def show_shipping_info(self):
+          # Start index for shipping info elements
+          start_row_index = i + 1
+          shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
+          for j, info in enumerate(shipping_info_entries):
+            label = ctk.CTkLabel(self.scroll_diag, text=info, font=("Roboto", 12))
+            label.grid(row=start_row_index + j, column=0, padx=10, pady=5)
+            shipping_entry = ctk.CTkEntry(self.scroll_diag)
+            shipping_entry.grid(row=start_row_index + j, column=1, padx=10, pady=5)
+            shipping_entries.append(shipping_entry)
+            shipping_labels.append(label)
 
-        def hide_shipping_info():
+        def hide_shipping_info(self):
           for shipping_widget in shipping_entries:
             shipping_widget.grid_remove()
+          for shipping_label in shipping_labels:
+            shipping_label.grid_remove()
 
         def on_shipping_option_change(self, event=None):
           self.entries["SHIPPING?"].bind("<<OptionmenuSelected>>", self.on_shipping_option_changed)
@@ -537,16 +549,6 @@ class Prev_SO(ctk.CTkFrame):
 
         entry.configure(postcommand=self.on_shipping_option_change)
 
-        # Start index for shipping info elements
-        start_row_index = i + 1
-
-        shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
-        for j, info in enumerate(shipping_info_entries):
-          label = ctk.CTkLabel(self.scroll_diag, text=info, font=("Roboto", 12))
-          label.grid(row=start_row_index + j, column=0, padx=10, pady=5)
-          shipping_entry = ctk.CTkEntry(self.scroll_diag)
-          shipping_entry.grid(row=start_row_index + j, column=1, padx=10, pady=5)
-          shipping_entries.append(shipping_entry)
 
         hide_shipping_info()
         break
