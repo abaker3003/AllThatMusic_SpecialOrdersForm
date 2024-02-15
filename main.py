@@ -510,10 +510,10 @@ class Prev_SO(ctk.CTkFrame):
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
       elif column == "SHIPPING?": 
-        entry = ctk.CTkOptionMenu(self.scroll_diag, values=["YES", "NO"])
-        entry.set(values[i])  # Set to current value or default one
+        self.switch = ctk.StringVar(value=values[i])
+        entry = ctk.CTkSwitch(self.scroll_diag, command=on_shipping_option_changed, onvalue="YES", offvalue="NO")
         entry.grid(row=i, column=1, padx=10, pady=5)
-        self.entries[column] = entry
+        self.entries[column] = self.switch.get()
 
         shipping_labels = []
 
@@ -539,9 +539,6 @@ class Prev_SO(ctk.CTkFrame):
           for shipping_label in shipping_labels:
             shipping_label.grid_remove()
 
-        def on_shipping_option_change(event=None):
-          self.entries["SHIPPING?"].bind("<<OptionmenuSelected>>",on_shipping_option_changed)
-
         def on_shipping_option_changed(event):
           selected_option = self.entries["SHIPPING?"].get()
           if selected_option == "YES":
@@ -549,10 +546,6 @@ class Prev_SO(ctk.CTkFrame):
           else:
             hide_shipping_info()
 
-        self.entries["SHIPPING?"].trace("w",on_shipping_option_change)
-
-
-        hide_shipping_info()
         break
 
       else:
