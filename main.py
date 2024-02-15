@@ -510,19 +510,8 @@ class Prev_SO(ctk.CTkFrame):
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
       elif column == "SHIPPING?": 
-        self.switch = ctk.StringVar(value=values[i])
-        entry = ctk.CTkSwitch(self.scroll_diag, command=on_shipping_option_changed, onvalue="YES", offvalue="NO")
-        entry.grid(row=i, column=1, padx=10, pady=5)
-        self.entries[column] = self.switch.get()
 
-        shipping_labels = []
-
-        shipping_entries = []
-
-        # Start index for shipping info elements
-        self.start_row_index = i + 1
-
-        def show_shipping_info(self):
+        def show_shipping_info():
         
           shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
           for j, info in enumerate(shipping_info_entries):
@@ -533,18 +522,30 @@ class Prev_SO(ctk.CTkFrame):
             shipping_entries.append(shipping_entry)
             shipping_labels.append(label)
 
-        def hide_shipping_info(self):
+        def hide_shipping_info():
           for shipping_widget in shipping_entries:
             shipping_widget.grid_remove()
           for shipping_label in shipping_labels:
             shipping_label.grid_remove()
 
-        def on_shipping_option_changed(event):
-          selected_option = self.entries["SHIPPING?"].get()
-          if selected_option == "YES":
+        def on_shipping_option_changed(value):
+          if value == "YES":
             show_shipping_info()
           else:
             hide_shipping_info()
+
+        self.switch = ctk.StringVar(value=values[i])
+        entry = ctk.CTkSwitch(self.scroll_diag, variable=self.switch, onvalue="YES", offvalue="NO")
+        entry.grid(row=i, column=1, padx=10, pady=5)
+        self.switch.trace_add("write", lambda *args: on_shipping_option_changed(self.switch.get()))
+        self.entries[column] = self.switch.get()
+
+        shipping_labels = []
+
+        shipping_entries = []
+
+        # Start index for shipping info elements
+        self.start_row_index = i + 1
 
         break
 
