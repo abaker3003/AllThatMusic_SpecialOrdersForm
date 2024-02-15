@@ -490,7 +490,7 @@ class Prev_SO(ctk.CTkFrame):
 
 
     self.dialog.title("Edit Order")
-    entries = {}
+    self.entries = {}
 
     typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
     vendors_values = ["AEC", "AMS", "AMA"]
@@ -513,21 +513,23 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=["YES", "NO"])
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
-        entries[column] = entry
+        self.entries[column] = entry
 
         shipping_labels = []
 
         shipping_entries = []
 
+        # Start index for shipping info elements
+        self.start_row_index = i + 1
+
         def show_shipping_info(self):
-          # Start index for shipping info elements
-          start_row_index = i + 1
+        
           shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
           for j, info in enumerate(shipping_info_entries):
             label = ctk.CTkLabel(self.scroll_diag, text=info, font=("Roboto", 12))
-            label.grid(row=start_row_index + j, column=0, padx=10, pady=5)
+            label.grid(row=self.start_row_index + j, column=0, padx=10, pady=5)
             shipping_entry = ctk.CTkEntry(self.scroll_diag)
-            shipping_entry.grid(row=start_row_index + j, column=1, padx=10, pady=5)
+            shipping_entry.grid(row=self.start_row_index + j, column=1, padx=10, pady=5)
             shipping_entries.append(shipping_entry)
             shipping_labels.append(label)
 
@@ -537,17 +539,17 @@ class Prev_SO(ctk.CTkFrame):
           for shipping_label in shipping_labels:
             shipping_label.grid_remove()
 
-        def on_shipping_option_change(self, event=None):
-          self.entries["SHIPPING?"].bind("<<OptionmenuSelected>>", self.on_shipping_option_changed)
+        def on_shipping_option_change(event=None):
+          self.entries["SHIPPING?"].bind("<<OptionmenuSelected>>",on_shipping_option_changed)
 
-        def on_shipping_option_changed(self, event):
+        def on_shipping_option_changed(event):
           selected_option = self.entries["SHIPPING?"].get()
           if selected_option == "YES":
-            self.show_shipping_info()
+            show_shipping_info()
           else:
-            self.hide_shipping_info()
+            hide_shipping_info()
 
-        entry.configure(postcommand=self.on_shipping_option_change)
+        self.entries["SHIPPING?"].trace("w",on_shipping_option_change)
 
 
         hide_shipping_info()
@@ -561,12 +563,12 @@ class Prev_SO(ctk.CTkFrame):
       if column in set(["REF NUM", "DATE", "CLERK NAME"]):
         entry.configure(state='disabled')
 
-      entries[column] = entry
+      self.entries[column] = entry
 
-    button_start_row_index = start_row_index + len(shipping_info_entries) + 1
+    button_start_row_index = self.start_row_index
 
     self.save_changes_button = ctk.CTkButton(
-        self.dialog, text="Save", command=lambda: self.save(item, entries))
+        self.dialog, text="Save", command=lambda: self.save(item, self.entries))
     self.save_changes_button.grid(row=button_start_row_index,
                                   column=0,
                                   columnspan=2,
