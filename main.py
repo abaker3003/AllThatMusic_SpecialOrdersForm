@@ -433,15 +433,23 @@ class Prev_SO(ctk.CTkFrame):
     self.excel_file = xl.open_excel_file('SO_Test.xlsx')
     self.df = self.excel_file.read_into_dataframe_SO()
 
+    
+    self.scrollbar_x = ttk.Scrollbar(self,
+                                     orient='horizontal')
+    self.scrollbar_x.grid(row=2, column=0, sticky='ew', padx=10, pady=(0, 10))
+
     # Create the Treeview
     self.tree = ttk.Treeview(self,
                              columns=list(self.df.columns),
-                             show="headings")
+                             show="headings",xscrollcommand=self.scrollbar_x.set)
     for column in self.df.columns:
       self.tree.heading(column, text=column)
-      self.tree.column(column, width=150,
-                       anchor='center')  # Adjust width and centering as needed
+      self.tree.column(column, width=100,
+                       anchor='center')  
+      # Adjust width and centering as needed
     self.tree.grid(row=1, column=0, sticky='nsew', padx=10, pady=5)
+
+    self.scrollbar_x.config(command=self.tree.xview)
 
     # Add the data to the Treeview
     for _, row in self.df.iterrows():
@@ -449,19 +457,15 @@ class Prev_SO(ctk.CTkFrame):
 
     # Configure the grid to expand the treeview with window resizing
     self.grid_columnconfigure(0, weight=1)
-    self.grid_rowconfigure(1, weight=1)
+    self.grid_rowconfigure(0, weight=1)
 
     # Create the Scrollbar
     self.scrollbar_y = ttk.Scrollbar(self,
                                      orient='vertical',
                                      command=self.tree.yview)
     self.scrollbar_y.grid(row=1, column=1, sticky='ns', padx=(0, 10), pady=5)
-    self.scrollbar_x = ttk.Scrollbar(self,
-                                     orient='horizontal',
-                                     command=self.tree.xview)
-    self.scrollbar_x.grid(row=2, column=0, sticky='ew', padx=10, pady=(0, 10))
-    self.tree.configure(yscrollcommand=self.scrollbar_y.set,
-                        xscrollcommand=self.scrollbar_x.set)
+    self.tree.configure(yscrollcommand=self.scrollbar_y.set, xscrollcommand=self.scrollbar_x.set)
+
 
     # Back Button with CTk Improvement
     self.back_button = ctk.CTkButton(self,
