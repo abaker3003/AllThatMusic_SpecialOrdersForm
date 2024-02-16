@@ -439,7 +439,7 @@ class Prev_SO(ctk.CTkFrame):
                              show="headings")
     for column in self.df.columns:
       self.tree.heading(column, text=column)
-      self.tree.column(column, width=100,
+      self.tree.column(column, width=150,
                        anchor='center')  # Adjust width and centering as needed
     self.tree.grid(row=1, column=0, sticky='nsew', padx=10, pady=5)
 
@@ -511,19 +511,26 @@ class Prev_SO(ctk.CTkFrame):
         entry.grid(row=i, column=1, padx=10, pady=5)
       elif column == "SHIPPING?": 
 
+        self.shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
+
+        shipping_labels = []
+
+        self.shipping_entries = []
+
         def show_shipping_info():
         
-          shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
-          for j, info in enumerate(shipping_info_entries):
+          for j, info in enumerate(self.shipping_info_entries):
             label = ctk.CTkLabel(self.scroll_diag, text=info, font=("Roboto", 12))
             label.grid(row=self.start_row_index + j, column=0, padx=10, pady=5)
-            shipping_entry = ctk.CTkEntry(self.scroll_diag)
+            shipping_entry_val = ctk.StringVar(value=values[self.start_row_index + j])
+            shipping_entry = ctk.CTkEntry(self.scroll_diag, textvariable=shipping_entry_val)
             shipping_entry.grid(row=self.start_row_index + j, column=1, padx=10, pady=5)
-            shipping_entries.append(shipping_entry)
+            self.shipping_entries.append(shipping_entry_val)
             shipping_labels.append(label)
+            self.entries[info] = shipping_entry_val
 
         def hide_shipping_info():
-          for shipping_widget in shipping_entries:
+          for shipping_widget in self.shipping_entries:
             shipping_widget.grid_remove()
           for shipping_label in shipping_labels:
             shipping_label.grid_remove()
@@ -538,11 +545,7 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkSwitch(self.scroll_diag, variable=self.switch, onvalue="YES", offvalue="NO")
         entry.grid(row=i, column=1, padx=10, pady=5)
         self.switch.trace_add("write", lambda *args: on_shipping_option_changed(self.switch.get()))
-        self.entries[column] = self.switch.get()
-
-        shipping_labels = []
-
-        shipping_entries = []
+        self.entries[column] = self.switch
 
         # Start index for shipping info elements
         self.start_row_index = i + 1
@@ -560,6 +563,8 @@ class Prev_SO(ctk.CTkFrame):
       self.entries[column] = entry
 
     button_start_row_index = self.start_row_index
+
+    print(self.entries)
 
     self.save_changes_button = ctk.CTkButton(
         self.dialog, text="Save", command=lambda: self.save(item, self.entries))
@@ -586,8 +591,9 @@ class Prev_SO(ctk.CTkFrame):
     self.excel_file.update_excel(int(item) + 1, [new_value])
 
   def save(self, item, entries):
+    print(self.df.columns)
     # Update the Treeview and the DataFrame with the new values
-    new_values = [entries[column].get() for column in self.df.columns]
+    new_values = [entries[column].get() for column in self.df.columns]    
     self.tree.item(item, values=new_values)
 
     # Assuming that 'I004' format means 'I' followed by an actual index number
