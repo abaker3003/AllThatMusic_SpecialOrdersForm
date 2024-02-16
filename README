@@ -7,3 +7,5 @@ The window will display the empty forms for the type of product, the artist, and
 Additionally, the special order form will ask for the product's price value and the clerk's name who filled out the form.
 
 ** This is subject to change through the course of the project's completion process **
+
+Integrated https://github.com/Akascape/CTkScrollableDropdown in ai_project.py
