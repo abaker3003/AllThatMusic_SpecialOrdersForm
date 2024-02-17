@@ -29,7 +29,7 @@ class ExcelFile:
     # ---> FOR SO_FORM <--- #
     def read_into_dataframe_SO(self):
         # Read the Excel file into a pandas DataFrame
-        return pd.read_excel(self.filename,  dtype={'PHONE': str})
+        return pd.read_excel(self.filename,  dtype={'PHONE': str, 'ZIPCODE': str})
 
     # ---> FOR AI_FORM <--- #
     def read_into_dataframe(self):

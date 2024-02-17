@@ -117,11 +117,11 @@ class SO_Form(ctk.CTkFrame):
       data.append(typs.get())
       data.append(clerk_input.get())
       if ship_var.get() == 1:
-        data.append("Yes")
+        data.append("YES")
         data.extend(self.shipping_data)
       else:
-        data.append("No")
-        data.extend(["N/A"] * len(self.shipping_data))
+        data.append("NO")
+        data.extend(["N/A" * len(self.shipping_data)])
       xl_file.writeOnXL(data)
       xl_file.close_file()
       save_button.configure(text="Saved!")
@@ -450,8 +450,8 @@ class Prev_SO(ctk.CTkFrame):
         self.tree.column(column, width=100, anchor='center')  # Adjust width and centering as needed
 
     # Add the data to the Treeview
-    for _, row in self.df.iterrows():
-        self.tree.insert('', 'end', values=list(row))
+    for i, row in self.df.iterrows():
+        self.tree.insert('', "end", values=list(row), iid=i)
 
     # Configure the grid to expand the treeview with window resizing
     self.tree.grid_columnconfigure(0, weight=1)
@@ -473,7 +473,9 @@ class Prev_SO(ctk.CTkFrame):
 
   def on_double_click(self, event):
     # Get the selected item
+    print(self.tree.selection())
     item = self.tree.selection()[0]
+    print(item)
     values = self.tree.item(item, 'values')
 
 
@@ -538,6 +540,8 @@ class Prev_SO(ctk.CTkFrame):
 
         self.switch = ctk.StringVar(value=values[i])
         entry = ctk.CTkSwitch(self.scroll_diag, variable=self.switch, onvalue="YES", offvalue="NO")
+        if values[i] == "YES":
+          entry._check_state = True
         entry.grid(row=i, column=1, padx=10, pady=5)
         self.switch.trace_add("write", lambda *args: on_shipping_option_changed(self.switch.get()))
         self.entries[column] = self.switch
@@ -586,18 +590,18 @@ class Prev_SO(ctk.CTkFrame):
     self.excel_file.update_excel(int(item) + 1, [new_value])
 
   def save(self, item, entries):
-    print(self.df.columns)
     # Update the Treeview and the DataFrame with the new values
     new_values = [entries[column].get() for column in self.df.columns]    
     self.tree.item(item, values=new_values)
 
     # Assuming that 'I004' format means 'I' followed by an actual index number
-    if item.startswith('I') and item[1:].isdigit():
+    '''if item.startswith('I') and item[1:].isdigit():
       item_index = int(item[1:])
     else:
       # Handle the case where item does not follow the expected format
       raise ValueError(
-          f"The item identifier {item} is not in the expected format.")
+          f"The item identifier {item} is not in the expected format.")'''
+    item_index = int(item)
 
     for column, new_value in zip(self.df.columns, new_values):
       self.df.at[item_index,
