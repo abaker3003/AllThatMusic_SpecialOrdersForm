@@ -448,9 +448,19 @@ class DescriptionInputFrame(ctk.CTkFrame):
             super().__init__()
             # ---> Create double linked list for frame navigation <--- #
             self.description_frame = DescriptionInputFrame(self)
-            self.condition_frame = ctk.CTkFrame(self)
+            self.condition_frame = self.second_frame()
             self.begin()
 
         
         def begin():
             self.description_frame.grid(row=0, column=0, sticky='nsew')
+
+        def second_frame(self):
+            self.secondframe = ctk.CTkFrame(self)
+            self.firstsection = Condition(self.secondframe)
+            self.condition_frame.grid(row=0, column=0, sticky='nsew')
+            self.secondsection = Damage_Selection(self.secondframe)
+            self.secondsection.grid(row=1, column=0, sticky='nsew')
+            self.thirdsection = Damage_Selection_Jacket(self.secondframe)
+            self.thirdsection.grid(row=2, column=0, sticky='nsew')
+            return self.secondframe
