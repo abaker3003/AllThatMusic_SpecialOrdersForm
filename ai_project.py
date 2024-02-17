@@ -19,11 +19,175 @@ import tkinter.messagebox as msgbox
 from matplotlib import artist
 import os
 
+class Damage_Selection_Jacket(ctk.CTkFrame):
+  def __init__(self, *args, header_name="Jacket Damages", **kwargs):
+    super().__init__(*args, **kwargs)
+    self.header_label = ctk.CTkLabel(self, text=header_name)
+    self.header_label.grid(row=0, column=0, columnspan=2, pady=10)
+    self.options = [
+        "traces", "handling traces", "hairline", "hairlines", "sleeve dust",
+        "sleeve rubs", "scuffings", "scuffs", "markings", "marks",
+        "blemishing", "blemishes", "prints", "spindle marks", "ring wear",
+        "corner wear"
+    ]
+    self.second_options = [
+        "subtle", "faint", "barely-visible", "light", "minor", "occassional",
+        "stray", "scattered", "mild", "moderate", "typical", "pronounced",
+        "considerable", "severe"
+    ]
+
+    self.selections = {}
+    self.is_option_selected = False
+    self.main_func()
+
+  def main_func(self):
+    self.box_var = ctk.StringVar()
+    self.box_option = ctk.CTkComboBox(self, variable=self.box_var, state="readonly")
+    self.box_option_scroll = CTkScrollableDropdown.CTkScrollableDropdown(attach=self.box_option, values=self.options)
+    self.box_option.grid(row=1,
+                         column=0,
+                         columnspan=2,
+                         sticky='w',
+                         pady=(10, 20),
+                         padx=10)
+    
+    self.box_var2 = ctk.StringVar()
+    self.box_option2 = ctk.CTkComboBox(self,
+                                  variable=self.box_var2, state="readonly")
+    self.box_option2_scroll = CTkScrollableDropdown.CTkScrollableDropdown(attach=self.box_option2, values=self.second_options)
+    self.box_option2.grid(row=1,
+                     column=2,
+                     columnspan=2,
+                     sticky='w',
+                     pady=(10, 20),
+                     padx=10)
+
+    self.display_box = ctk.CTkFrame(self, height=500, width=300)
+    self.display_box.grid(row=1, column=4, sticky='w', pady=(10, 20), padx=10)
+
+    self.tree = ttk.Treeview(self.display_box,
+                             columns=('Damage', 'Severity'),
+                             show='headings')
+    self.tree.heading('Damage', text='Damage')
+    self.tree.heading('Severity', text='Severity')
+
+    self.add_btn = ctk.CTkButton(self, text="Add", command=self.box_selected)
+    self.add_btn.grid(row=2, column=0, columnspan=2, sticky='w')
+
+
+    self.tree.grid(row=0,
+                   column=0,
+                   columnspan=2,
+                   sticky='w',
+                   pady=(10, 20),
+                   padx=10)
+
+    self.tree.bind('<<TreeviewSelect>>', self.on_select())
+
+  def box_selected(self):
+    self.selections[self.box_var.get()] = self.box_var2.get()
+    self.tree.insert('',
+                     'end',
+                     values=(self.box_var.get(), self.box_var2.get()))
+    idx = self.options.index(self.box_var.get())
+    self.options.pop(idx)
+    self.box_option_scroll.configure(values=self.options)
+    self.box_var.set("")
+    self.box_var2.set("")
+
+  def close_dialog_and_reset(self):
+    self.edit.destroy()
+    self.delete.destroy()
+    self.add_btn.configure(state="normal")
+    self.edit = None
+    self.delete = None
+    self.is_option_selected = True
+
+  def close_dialog(self):
+    self.close_dialog_and_reset()
+
+  def edit_option(self):
+
+    def done():
+      self.confirm_edit.destroy()
+      self.confirm_edit = None
+      self.dialog.destroy()
+      self.is_option_selected = True
+      self.close_dialog()
+
+    def confirm_or_cancel():
+      self.selections[option1] = self.box_option2_edit_val.get()
+      tree_item = self.tree.selection()[0]
+      self.tree.delete(tree_item)
+      self.tree.unbind('<<TreeviewSelect>>')
+      self.tree.insert('',
+                       'end',
+                       values=(option1, self.box_option2_edit_val.get()))
+      self.tree.bind('<<TreeviewSelect>>', self.on_select)
+      self.is_option_selected = True
+      done()
+
+    selected_item = self.tree.selection()[0]
+
+    option1, option2 = self.tree.item(selected_item, 'values')
+
+    self.dialog = ctk.CTkToplevel(self)
+
+    self.dialog.title("Edit Option 2")
+
+    first_opt = ctk.CTkLabel(self.dialog, text=f"{option1}")
+
+    first_opt.grid(row=0, column=0, pady=20)
+
+    self.box_option2_edit_val = ctk.StringVar()
+    self.box_option2_edit = ctk.CTkComboBox(self.dialog,
+                                            values=self.second_options,
+                                            variable=self.box_option2_edit_val)
+    self.box_option2_edit.set(option2)
+    self.box_option2_edit.grid(row=0, column=1, pady=20)
+    self.confirm_edit = ctk.CTkButton(self.dialog,
+                                      text="Done",
+                                      command=confirm_or_cancel)
+    self.confirm_edit.grid(row=1, column=0)
+
+  def delete_option(self):
+    selected_item = self.tree.selection()[0]
+    option1 = self.tree.item(selected_item, 'values')[0]
+    self.tree.delete(selected_item)
+    self.options.append(option1)
+    self.options.sort()
+    self.box_option_scroll.configure(values=self.options)
+    self.selections.pop(option1)
+    self.is_option_selected = False
+    self.close_dialog()
+
+  def on_select(self, event):
+    if self.is_option_selected:
+      self.is_option_selected = False
+      return
+    self.add_btn.configure(state="disabled")
+
+    self.edit = ctk.CTkButton(self.display_box,
+                              text="Edit",
+                              command=self.edit_option)
+    self.edit.grid(row=1, column=0, pady=20)
+
+    self.delete = ctk.CTkButton(self.display_box,
+                                text="Delete",
+                                command=self.delete_option)
+    self.delete.grid(row=1, column=1, pady=20)
+
+    self.is_option_selected = True
+
+  def get_selection(self):
+    return self.selections
 
 class Damage_Selection(ctk.CTkFrame):
 
-  def __init__(self, *args, header_name="Add Damages", **kwargs):
+  def __init__(self, *args, header_name="Vinyl Damages", **kwargs):
     super().__init__(*args, **kwargs)
+    self.header_label = ctk.CTkLabel(self, text=header_name)
+    self.header_label.grid(row=0, column=0, columnspan=2, pady=10)
     self.options = [
         "traces", "handling traces", "hairline", "hairlines", "sleeve dust",
         "sleeve rubs", "scuffings", "scuffs", "markings", "marks",
@@ -45,7 +209,7 @@ class Damage_Selection(ctk.CTkFrame):
     self.box_var = ctk.StringVar()
     self.box_option = ctk.CTkComboBox(self, variable=self.box_var, state="readonly")
     self.box_option_scroll = CTkScrollableDropdown.CTkScrollableDropdown(attach=self.box_option, values=self.options)
-    self.box_option.grid(row=0,
+    self.box_option.grid(row=1,
                          column=0,
                          columnspan=2,
                          sticky='w',
@@ -56,7 +220,7 @@ class Damage_Selection(ctk.CTkFrame):
     self.box_option2 = ctk.CTkComboBox(self,
                                   variable=self.box_var2, state="readonly")
     self.box_option2_scroll = CTkScrollableDropdown.CTkScrollableDropdown(attach=self.box_option2, values=self.second_options)
-    self.box_option2.grid(row=0,
+    self.box_option2.grid(row=1,
                      column=2,
                      columnspan=2,
                      sticky='w',
@@ -64,7 +228,7 @@ class Damage_Selection(ctk.CTkFrame):
                      padx=10)
 
     self.display_box = ctk.CTkFrame(self, height=500, width=300)
-    self.display_box.grid(row=0, column=4, sticky='w', pady=(10, 20), padx=10)
+    self.display_box.grid(row=1, column=4, sticky='w', pady=(10, 20), padx=10)
 
     self.tree = ttk.Treeview(self.display_box,
                              columns=('Damage', 'Severity'),
@@ -73,7 +237,7 @@ class Damage_Selection(ctk.CTkFrame):
     self.tree.heading('Severity', text='Severity')
 
     self.add_btn = ctk.CTkButton(self, text="Add", command=self.box_selected)
-    self.add_btn.grid(row=1, column=0, columnspan=2, sticky='w')
+    self.add_btn.grid(row=2, column=0, columnspan=2, sticky='w')
 
 
     self.tree.grid(row=0,
@@ -266,6 +430,7 @@ class DescriptionInputFrame(Base):
     divider = ctk.CTkFrame(self, height=2, fg_color="gray")
     divider.grid(row=8, column=0, columnspan=17, sticky='we', padx=5, pady=5)
 
+    ## ----> WILL PLACE IN A SEPARATE FRAME <---- ##
     # ---> DESCRIPTION INPUT <--- #
     self.conditions = ctk.CTkFrame(self)
     self.conditions.grid(row=9, column=0, columnspan=7, pady=10)

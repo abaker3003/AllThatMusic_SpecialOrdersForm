@@ -501,7 +501,7 @@ class Prev_SO(ctk.CTkFrame):
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
       elif column == "DEPOSIT" or column == "PRICE":
-        entry = ctk.DoubleVar()
+        entry = ctk.DoubleVar(values[i])
         entry_num = ctk.CTkEntry(self.scroll_diag)
         entry_num.insert(0, values[i])  # Set to current value or default one
         entry_num.grid(row=i, column=1, padx=10, pady=5)
@@ -545,6 +545,7 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkSwitch(self.scroll_diag, variable=self.switch, onvalue="YES", offvalue="NO")
         if values[i] == "YES":
           entry._check_state = True
+          show_shipping_info()
         entry.grid(row=i, column=1, padx=10, pady=5)
         self.switch.trace_add("write", lambda *args: on_shipping_option_changed(self.switch.get()))
         self.entries[column] = self.switch

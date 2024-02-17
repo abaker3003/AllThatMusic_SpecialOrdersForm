@@ -28,5 +28,6 @@ def get_todays_entries_count(today, excel_file):
         if excel_file.worksheet.cell(row=row, column=1).value == today:
             count += 1
     if count == 1:
-        excel_file.writeOnXL([])
+        if excel_file.countRows() > 1:
+            excel_file.writeOnXL([""] * excel_file.countColumns())
     return count

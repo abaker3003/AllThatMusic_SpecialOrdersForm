@@ -14,6 +14,10 @@ class ExcelFile:
     def countRows(self):
         # Count rows
         return self.worksheet.max_row
+    
+    def countColumns(self):
+        # Count columns
+        return self.worksheet.max_column
 
     def writeOnXL(self, data):
 
