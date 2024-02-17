@@ -473,9 +473,7 @@ class Prev_SO(ctk.CTkFrame):
 
   def on_double_click(self, event):
     # Get the selected item
-    print(self.tree.selection())
     item = self.tree.selection()[0]
-    print(item)
     values = self.tree.item(item, 'values')
 
 
@@ -502,6 +500,11 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=vendors_values)
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
+      elif column == "DEPOSIT" or column == "PRICE":
+        entry = ctk.DoubleVar()
+        entry_num = ctk.CTkEntry(self.scroll_diag)
+        entry_num.insert(0, values[i])  # Set to current value or default one
+        entry_num.grid(row=i, column=1, padx=10, pady=5)
       elif column == "TYPE":
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=typ_values)
         entry.set(values[i])  # Set to current value or default one
@@ -563,8 +566,6 @@ class Prev_SO(ctk.CTkFrame):
 
     button_start_row_index = self.start_row_index
 
-    print(self.entries)
-
     self.save_changes_button = ctk.CTkButton(
         self.dialog, text="Save", command=lambda: self.save(item, self.entries))
     self.save_changes_button.grid(row=button_start_row_index,
@@ -594,13 +595,6 @@ class Prev_SO(ctk.CTkFrame):
     new_values = [entries[column].get() for column in self.df.columns]    
     self.tree.item(item, values=new_values)
 
-    # Assuming that 'I004' format means 'I' followed by an actual index number
-    '''if item.startswith('I') and item[1:].isdigit():
-      item_index = int(item[1:])
-    else:
-      # Handle the case where item does not follow the expected format
-      raise ValueError(
-          f"The item identifier {item} is not in the expected format.")'''
     item_index = int(item)
 
     for column, new_value in zip(self.df.columns, new_values):
