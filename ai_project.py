@@ -556,14 +556,13 @@ class DescriptionInputFrame(Base):
     self.AIDescription_button.grid(row=3, column=0, pady=20, padx=50)
 
 
-'''
+
 class AIApp(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("AI Chatbot")
         self.description_frame = DescriptionInputFrame(self)
         self.description_frame.grid()
-
+'''
 if __name__ == "__main__":
     app = AIApp()
     app.mainloop()'''

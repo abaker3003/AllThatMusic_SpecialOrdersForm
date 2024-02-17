@@ -628,7 +628,7 @@ class SO_App(ctk.CTk):
 
     self.special_order_form = SO_Form(self)
     self.previous_orders = Prev_SO(self)
-    self.ai_form = ai.DescriptionInputFrame(self)
+    self.ai_form = ai.AIApp(self)
     self.reconciliation_form = None
 
     self.special_order_form_button = ctk.CTkButton(
