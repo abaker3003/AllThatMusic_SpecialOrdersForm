@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Scrollbar, ttk
 '''from tkinter import *
 from tkinter.ttk import *
 from tkinter.tix import *'''
@@ -9,6 +9,7 @@ from matplotlib import artist
 import generators as gn
 import xlfile as xl
 import ai_project as ai
+from tkinter import Scrollbar
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -433,45 +434,35 @@ class Prev_SO(ctk.CTkFrame):
     self.excel_file = xl.open_excel_file('SO_Test.xlsx')
     self.df = self.excel_file.read_into_dataframe_SO()
 
+    self.tree_frame = ctk.CTkScrollableFrame(self, width=700, height=300, orientation='horizontal')
+
+    self.tree_frame.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
     
-    self.scrollbar_x = ttk.Scrollbar(self,
-                                     orient='horizontal')
-    self.scrollbar_x.grid(row=2, column=0, sticky='ew', padx=10, pady=(0, 10))
 
+    
     # Create the Treeview
-    self.tree = ttk.Treeview(self,
-                             columns=list(self.df.columns),
-                             show="headings",xscrollcommand=self.scrollbar_x.set)
-    for column in self.df.columns:
-      self.tree.heading(column, text=column)
-      self.tree.column(column, width=100,
-                       anchor='center')  
-      # Adjust width and centering as needed
-    self.tree.grid(row=1, column=0, sticky='nsew', padx=10, pady=5)
+    self.tree = ttk.Treeview(self.tree_frame, columns=list(self.df.columns), show="headings")
+    
+    self.tree.grid(row=0, column=0, sticky='nsew', padx=10, pady=5)
 
-    self.scrollbar_x.config(command=self.tree.xview)
+    for column in self.df.columns:
+        self.tree.heading(column, text=column)
+        self.tree.column(column, width=100, anchor='center')  # Adjust width and centering as needed
 
     # Add the data to the Treeview
     for _, row in self.df.iterrows():
-      self.tree.insert('', 'end', values=list(row))
+        self.tree.insert('', 'end', values=list(row))
 
     # Configure the grid to expand the treeview with window resizing
-    self.grid_columnconfigure(0, weight=1)
-    self.grid_rowconfigure(0, weight=1)
-
-    # Create the Scrollbar
-    self.scrollbar_y = ttk.Scrollbar(self,
-                                     orient='vertical',
-                                     command=self.tree.yview)
-    self.scrollbar_y.grid(row=1, column=1, sticky='ns', padx=(0, 10), pady=5)
-    self.tree.configure(yscrollcommand=self.scrollbar_y.set, xscrollcommand=self.scrollbar_x.set)
+    self.tree.grid_columnconfigure(0, weight=1)
+    self.tree.grid_rowconfigure(0, weight=1)
 
 
     # Back Button with CTk Improvement
     self.back_button = ctk.CTkButton(self,
-                                     text="Back",
-                                     command=self.master.show_main_frame,
-                                     text_color="#FFFFFF")
+                     text="Back",
+                     command=self.master.show_main_frame,
+                     text_color="#FFFFFF")
     self.back_button.grid(row=3, column=0, padx=10, pady=20, sticky='w')
 
     # Bind the double-click event
@@ -699,11 +690,11 @@ class SO_App(ctk.CTk):
     self.geometry("1050x500")
     self.configure(background="#ffced0")
     self.hide_all_frames()
-    self.special_order_form.grid(row=3, column=1, sticky='nsew')
+    self.special_order_form.grid(row=0, column=1, sticky='nsew')
     self.special_order_form_button.configure(state="disabled")
 
   def show_previous_orders(self):
-    self.geometry("1200x500")
+    self.geometry("1000x500")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
     self.previous_orders_button.configure(state="disabled")
