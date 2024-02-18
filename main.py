@@ -9,6 +9,7 @@ from matplotlib import artist
 import generators as gn
 import xlfile as xl
 import ai_project as ai
+import ai_project_frame_test as aif
 from tkinter import Scrollbar
 
 ctk.set_appearance_mode("dark")
@@ -628,7 +629,7 @@ class SO_App(ctk.CTk):
 
     self.special_order_form = SO_Form(self)
     self.previous_orders = Prev_SO(self)
-    self.ai_form = ai.AIApp(self)
+    self.ai_form = aif.AIApp(self)
     self.reconciliation_form = None
 
     self.special_order_form_button = ctk.CTkButton(
