@@ -452,6 +452,7 @@ class Prev_SO(ctk.CTkFrame):
 
     # Add the data to the Treeview
     for i, row in self.df.iterrows():
+        print("i: ", i, "row: ", list(row))
         self.tree.insert('', "end", values=list(row), iid=i)
 
     # Configure the grid to expand the treeview with window resizing
@@ -475,6 +476,7 @@ class Prev_SO(ctk.CTkFrame):
   def on_double_click(self, event):
     # Get the selected item
     item = self.tree.selection()[0]
+    print(item)
     values = self.tree.item(item, 'values')
 
 
@@ -502,7 +504,7 @@ class Prev_SO(ctk.CTkFrame):
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
       elif column == "DEPOSIT" or column == "PRICE":
-        entry = ctk.DoubleVar(values[i])
+        entry = ctk.DoubleVar(value=values[i])
         entry_num = ctk.CTkEntry(self.scroll_diag)
         entry_num.insert(0, values[i])  # Set to current value or default one
         entry_num.grid(row=i, column=1, padx=10, pady=5)
@@ -517,6 +519,8 @@ class Prev_SO(ctk.CTkFrame):
         shipping_labels = []
 
         self.shipping_entries = []
+
+        self.start_row_index = i + 1
 
         def show_shipping_info():
         
@@ -550,10 +554,6 @@ class Prev_SO(ctk.CTkFrame):
         entry.grid(row=i, column=1, padx=10, pady=5)
         self.switch.trace_add("write", lambda *args: on_shipping_option_changed(self.switch.get()))
         self.entries[column] = self.switch
-
-        # Start index for shipping info elements
-        self.start_row_index = i + 1
-
         break
 
       else:
@@ -597,7 +597,9 @@ class Prev_SO(ctk.CTkFrame):
     new_values = [entries[column].get() for column in self.df.columns]    
     self.tree.item(item, values=new_values)
 
-    item_index = int(item)
+    item_index = int(item) + 1
+
+    print("Item index:", item_index)
 
     for column, new_value in zip(self.df.columns, new_values):
       self.df.at[item_index,
@@ -632,40 +634,38 @@ class SO_App(ctk.CTk):
     self.ai_form = aif.AIApp(self)
     self.reconciliation_form = None
 
+    
+    button_config = {
+      "fg_color": "#990000",
+      "border_color": "red",
+      "font": ("Arial", 30),
+      "text_color": "#FFFFFF"
+      }
+    
     self.special_order_form_button = ctk.CTkButton(
         self.sidebar_menu,
         text="Special Order Form",
         command=self.show_special_order_form,
-        fg_color="#990000",
-        border_color="red",
-        font=("Arial", 30),
-        text_color="#FFFFFF")
-
+        **button_config)
+    
     self.previous_orders_button = ctk.CTkButton(
+            self.sidebar_menu,
+            text="Previous Orders",
+            command=self.show_previous_orders,
+            **button_config)
+    
+    self.ai_form_button = ctk.CTkButton(
         self.sidebar_menu,
-        text="Previous Orders",
-        command=self.show_previous_orders,
-        fg_color="#990000",
-        border_color="red",
-        font=("Arial", 30),
-        text_color="#FFFFFF")
-
-    self.ai_form_button = ctk.CTkButton(self.sidebar_menu,
-                                        text="AI Form",
-                                        command=self.show_ai_form,
-                                        fg_color="#990000",
-                                        border_color="red",
-                                        font=("Arial", 30),
-                                        text_color="#FFFFFF")
+        text= "AI Form",    
+        command= self.show_ai_form,
+        **button_config
+    )
 
     self.reconciliation_form_button = ctk.CTkButton(
         self.sidebar_menu,
         text="Reconciliation Form",
         command=self.show_reconciliation_form,
-        fg_color="#990000",
-        border_color="red",
-        font=("Arial", 30),
-        text_color="#FFFFFF")
+        **button_config)
 
     self.hide_all_frames()
 
