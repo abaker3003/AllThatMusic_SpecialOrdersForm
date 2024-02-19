@@ -301,13 +301,12 @@ class SO_Form(ctk.CTkFrame):
     # Button positioning based on amount of options
     for i, vendor in enumerate(vendors_values):
       rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                      text=vendor,
-                                      variable=vendors,
-                                      value=vendor,
-                                      text_color="#FFFFFF",
-                                      font=("Roboto", 16))
+                                    text=vendor,
+                                    variable=vendors,
+                                    value=vendor,
+                                    text_color="#FFFFFF",
+                                    font=("Roboto", 16))
       rdio_opt.grid(row=1, column=i, sticky='ew')
-      
 
     self.type_buttons = ctk.CTkFrame(self)
     self.type_buttons.grid(row=row_offset, column=3, columnspan=3, sticky='ew')
@@ -436,36 +435,38 @@ class Prev_SO(ctk.CTkFrame):
     self.excel_file = xl.open_excel_file('SO_Test.xlsx')
     self.df = self.excel_file.read_into_dataframe_SO()
 
-    self.tree_frame = ctk.CTkScrollableFrame(self, width=700, height=300, orientation='horizontal')
+    self.tree_frame = ctk.CTkScrollableFrame(self,
+                                             width=700,
+                                             height=300,
+                                             orientation='horizontal')
 
     self.tree_frame.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
-    
 
-    
     # Create the Treeview
-    self.tree = ttk.Treeview(self.tree_frame, columns=list(self.df.columns), show="headings")
-    
+    self.tree = ttk.Treeview(self.tree_frame,
+                             columns=list(self.df.columns),
+                             show="headings")
+
     self.tree.grid(row=0, column=0, sticky='nsew', padx=10, pady=5)
 
     for column in self.df.columns:
-        self.tree.heading(column, text=column)
-        self.tree.column(column, width=100, anchor='center')  # Adjust width and centering as needed
+      self.tree.heading(column, text=column)
+      self.tree.column(column, width=100, anchor='center')
 
     # Add the data to the Treeview
     for i, row in self.df.iterrows():
-        print("i: ", i, "row: ", list(row))
-        self.tree.insert('', "end", values=list(row), iid=i)
+      print("i: ", i, "row: ", list(row))
+      self.tree.insert('', "end", values=list(row), iid=i)
 
     # Configure the grid to expand the treeview with window resizing
     self.tree.grid_columnconfigure(0, weight=1)
     self.tree.grid_rowconfigure(0, weight=1)
 
-
     # Back Button with CTk Improvement
     self.back_button = ctk.CTkButton(self,
-                     text="Back",
-                     command=self.master.show_main_frame,
-                     text_color="#FFFFFF")
+                                     text="Back",
+                                     command=self.master.show_main_frame,
+                                     text_color="#FFFFFF")
     self.back_button.grid(row=3, column=0, padx=10, pady=20, sticky='w')
 
     # Bind the double-click event
@@ -480,13 +481,13 @@ class Prev_SO(ctk.CTkFrame):
     print(item)
     values = self.tree.item(item, 'values')
 
-
     # Create a dialog with entry fields for each column
     self.dialog = ctk.CTkToplevel(self)
     self.dialog.geometry("350x580")
-    self.scroll_diag = ctk.CTkScrollableFrame(self.dialog, height=400, width=280)
+    self.scroll_diag = ctk.CTkScrollableFrame(self.dialog,
+                                              height=400,
+                                              width=280)
     self.scroll_diag.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
-
 
     self.dialog.title("Edit Order")
     self.entries = {}
@@ -495,10 +496,8 @@ class Prev_SO(ctk.CTkFrame):
     vendors_values = ["AEC", "AMS", "AMA"]
 
     for i, column in enumerate(self.df.columns):
-      ctk.CTkLabel(self.scroll_diag, text=column, font=("Arial", 10)).grid(row=i,
-                                                                      column=0,
-                                                                      padx=10,
-                                                                      pady=5)
+      ctk.CTkLabel(self.scroll_diag, text=column,
+                   font=("Arial", 10)).grid(row=i, column=0, padx=10, pady=5)
 
       if column == "VENDOR":
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=vendors_values)
@@ -513,7 +512,7 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=typ_values)
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
-      elif column == "SHIPPING?": 
+      elif column == "SHIPPING?":
 
         self.shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
 
@@ -524,13 +523,20 @@ class Prev_SO(ctk.CTkFrame):
         self.start_row_index = i + 1
 
         def show_shipping_info():
-        
+
           for j, info in enumerate(self.shipping_info_entries):
-            label = ctk.CTkLabel(self.scroll_diag, text=info, font=("Roboto", 12))
+            label = ctk.CTkLabel(self.scroll_diag,
+                                 text=info,
+                                 font=("Roboto", 12))
             label.grid(row=self.start_row_index + j, column=0, padx=10, pady=5)
-            shipping_entry_val = ctk.StringVar(value=values[self.start_row_index + j])
-            shipping_entry = ctk.CTkEntry(self.scroll_diag, textvariable=shipping_entry_val)
-            shipping_entry.grid(row=self.start_row_index + j, column=1, padx=10, pady=5)
+            shipping_entry_val = ctk.StringVar(
+                value=values[self.start_row_index + j])
+            shipping_entry = ctk.CTkEntry(self.scroll_diag,
+                                          textvariable=shipping_entry_val)
+            shipping_entry.grid(row=self.start_row_index + j,
+                                column=1,
+                                padx=10,
+                                pady=5)
             self.shipping_entries.append(shipping_entry_val)
             shipping_labels.append(label)
             self.entries[info] = shipping_entry_val
@@ -548,12 +554,17 @@ class Prev_SO(ctk.CTkFrame):
             hide_shipping_info()
 
         self.switch = ctk.StringVar(value=values[i])
-        entry = ctk.CTkSwitch(self.scroll_diag, variable=self.switch, onvalue="YES", offvalue="NO")
+        entry = ctk.CTkSwitch(self.scroll_diag,
+                              variable=self.switch,
+                              onvalue="YES",
+                              offvalue="NO")
         if values[i] == "YES":
           entry._check_state = True
           show_shipping_info()
         entry.grid(row=i, column=1, padx=10, pady=5)
-        self.switch.trace_add("write", lambda *args: on_shipping_option_changed(self.switch.get()))
+        self.switch.trace_add(
+            "write",
+            lambda *args: on_shipping_option_changed(self.switch.get()))
         self.entries[column] = self.switch
         break
 
@@ -570,14 +581,17 @@ class Prev_SO(ctk.CTkFrame):
     button_start_row_index = self.start_row_index
 
     self.save_changes_button = ctk.CTkButton(
-        self.dialog, text="Save", command=lambda: self.save(item, self.entries))
+        self.dialog,
+        text="Save",
+        command=lambda: self.save(item, self.entries))
     self.save_changes_button.grid(row=button_start_row_index,
                                   column=0,
                                   columnspan=2,
                                   pady=20)
 
-    self.cancel_changes_button = ctk.CTkButton(
-        self.dialog, text="Cancel", command=self.dialog.destroy)
+    self.cancel_changes_button = ctk.CTkButton(self.dialog,
+                                               text="Cancel",
+                                               command=self.dialog.destroy)
     self.cancel_changes_button.grid(row=button_start_row_index + 1,
                                     column=0,
                                     columnspan=2,
@@ -595,7 +609,7 @@ class Prev_SO(ctk.CTkFrame):
 
   def save(self, item, entries):
     # Update the Treeview and the DataFrame with the new values
-    new_values = [entries[column].get() for column in self.df.columns]    
+    new_values = [entries[column].get() for column in self.df.columns]
     self.tree.item(item, values=new_values)
 
     item_index = int(item) + 1
@@ -617,6 +631,16 @@ class Prev_SO(ctk.CTkFrame):
     self.dialog.destroy()
     self.dialog = None
 
+  def update_treeview(self):
+    # Clear the Treeview
+    for item in self.tree.get_children():
+      self.tree.delete(item)
+    # Reload the data
+    self.df = self.excel_file.read_into_dataframe_SO()
+    # Repopulate the Treeview with the updated data
+    for i, row in self.df.iterrows():
+      self.tree.insert('', "end", values=list(row), iid=i)
+
 
 class SO_App(ctk.CTk):
 
@@ -635,32 +659,29 @@ class SO_App(ctk.CTk):
     self.ai_form = aif.AIApp(self)
     self.reconciliation_form = None
 
-    
     button_config = {
-      "fg_color": "#990000",
-      "border_color": "red",
-      "font": ("Arial", 30),
-      "text_color": "#FFFFFF"
-      }
-    
+        "fg_color": "#990000",
+        "border_color": "red",
+        "font": ("Arial", 30),
+        "text_color": "#FFFFFF"
+    }
+
     self.special_order_form_button = ctk.CTkButton(
         self.sidebar_menu,
         text="Special Order Form",
         command=self.show_special_order_form,
         **button_config)
-    
+
     self.previous_orders_button = ctk.CTkButton(
-            self.sidebar_menu,
-            text="Previous Orders",
-            command=self.show_previous_orders,
-            **button_config)
-    
-    self.ai_form_button = ctk.CTkButton(
         self.sidebar_menu,
-        text= "AI Form",    
-        command= self.show_ai_form,
-        **button_config
-    )
+        text="Previous Orders",
+        command=self.show_previous_orders,
+        **button_config)
+
+    self.ai_form_button = ctk.CTkButton(self.sidebar_menu,
+                                        text="AI Form",
+                                        command=self.show_ai_form,
+                                        **button_config)
 
     self.reconciliation_form_button = ctk.CTkButton(
         self.sidebar_menu,
@@ -696,7 +717,7 @@ class SO_App(ctk.CTk):
     self.special_order_form_button.configure(state="disabled")
 
   def show_previous_orders(self):
-    self.previous_orders.update()
+    self.previous_orders.update_treeview()
     self.geometry("1000x500")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
