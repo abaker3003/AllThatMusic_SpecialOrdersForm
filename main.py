@@ -123,6 +123,7 @@ class SO_Form(ctk.CTkFrame):
       else:
         data.append("NO")
         data.extend(["N/A" * len(self.shipping_data)])
+      gn.first_SO_of_day(xl_file, int(ticket_num[-3:]))
       xl_file.writeOnXL(data)
       xl_file.close_file()
       save_button.configure(text="Saved!")
@@ -687,6 +688,7 @@ class SO_App(ctk.CTk):
       buttons.configure(state="normal")
 
   def show_special_order_form(self):
+    self.special_order_form = SO_Form(self)
     self.geometry("1050x500")
     self.configure(background="#ffced0")
     self.hide_all_frames()
@@ -694,6 +696,7 @@ class SO_App(ctk.CTk):
     self.special_order_form_button.configure(state="disabled")
 
   def show_previous_orders(self):
+    self.previous_orders.update()
     self.geometry("1000x500")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')

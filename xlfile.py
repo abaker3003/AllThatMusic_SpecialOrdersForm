@@ -21,14 +21,7 @@ class ExcelFile:
 
     def writeOnXL(self, data):
 
-        # Change dtype for phone number to string
-        # Add new row to worksheet
-        self.worksheet.append(data)
-
-        # Save changes to the workbook
-        self.workbook.save(self.filename)
-        
-        self.workbook.close()
+        self.update_excel(self.countRows() + 1, data)
 
     # ---> FOR SO_FORM <--- #
     def read_into_dataframe_SO(self):
