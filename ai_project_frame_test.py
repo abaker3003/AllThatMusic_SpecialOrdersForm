@@ -30,7 +30,7 @@ class Condition(ctk.CTkFrame):
     ]
     self.condition = ctk.StringVar()
 
-    condition_label = ctk.CTkLabel(self, text="Condition")
+    condition_label = ctk.CTkLabel(self, text="Condition", font=("Helvetica", 18))
     condition_label.grid(row=0, column=0, columnspan=6, pady=10, sticky='ew')
 
     for i, cond in enumerate(conditions_list):
@@ -38,7 +38,7 @@ class Condition(ctk.CTkFrame):
                                     text=cond,
                                     variable=self.condition,
                                     value=cond)
-      cond_opt.grid(row=1, column=i, padx=20)
+      cond_opt.grid(row=1, column=i, padx=20 )
 
     def get_condition():
       return self.condition.get()
@@ -48,7 +48,7 @@ class Damage_Selection_Jacket(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Jacket Damages", **kwargs):
     super().__init__(*args, **kwargs)
-    self.header_label = ctk.CTkLabel(self, text=header_name)
+    self.header_label = ctk.CTkLabel(self, text=header_name, font=("Helvetica", 18))
     self.header_label.grid(row=0, column=0, columnspan=6, sticky='ew')
     self.options = [
         "traces", "handling traces", "hairline", "hairlines", "sleeve dust",
@@ -109,7 +109,7 @@ class Damage_Selection_Jacket(ctk.CTkFrame):
     self.tree.heading('Severity', text='Severity')
 
     self.add_btn = ctk.CTkButton(self, text="Add", command=self.box_selected)
-    self.add_btn.grid(row=3, column=0, columnspan=2, sticky='w')
+    self.add_btn.grid(row=3, column=0, columnspan=2, sticky='e', padx=10)
 
     self.tree.grid(row=0,
                    column=0,
@@ -223,7 +223,7 @@ class Damage_Selection(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Vinyl Damages", **kwargs):
     super().__init__(*args, **kwargs)
-    self.header_label = ctk.CTkLabel(self, text=header_name)
+    self.header_label = ctk.CTkLabel(self, text=header_name, font=("Helvetica", 18))
     self.header_label.grid(row=0, column=0, columnspan=6, sticky='ew')
     self.options = [
         "traces", "handling traces", "hairline", "hairlines", "sleeve dust",
@@ -285,7 +285,7 @@ class Damage_Selection(ctk.CTkFrame):
     self.tree.heading('Severity', text='Severity')
 
     self.add_btn = ctk.CTkButton(self, text="Add", command=self.box_selected)
-    self.add_btn.grid(row=3, column=0, columnspan=2, sticky='w')
+    self.add_btn.grid(row=3, column=0, columnspan=2, sticky='e', padx=10)
 
     self.tree.grid(row=0,
                    column=0,
@@ -417,7 +417,7 @@ class DescriptionInputFrame(ctk.CTkFrame):
                            pady=10)
 
     # ---> ARTIST INPUT <--- #
-    artist_label = ctk.CTkLabel(self.artist_title, text="Artist:")
+    artist_label = ctk.CTkLabel(self.artist_title, text="Artist:", font=("Helvetica", 18))
     #artist_label.grid(row=1, column=2, padx=5, pady=10)
     artist_label.grid(row=0, column=0)
 
@@ -425,7 +425,7 @@ class DescriptionInputFrame(ctk.CTkFrame):
     artist_text.grid(row=0, column=1, padx=20, pady=20, columnspan=2)
 
     # ---> TITLE INPUT <--- #
-    title_label = ctk.CTkLabel(self.artist_title, text="Title:")
+    title_label = ctk.CTkLabel(self.artist_title, text="Title:", font=("Helvetica", 18))
     #title_label.grid(row=2, column=2, padx=5, pady=10)
     title_label.grid(row=1, column=0)
 
@@ -441,7 +441,7 @@ class DescriptionInputFrame(ctk.CTkFrame):
                          rowspan=3,
                          sticky='nsew',
                          pady=10)
-    type_label = ctk.CTkLabel(self.type_frame, text="Type:")
+    type_label = ctk.CTkLabel(self.type_frame, text="Type:", font=("Helvetica", 18))
     type_label.grid(row=2, column=0, padx=40)
 
     types_list = [
@@ -520,17 +520,17 @@ class AIApp(ctk.CTkFrame):
     self.thirdsection.grid(row=1, column=0, sticky='nsew')
 
     self.btns = ctk.CTkFrame(self.secondframe)
-    self.btns.grid(row=2, column=0, columnspan=3, sticky='nsew')
+    self.btns.grid(row=2, column=0, columnspan=3, pady= 10)
 
     back_button = ctk.CTkButton(self.btns,
                                 text="Back",
                                 command=self.prev_frame)
-    back_button.grid(row=0, column=0, columnspan=2, sticky='w')
+    back_button.grid(row=0, column=0, columnspan=2, sticky='w', padx=10)
 
     next_button = ctk.CTkButton(self.btns,
                                 text="Next",
                                 command=self.next_frame)
-    next_button.grid(row=0, column=2, columnspan=2, sticky='e')
+    next_button.grid(row=0, column=2, columnspan=2, sticky='e', padx=10)
 
     return self.secondframe
 

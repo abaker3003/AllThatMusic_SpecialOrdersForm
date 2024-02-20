@@ -718,14 +718,14 @@ class SO_App(ctk.CTk):
 
   def show_previous_orders(self):
     self.previous_orders.update_treeview()
-    self.geometry("1000x500")
+    self.geometry("1000x550")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
     self.previous_orders_button.configure(state="disabled")
 
   def show_ai_form(self):
     self.hide_all_frames()
-    self.geometry("1100x600")
+    self.geometry("1125x600")
     self.ai_form.grid(row=0, column=1, sticky='nsew')
     self.ai_form_button.configure(state="disabled")
 
