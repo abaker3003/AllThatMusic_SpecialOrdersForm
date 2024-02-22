@@ -40,8 +40,8 @@ class Condition(ctk.CTkFrame):
                                     value=cond)
       cond_opt.grid(row=1, column=i, padx=20 )
 
-    def get_condition():
-      return self.condition.get()
+  def get_condition(self):
+    return self.condition.get()
 
 
 class Damage_Selection_Jacket(ctk.CTkFrame):
@@ -405,7 +405,7 @@ class DescriptionInputFrame(ctk.CTkFrame):
       self.desc_data['artist'] = artist_text.get()
       self.desc_data['title'] = title_text.get()
       self.desc_data['type'] = types.get()
-      save_button['state'] = "DISABLED"
+      save_button.configure(state="disabled")
       self.master.next_frame()
 
     self.artist_title = ctk.CTkFrame(self)
@@ -485,6 +485,112 @@ class DescriptionInputFrame(ctk.CTkFrame):
   def get_desc_data(self):
     return self.desc_data
 
+class AI_Frame(ctk.CTkFrame):
+  def  __init__(self, master=None, *args, **kwargs):
+    super().__init__(master, *args, **kwargs)
+
+    ai_label = ctk.CTkLabel(self, text="Artificial Intelligence (AI)")
+    ai_label.grid(row=0, column=0, sticky='w')
+
+    nltk.download('punkt')
+    nltk.download('stopwords')
+
+    '''condition = Condition.get_condition()
+
+    jacket_dmg = Damage_Selection_Jacket.get_selection()
+    vinyl_dmg = Damage_Selection.get_selection()'''
+
+    # ---> FILE HANDLING <--- #
+    xl_file = xl.open_excel_file('WebLP Master NEW.xlsx')
+
+    df = xl_file.read_into_dataframe()
+
+    filtered_df = df[df['Cond'] == self.master.condition]
+
+    # -->--> Text Processing <--<-- #
+    filtered_df['Description'] = filtered_df['Description'].str.lower()
+
+    filtered_df['Description'] = filtered_df['Description'].astype(str).apply(
+        word_tokenize)
+
+    stop_words = set(stopwords.words('english'))
+
+    filtered_df['Description'] = filtered_df['Description'].apply(
+        lambda x: [word for word in x if word not in stop_words])
+
+    # ---> COUNTER <--- #
+    word_counts = Counter()
+    for notes in filtered_df['Description']:
+      word_counts.update(notes)
+
+    # -->--> Identify Common Words <--<-- #
+    # ->->-> Change number for the amount of words <-<-<- #
+    most_common_words = word_counts.most_common(20)
+
+    # ---> TF-IDF <--- #
+    filtered_df['Description'] = filtered_df['Description'].apply(' '.join)
+
+    tfidf_vectorizer = TfidfVectorizer()
+
+    tfidf_matrix = tfidf_vectorizer.fit_transform(filtered_df['Description'])
+    feature_names = tfidf_vectorizer.get_feature_names_out()
+
+    mean_tfidf_scores = tfidf_matrix.mean(axis=0)
+    mean_tfidf_scores = mean_tfidf_scores.tolist()[0]
+    self.top_words_tfidf = [(feature_names[i], mean_tfidf_scores[i])
+                            for i in range(len(mean_tfidf_scores))]
+
+    # ---> CHAT-3 AI <--- #
+    # -->--> Set up GPT API key <--<-- #
+    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+    client = OpenAI(api_key=OPENAI_API_KEY,
+                    organization='org-kcRkG3XdvJvZ7n96rmg9do6k')
+    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
+    response_api = requests.get("http://api.openai.com/v1/chat/completions",
+                                headers=headers)
+
+    # -->--> Prompt usng the common words/phrases <--<-- #
+    prompt = "PLEASE LEAVE DESCRIPTION IN 2 SENTENCES: Based on the commonly used words and phrases in the dataset for the condition '" + self.master.condition + "', please generate a general description for the corresponding vinyl: " + "".join(
+        [word for word, _ in self.top_words_tfidf]
+    ) + "\nMake sure the first sentence is about the vinyl and the second sentence is about the jacket. Also, use these python dictionary to write an accurate decription on the vinyl damage: " + str(self.master.vinyl_dmg) + " and jacket damage: " + str(self.master.jacket_dmg)
+    messages = [{
+        "role": "system",
+        "content": "You are a helpful assistant."
+    }, {
+        "role": "user",
+        "content": prompt
+    }]
+
+    response = client.chat.completions.create(model="gpt-3.5-turbo",
+                                              messages=messages)
+    generated_description = response.choices[0].message.content.strip()
+
+    
+    self.AIDescriptionDiag = ctk.CTkFrame(self)
+    self.AIDescriptionDiag.grid(row=1, column=0, sticky='nsew')
+
+    self.AIDescription_label = ctk.CTkLabel(self.AIDescriptionDiag,
+                                            text="AI Description")
+    self.AIDescription_label.grid(row=0, column=0, pady=20)
+
+    self.AIDescription_text = ctk.CTkEntry(self.AIDescriptionDiag,
+                                           height=10,
+                                           width=50)
+    self.AIDescription_text.configure(state="normal")
+    self.AIDescription_text.insert("1.0", generated_description)
+    self.AIDescription_text.grid(row=1, column=0, pady=20)
+
+    self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag,
+                                              text="Generate",
+                                              command=NONE)
+    self.AIDescription_button.grid(row=2, column=0, pady=50, padx=50)
+
+    self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag,
+                                              text="Save",
+                                              command=NONE)
+    self.AIDescription_button.grid(row=3, column=0, pady=20, padx=50)
+
 
 class AIApp(ctk.CTkFrame):
 
@@ -492,10 +598,12 @@ class AIApp(ctk.CTkFrame):
     super().__init__(master, **kwargs)
     # ---> Create double linked list for frame navigation <--- #
     self.description_frame = DescriptionInputFrame(self)
-    self.condition_frame = self.build_second_frame()
-    self.ai_frame = ctk.CTkFrame(self)
-    self.frames_ll = self.LL_Frames(
-        [self.description_frame, self.condition_frame, self.ai_frame])
+    self.damage_frame = self.build_second_frame()
+    self.condition = self.description_frame.condition_frame.get_condition()
+    self.jacket_dmg = self.thirdsection.get_selection()
+    self.vinyl_dmg = self.secondsection.get_selection()
+    self.ai_frame = AI_Frame(self)
+    self.frames_ll = self.LL_Frames([self.description_frame, self.damage_frame, self.ai_frame])
     self.current = self.frames_ll.head
     self.begin()
 
