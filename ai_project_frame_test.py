@@ -28,7 +28,7 @@ class Condition(ctk.CTkFrame):
     conditions_list = [
         "Good", "Very Good", "Fairly Good", "Fair", "New", "Poor"
     ]
-    self.condition = ctk.StringVar()
+    self.condition = StringVar()
 
     condition_label = ctk.CTkLabel(self, text="Condition", font=("Helvetica", 18))
     condition_label.grid(row=0, column=0, columnspan=6, pady=10, sticky='ew')
@@ -243,7 +243,7 @@ class Damage_Selection(ctk.CTkFrame):
 
   def main_func(self):
 
-    self.box_var = ctk.StringVar()
+    self.box_var = StringVar()
     self.box_option = ctk.CTkComboBox(self,
                                       variable=self.box_var,
                                       state="readonly")
@@ -256,7 +256,7 @@ class Damage_Selection(ctk.CTkFrame):
                          pady=(10, 20),
                          padx=10)
 
-    self.box_var2 = ctk.StringVar()
+    self.box_var2 = StringVar()
     self.box_option2 = ctk.CTkComboBox(self,
                                        variable=self.box_var2,
                                        state="readonly")
@@ -397,16 +397,17 @@ class Damage_Selection(ctk.CTkFrame):
 
 class DescriptionInputFrame(ctk.CTkFrame):
 
-  def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
+  def __init__(self, master, *args, **kwargs):
+    super().__init__(master, *args, **kwargs)
     self.desc_data = {}
 
     def save():
       self.desc_data['artist'] = artist_text.get()
       self.desc_data['title'] = title_text.get()
       self.desc_data['type'] = types.get()
+      self.desc_data["Condition"] = self.condition_frame.get_condition()
       save_button.configure(state="disabled")
-      self.master.next_frame()
+      self.master.save_data(self.desc_data)
 
     self.artist_title = ctk.CTkFrame(self)
     self.artist_title.grid(row=0,
@@ -486,8 +487,13 @@ class DescriptionInputFrame(ctk.CTkFrame):
     return self.desc_data
 
 class AI_Frame(ctk.CTkFrame):
-  def  __init__(self, master=None, *args, **kwargs):
-    super().__init__(master, *args, **kwargs)
+  def  __init__(self, master=None, condition=None, vinyl_dmg=None, jacket_dmg=None, **kwargs):
+    super().__init__(master, **kwargs)
+    self._condition = condition
+    self._vinyl_dmg = vinyl_dmg
+    self._jacket_dmg = jacket_dmg
+
+  def desc(self):
 
     ai_label = ctk.CTkLabel(self, text="Artificial Intelligence (AI)")
     ai_label.grid(row=0, column=0, sticky='w')
@@ -505,7 +511,7 @@ class AI_Frame(ctk.CTkFrame):
 
     df = xl_file.read_into_dataframe()
 
-    filtered_df = df[df['Cond'] == self.master.condition]
+    filtered_df = df[df['Cond'] == self._condition]
 
     # -->--> Text Processing <--<-- #
     filtered_df['Description'] = filtered_df['Description'].str.lower()
@@ -536,7 +542,11 @@ class AI_Frame(ctk.CTkFrame):
     feature_names = tfidf_vectorizer.get_feature_names_out()
 
     mean_tfidf_scores = tfidf_matrix.mean(axis=0)
+
     mean_tfidf_scores = mean_tfidf_scores.tolist()[0]
+
+    word_tfidf_scores = dict(zip(feature_names, mean_tfidf_scores))
+
     self.top_words_tfidf = [(feature_names[i], mean_tfidf_scores[i])
                             for i in range(len(mean_tfidf_scores))]
 
@@ -551,9 +561,9 @@ class AI_Frame(ctk.CTkFrame):
                                 headers=headers)
 
     # -->--> Prompt usng the common words/phrases <--<-- #
-    prompt = "PLEASE LEAVE DESCRIPTION IN 2 SENTENCES: Based on the commonly used words and phrases in the dataset for the condition '" + self.master.condition + "', please generate a general description for the corresponding vinyl: " + "".join(
+    prompt = "PLEASE LEAVE DESCRIPTION IN 2 SENTENCES: Based on the commonly used words and phrases in the dataset for the condition '" + self._condition + "', please generate a general description for the corresponding vinyl: " + "".join(
         [word for word, _ in self.top_words_tfidf]
-    ) + "\nMake sure the first sentence is about the vinyl and the second sentence is about the jacket. Also, use these python dictionary to write an accurate decription on the vinyl damage: " + str(self.master.vinyl_dmg) + " and jacket damage: " + str(self.master.jacket_dmg)
+    ) + "\nMake sure the first sentence is about the vinyl and the second sentence is about the jacket. Also, use these python dictionary to write an accurate decription on the vinyl damage: " + str(self._vinyl_dmg) + " and jacket damage: " + str(self._jacket_dmg)
     messages = [{
         "role": "system",
         "content": "You are a helpful assistant."
@@ -578,6 +588,7 @@ class AI_Frame(ctk.CTkFrame):
                                            height=10,
                                            width=50)
     self.AIDescription_text.configure(state="normal")
+    self.AIDescription_text.delete("1.0", END)
     self.AIDescription_text.insert("1.0", generated_description)
     self.AIDescription_text.grid(row=1, column=0, pady=20)
 
@@ -590,6 +601,30 @@ class AI_Frame(ctk.CTkFrame):
                                               text="Save",
                                               command=NONE)
     self.AIDescription_button.grid(row=3, column=0, pady=20, padx=50)
+  
+  @property
+  def condition(self):
+    return self._condition
+  
+  @property
+  def vinyl_dmg(self):
+    return self._vinyl_dmg
+  
+  @property
+  def jacket_dmg(self):
+    return self._jacket_dmg
+
+  @condition.setter
+  def condition(self, cnd):
+    self._condition = cnd
+
+  @vinyl_dmg.setter
+  def vinyl_dmg(self, vnyl):
+    self._vinyl_dmg = vnyl
+
+  @jacket_dmg.setter
+  def jacket_dmg(self, jckt):
+    self._jacket_dmg = jckt
 
 
 class AIApp(ctk.CTkFrame):
@@ -597,22 +632,30 @@ class AIApp(ctk.CTkFrame):
   def __init__(self, master=None, **kwargs):
     super().__init__(master, **kwargs)
     # ---> Create double linked list for frame navigation <--- #
+    self.current = None
+    self.vinyl_data = {}
     self.description_frame = DescriptionInputFrame(self)
     self.damage_frame = self.build_second_frame()
-    self.condition = self.description_frame.condition_frame.get_condition()
-    self.jacket_dmg = self.thirdsection.get_selection()
-    self.vinyl_dmg = self.secondsection.get_selection()
     self.ai_frame = AI_Frame(self)
     self.frames_ll = self.LL_Frames([self.description_frame, self.damage_frame, self.ai_frame])
-    self.current = self.frames_ll.head
+    self.set_current(self.frames_ll.head)
     self.begin()
 
   def begin(self):
     self.current.data.grid(row=0, column=0, sticky='nsew')
 
+  def save_data(self, vinyl_data):
+    self.vinyl_data.update(vinyl_data)
+    self.next_frame()
+
   def next_frame(self):
     self.current.data.grid_forget()
-    self.current = self.current.next
+    self.set_current(self.current.next)
+    if self.current.data == self.ai_frame:
+      self.ai_frame.condition = self.vinyl_data["Condition"]
+      self.ai_frame.vinyl_dmg = self.vinyl_data["Vinyl Damage"]
+      self.ai_frame.jacket_dmg = self.vinyl_data["Jacket Damage"]
+      self.ai_frame.desc()
     self.current.data.grid(row=0, column=0, sticky='nsew')
 
   def build_second_frame(self):
@@ -637,16 +680,19 @@ class AIApp(ctk.CTkFrame):
 
     next_button = ctk.CTkButton(self.btns,
                                 text="Next",
-                                command=self.next_frame)
+                                command=lambda: self.save_data({"Vinyl Damage": self.secondsection.get_selection(), "Jacket Damage": self.thirdsection.get_selection()}))
     next_button.grid(row=0, column=2, columnspan=2, sticky='e', padx=10)
 
     return self.secondframe
 
   def prev_frame(self):
     self.current.data.grid_forget()
-    self.current = self.current.prev
+    self.set_current(self.current.prev)
     self.current.data.grid(row=0, column=0, sticky='nsew')
 
   def LL_Frames(self, frames):
     # --> Double Linked List of Frames <-- #
     return dll.DoublyLinkedList(frames)
+  
+  def set_current(self, current):
+    self.current = current

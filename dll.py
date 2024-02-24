@@ -1,3 +1,8 @@
+import sys
+import customtkinter
+import tkinter.ttk
+import tkinter 
+
 class Node():
     def __init__(self, data):
         self.data = data
@@ -14,10 +19,9 @@ class DoublyLinkedList():
 
     def append(self, data):
         new_node = Node(data)
-        if self.head is None:
-            self.head = new_node
-            self.tail = new_node
-        else:
-            new_node.prev = self.tail
+        new_node.prev = self.tail
+        if self.tail:
             self.tail.next = new_node
-            self.tail = new_node
+        else:
+            self.head = new_node
+        self.tail = new_node
