@@ -5,6 +5,7 @@ import xlfile as xl
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import threading
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from openai import OpenAI
@@ -406,7 +407,6 @@ class DescriptionInputFrame(ctk.CTkFrame):
       self.desc_data['title'] = title_text.get()
       self.desc_data['type'] = types.get()
       self.desc_data["Condition"] = self.condition_frame.get_condition()
-      save_button.configure(state="disabled")
       self.master.save_data(self.desc_data)
 
     self.artist_title = ctk.CTkFrame(self)
@@ -489,17 +489,15 @@ class DescriptionInputFrame(ctk.CTkFrame):
 class AI_Frame(ctk.CTkFrame):
   def  __init__(self, master=None, condition=None, vinyl_dmg=None, jacket_dmg=None, **kwargs):
     super().__init__(master, **kwargs)
+    self.configure( width=900, height=600)
     self._condition = condition
     self._vinyl_dmg = vinyl_dmg
     self._jacket_dmg = jacket_dmg
 
   def desc(self):
 
-    ai_label = ctk.CTkLabel(self, text="Artificial Intelligence (AI)")
-    ai_label.grid(row=0, column=0, sticky='w')
-
-    nltk.download('punkt')
-    nltk.download('stopwords')
+    ai_label = ctk.CTkLabel(self, text="Artificial Intelligence (AI)", font=("Helvetica", 18))
+    ai_label.grid(row=0, column=0,  columnspan=5, sticky='ew')
 
     '''condition = Condition.get_condition()
 
@@ -552,19 +550,21 @@ class AI_Frame(ctk.CTkFrame):
 
     # ---> CHAT-3 AI <--- #
     # -->--> Set up GPT API key <--<-- #
-    OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+    '''OPENAI_API_KEY = 
 
     client = OpenAI(api_key=OPENAI_API_KEY,
                     organization='org-kcRkG3XdvJvZ7n96rmg9do6k')
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
     response_api = requests.get("http://api.openai.com/v1/chat/completions",
-                                headers=headers)
+                                headers=headers)'''
 
     # -->--> Prompt usng the common words/phrases <--<-- #
     prompt = "PLEASE LEAVE DESCRIPTION IN 2 SENTENCES: Based on the commonly used words and phrases in the dataset for the condition '" + self._condition + "', please generate a general description for the corresponding vinyl: " + "".join(
         [word for word, _ in self.top_words_tfidf]
-    ) + "\nMake sure the first sentence is about the vinyl and the second sentence is about the jacket. Also, use these python dictionary to write an accurate decription on the vinyl damage: " + str(self._vinyl_dmg) + " and jacket damage: " + str(self._jacket_dmg)
-    messages = [{
+    ) + "\nMake sure the first sentence is about the vinyl and the second sentence is about the jacket. Also, use these python dictionary to write an accurate decription on the vinyl damage: " + str(self._vinyl_dmg) + " and jacket damage: " + str(self._jacket_dmg) + " ONLY IF THE DAMAGE IS PRESENT. If the damage is not present, please do not include the vinyl or jacket damage in the description. Thank you."
+
+    # --> UNCOMMENT WHEN READY TO USE API <-- #
+    '''messages = [{
         "role": "system",
         "content": "You are a helpful assistant."
     }, {
@@ -574,33 +574,35 @@ class AI_Frame(ctk.CTkFrame):
 
     response = client.chat.completions.create(model="gpt-3.5-turbo",
                                               messages=messages)
-    generated_description = response.choices[0].message.content.strip()
+    generated_description = response.choices[0].message.content.strip()'''
 
     
-    self.AIDescriptionDiag = ctk.CTkFrame(self)
-    self.AIDescriptionDiag.grid(row=1, column=0, sticky='nsew')
+    self.AIDescriptionDiag = ctk.CTkFrame(self, height=600, width=900)
+    self.AIDescriptionDiag.grid(row=1, column=0, columnspan=5, sticky='nsew')
 
     self.AIDescription_label = ctk.CTkLabel(self.AIDescriptionDiag,
-                                            text="AI Description")
-    self.AIDescription_label.grid(row=0, column=0, pady=20)
+                                            text="AI Description", font=("Helvetica", 18))
+    self.AIDescription_label.grid(row=0, column=0, columnspan=5, pady=20, sticky='nsew')
 
-    self.AIDescription_text = ctk.CTkEntry(self.AIDescriptionDiag,
-                                           height=10,
-                                           width=50)
+    self.AIDescription_text = ctk.CTkTextbox(self.AIDescriptionDiag,
+                                           height=300,
+                                           width=300, wrap="word")
     self.AIDescription_text.configure(state="normal")
-    self.AIDescription_text.delete("1.0", END)
-    self.AIDescription_text.insert("1.0", generated_description)
-    self.AIDescription_text.grid(row=1, column=0, pady=20)
+    self.AIDescription_text.delete("0.0", tk.END)
+    
+    #-- CHANGE TO generated_description WHEN API IS READY --#
+    self.AIDescription_text.insert("0.0", prompt)
+    self.AIDescription_text.grid(row=1, column=1, columnspan=3, pady=20, padx=20, sticky='nsew')
 
     self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag,
                                               text="Generate",
                                               command=NONE)
-    self.AIDescription_button.grid(row=2, column=0, pady=50, padx=50)
+    self.AIDescription_button.grid(row=2, column=1, pady=50, padx=50)
 
     self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag,
                                               text="Save",
                                               command=NONE)
-    self.AIDescription_button.grid(row=3, column=0, pady=20, padx=50)
+    self.AIDescription_button.grid(row=2, column=2, pady=20, padx=50)
   
   @property
   def condition(self):
@@ -637,9 +639,14 @@ class AIApp(ctk.CTkFrame):
     self.description_frame = DescriptionInputFrame(self)
     self.damage_frame = self.build_second_frame()
     self.ai_frame = AI_Frame(self)
+    threading.Thread(target=self.nltk_packages, daemon=True).start()
     self.frames_ll = self.LL_Frames([self.description_frame, self.damage_frame, self.ai_frame])
     self.set_current(self.frames_ll.head)
     self.begin()
+
+  def nltk_packages(self):
+    nltk.download('punkt')
+    nltk.download('stopwords')
 
   def begin(self):
     self.current.data.grid(row=0, column=0, sticky='nsew')
@@ -652,11 +659,13 @@ class AIApp(ctk.CTkFrame):
     self.current.data.grid_forget()
     self.set_current(self.current.next)
     if self.current.data == self.ai_frame:
+      self.ai_frame.grid(row=0, column=0, sticky='nsew')
       self.ai_frame.condition = self.vinyl_data["Condition"]
       self.ai_frame.vinyl_dmg = self.vinyl_data["Vinyl Damage"]
       self.ai_frame.jacket_dmg = self.vinyl_data["Jacket Damage"]
       self.ai_frame.desc()
-    self.current.data.grid(row=0, column=0, sticky='nsew')
+    else:
+      self.current.data.grid(row=0, column=0, sticky='nsew')
 
   def build_second_frame(self):
     self.secondframe = ctk.CTkScrollableFrame(self,
