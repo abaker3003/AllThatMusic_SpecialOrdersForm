@@ -39,7 +39,7 @@ class Condition(ctk.CTkFrame):
                                     text=cond,
                                     variable=self.condition,
                                     value=cond)
-      cond_opt.grid(row=1, column=i, padx=20 )
+      cond_opt.grid(row=1, column=i, padx=20, pady=20)
 
   def get_condition(self):
     return self.condition.get()
@@ -415,7 +415,7 @@ class DescriptionInputFrame(ctk.CTkFrame):
                            columnspan=2,
                            rowspan=3,
                            sticky='nsew',
-                           pady=10)
+                           pady=10,)
 
     # ---> ARTIST INPUT <--- #
     artist_label = ctk.CTkLabel(self.artist_title, text="Artist:", font=("Helvetica", 18))
@@ -595,8 +595,8 @@ class AI_Frame(ctk.CTkFrame):
     self.AIDescription_text.grid(row=1, column=1, columnspan=3, pady=20, padx=20, sticky='nsew')
 
     self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag,
-                                              text="Generate",
-                                              command=NONE)
+                                              text="Back",
+                                              command=self.master.prev_frame)
     self.AIDescription_button.grid(row=2, column=1, pady=50, padx=50)
 
     self.AIDescription_button = ctk.CTkButton(self.AIDescriptionDiag,

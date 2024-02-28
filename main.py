@@ -647,11 +647,11 @@ class SO_App(ctk.CTk):
   def __init__(self):
     super().__init__()
     self.title("Special Order")
-    self.geometry("500x500")
+    self.geometry("1125x600")
     self.configure(background="#350909")
 
     self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=0)
-    self.sidebar_menu.grid(row=0, column=0, sticky='nsew', rowspan=4)
+    self.sidebar_menu.grid(row=0, column=0, sticky='nsew', rowspan=4, padx=10, pady=20)
     self.sidebar_menu.grid_rowconfigure(4, weight=1)
 
     self.special_order_form = SO_Form(self)
@@ -663,7 +663,8 @@ class SO_App(ctk.CTk):
         "fg_color": "#990000",
         "border_color": "red",
         "font": ("Arial", 30),
-        "text_color": "#FFFFFF"
+        "text_color": "#FFFFFF",
+        "corner_radius": 2,
     }
 
     self.special_order_form_button = ctk.CTkButton(
@@ -710,7 +711,7 @@ class SO_App(ctk.CTk):
 
   def show_special_order_form(self):
     self.special_order_form = SO_Form(self)
-    self.geometry("1050x500")
+    self.geometry("1125x600")
     self.configure(background="#ffced0")
     self.hide_all_frames()
     self.special_order_form.grid(row=0, column=1, sticky='nsew')
@@ -718,7 +719,7 @@ class SO_App(ctk.CTk):
 
   def show_previous_orders(self):
     self.previous_orders.update_treeview()
-    self.geometry("1000x550")
+    self.geometry("1125x600")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
     self.previous_orders_button.configure(state="disabled")
