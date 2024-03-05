@@ -1,8 +1,5 @@
 import tkinter as tk
 from tkinter import Scrollbar, ttk
-'''from tkinter import *
-from tkinter.ttk import *
-from tkinter.tix import *'''
 import tkinter.messagebox as msgbox
 import customtkinter as ctk
 from matplotlib import artist
@@ -19,8 +16,6 @@ class Reconciliation(ctk.CTkFrame):
     super().__init__(*args, **kwargs)
     self.header_name = header_name
     self.master.title(header_name)
-    '''self.header = ctk.CTkLabel(self, text=header_name, font=("Roboto", 20))
-    self.header.grid(row=0, column=0, sticky='nsew', rowspan=8)'''
 
     self.total = 0.0
 
@@ -874,11 +869,6 @@ class SO_App(ctk.CTk):
         command=self.show_previous_orders,
         **button_config)
 
-    '''self.ai_form_button = ctk.CTkButton(self.sidebar_menu,
-                                        text="AI Form",
-                                        command=self.show_ai_form,
-                                        **button_config)'''
-
     self.reconciliation_form_button = ctk.CTkButton(
         self.sidebar_menu,
         text="Reconciliation",
@@ -916,12 +906,6 @@ class SO_App(ctk.CTk):
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
     self.previous_orders_button.configure(state="disabled")
-
-  '''def show_ai_form(self):
-    self.hide_all_frames()
-    self.geometry("1125x600")
-    #self.ai_form.grid(row=0, column=1, sticky='nsew')
-    self.ai_form_button.configure(state="disabled")'''
 
   def show_reconciliation_form(self):
     self.hide_all_frames()
