@@ -189,8 +189,11 @@ class Reconciliation(ctk.CTkFrame):
     self.notes.grid(row=0, column=5, rowspan=4, sticky='nsew', padx=10, pady=10)
     self.note_label = ctk.CTkLabel(self.notes, text="Notes", font=("Roboto", 16))
     self.note_label.grid(row=0, column=0, padx=10, pady=5)
-    self.note_text = ctk.CTkTextbox(self.notes, width=180, height=420, font=("Roboto", 15), wrap='word')
+    self.note_text = ctk.CTkTextbox(self.notes, width=180, height=350, font=("Roboto", 15), wrap='word')
     self.note_text.grid(row=1, column=0, padx=10, pady=5)
+
+    self.save = ctk.CTkButton(self.notes, text="Save", command=None, font=("Roboto", 16))
+    self.save.grid(row=2, column=0, padx=10, pady=20, sticky='ew')
 
 
 
@@ -638,7 +641,7 @@ class Prev_SO(ctk.CTkFrame):
     self.tree = ttk.Treeview(self.tree_frame,
                              columns=list(self.df.columns),
                              show="headings")
-
+    
     self.tree.grid(row=0, column=0, sticky='nsew', padx=10, pady=5)
 
     for column in self.df.columns:
@@ -647,7 +650,6 @@ class Prev_SO(ctk.CTkFrame):
 
     # Add the data to the Treeview
     for i, row in self.df.iterrows():
-      print("i: ", i, "row: ", list(row))
       self.tree.insert('', "end", values=list(row), iid=i)
 
     # Configure the grid to expand the treeview with window resizing
@@ -839,10 +841,10 @@ class SO_App(ctk.CTk):
   def __init__(self):
     super().__init__()
     self.title("Special Order")
-    self.geometry("1125x600")
+    self.geometry("270x300")
     self.configure(background="#350909")
 
-    self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=0)
+    self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=5)
     self.sidebar_menu.grid(row=0, column=0, sticky='nsew', rowspan=4, padx=10, pady=20)
     self.sidebar_menu.grid_rowconfigure(4, weight=1)
 
@@ -853,15 +855,16 @@ class SO_App(ctk.CTk):
 
     button_config = {
         "fg_color": "#990000",
+        "hover_color": "#6e0303",
         "border_color": "red",
         "font": ("Arial", 30),
         "text_color": "#FFFFFF",
-        "corner_radius": 2,
+        "corner_radius": 10,
     }
 
     self.special_order_form_button = ctk.CTkButton(
         self.sidebar_menu,
-        text="Special Order Form",
+        text="Special Order",
         command=self.show_special_order_form,
         **button_config)
 
@@ -871,23 +874,22 @@ class SO_App(ctk.CTk):
         command=self.show_previous_orders,
         **button_config)
 
-    self.ai_form_button = ctk.CTkButton(self.sidebar_menu,
+    '''self.ai_form_button = ctk.CTkButton(self.sidebar_menu,
                                         text="AI Form",
                                         command=self.show_ai_form,
-                                        **button_config)
+                                        **button_config)'''
 
     self.reconciliation_form_button = ctk.CTkButton(
         self.sidebar_menu,
-        text="Reconciliation Form",
+        text="Reconciliation",
         command=self.show_reconciliation_form,
         **button_config)
 
     self.hide_all_frames()
 
-    self.special_order_form_button.grid(row=0, column=0)
-    self.previous_orders_button.grid(row=1, column=0)
-    self.ai_form_button.grid(row=2, column=0)
-    self.reconciliation_form_button.grid(row=3, column=0)
+    self.special_order_form_button.grid(row=0, column=0, pady=25)
+    self.previous_orders_button.grid(row=1, column=0, pady=25)
+    self.reconciliation_form_button.grid(row=3, column=0, pady=25)
 
   def hide_all_frames(self):
     for frame in [self.special_order_form, self.previous_orders, self.reconciliation_form]:
@@ -896,14 +898,13 @@ class SO_App(ctk.CTk):
 
   def enable_buttons(self):
     for buttons in [
-        self.special_order_form_button, self.previous_orders_button,
-        self.ai_form_button, self.reconciliation_form_button
+        self.special_order_form_button, self.previous_orders_button, self.reconciliation_form_button
     ]:
       buttons.configure(state="normal")
 
   def show_special_order_form(self):
     self.special_order_form = SO_Form(self)
-    self.geometry("1125x600")
+    self.geometry("1065x460")
     self.configure(background="#ffced0")
     self.hide_all_frames()
     self.special_order_form.grid(row=0, column=1, sticky='nsew')
@@ -911,19 +912,20 @@ class SO_App(ctk.CTk):
 
   def show_previous_orders(self):
     self.previous_orders.update_treeview()
-    self.geometry("1125x600")
+    self.geometry("1015x400")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
     self.previous_orders_button.configure(state="disabled")
 
-  def show_ai_form(self):
+  '''def show_ai_form(self):
     self.hide_all_frames()
     self.geometry("1125x600")
     #self.ai_form.grid(row=0, column=1, sticky='nsew')
-    self.ai_form_button.configure(state="disabled")
+    self.ai_form_button.configure(state="disabled")'''
 
   def show_reconciliation_form(self):
     self.hide_all_frames()
+    self.geometry("1100x500")
     self.reconciliation_form.grid(row=0, column=1, sticky='nsew')
     self.reconciliation_form_button.configure(state="disabled")
 
