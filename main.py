@@ -8,12 +8,129 @@ import customtkinter as ctk
 from matplotlib import artist
 import generators as gn
 import xlfile as xl
-import ai_project as ai
-import ai_project_frame_test as aif
 from tkinter import Scrollbar
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
+
+class Reconciliation(ctk.CTkFrame):
+  
+  def __init__(self, *args, header_name="Reconciliation Form", **kwargs):
+    super().__init__(*args, **kwargs)
+    self.header_name = header_name
+    self.header = ctk.CTkLabel(self, text=header_name, font=("Roboto", 20))
+    self.header.grid(row=0, column=0, sticky='nsew', rowspan=8)
+
+    self.total = 0.0
+
+    # --- First Frame --- #
+
+    self.vendor_info = ctk.CTkFrame(self)
+    self.vendor_info.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+
+    # Vendor Name
+    vendor_name_label = ctk.CTkLabel(self.vendor_info, text="Vendor Name", font=("Roboto", 16))
+    vendor_name_label.grid(row=0, column=0, padx=10, pady=5)
+    
+    self.vend_name = ctk.CTkEntry(self.vendor_info)
+    self.vend_name.grid(row=0, column=1, padx=10, pady=5)
+
+    # Packing Slip 
+    pack_slip_label = ctk.CTkLabel(self.vendor_info, text="Packing Slip", font=("Roboto", 16))
+    pack_slip_label.grid(row=1, column=0, padx=10, pady=5)
+    pack_slip = ctk.CTkEntry(self.vendor_info)
+    pack_slip.grid(row=1, column=1, padx=10, pady=5)
+
+    date_label = ctk.CTkLabel(self.vendor_info, text="Date", font=("Roboto", 16))
+    date_label.grid(row=0, column=3, padx=10, pady=5)
+    date = ctk.CTkEntry(self.vendor_info)
+    date.grid(row=0, column=4, padx=10, pady=5)
+
+    # Received by
+    received_by_label = ctk.CTkLabel(self.vendor_info, text="Received By", font=("Roboto", 16))
+    received_by_label.grid(row=1, column=3, padx=10, pady=5)
+    self.received_by = ctk.CTkEntry(self.vendor_info)
+    self.received_by.grid(row=1, column=4, padx=10, pady=5)
+
+
+    # --- Second Frame --- #
+
+    self.details = ctk.CTkFrame(self)
+    self.details.grid(row=2, column=0, sticky='nsew', padx=10, pady=10)
+    
+    # CDs
+    cds_label = ctk.CTkLabel(self.details, text="10 - CDs", font=("Roboto", 16))
+    cds_label.grid(row=0, column=0, padx=10, pady=5)
+    self.cds = ctk.DoubleVar(self.details, value=0)
+    cds_entry = ctk.CTkEntry(self.details, textvariable=self.cds)
+    cds_entry.grid(row=0, column=1, padx=10, pady=5)
+
+    # 180s
+    one_eighty_label = ctk.CTkLabel(self.details, text="15 - 180s", font=("Roboto", 16))
+    one_eighty_label.grid(row=1, column=0, padx=10, pady=5)
+    self.one_eighty = ctk.DoubleVar(self.details, value=0)
+    one_eighty_entry = ctk.CTkEntry(self.details, textvariable=self.one_eighty)
+    one_eighty_entry.grid(row=1, column=1, padx=10, pady=5)
+
+    # Spanish CDs
+    spanish_cds_label = ctk.CTkLabel(self.details, text="20 - Spanish CDs", font=("Roboto", 16))
+    spanish_cds_label.grid(row=2, column=0, padx=10, pady=5)
+    self.spanish_cds = ctk.DoubleVar(self.details, value=0)
+    spanish_cds_entry = ctk.CTkEntry(self.details, textvariable=self.spanish_cds)
+    spanish_cds_entry.grid(row=2, column=1, padx=10, pady=5)
+
+    # DVDs
+    dvds_label = ctk.CTkLabel(self.details, text="40 - DVDs", font=("Roboto", 16))
+    dvds_label.grid(row=3, column=0, padx=10, pady=5)
+    self.dvds = ctk.DoubleVar(self.details, value=0)
+    dvds_entry = ctk.CTkEntry(self.details, textvariable=self.dvds)
+    dvds_entry.grid(row=3, column=1, padx=10, pady=5)
+
+    # Accessories 
+    accessories_label = ctk.CTkLabel(self.details, text="50 - Accessories", font=("Roboto", 16))
+    accessories_label.grid(row=0, column=3, padx=10, pady=5)
+    self.accessories = ctk.DoubleVar(self.details, value=0)
+    accessories_entry = ctk.CTkEntry(self.details, textvariable=self.accessories)
+    accessories_entry.grid(row=0, column=4, padx=10, pady=5)
+
+    # Boutique
+    boutique_label = ctk.CTkLabel(self.details, text="60 - Boutique", font=("Roboto", 16))
+    boutique_label.grid(row=1, column=3, padx=10, pady=5)
+    self.boutique = ctk.DoubleVar(self.details, value=0.0)
+    boutique_entry = ctk.CTkEntry(self.details, textvariable=self.boutique)
+    boutique_entry.grid(row=1, column=4, padx=10, pady=5)
+
+    # Posters
+    posters_label = ctk.CTkLabel(self.details, text="65 - Posters", font=("Roboto", 16))
+    posters_label.grid(row=2, column=3, padx=10, pady=5)
+    self.posters = ctk.DoubleVar(self.details, value=0)
+    posters_entry = ctk.CTkEntry(self.details, textvariable=self.posters)
+    posters_entry.grid(row=2, column=4, padx=10, pady=5)
+    
+
+    generate_btn = ctk.CTkButton(self.details, text="Generate", command=self.generate_report, font=("Roboto", 16))
+    generate_btn.grid(row=3, column=3, columnspan=2, padx=10, pady=10)
+    
+    # --- Third Frame --- #
+
+    self.totals = ctk.CTkFrame(self)
+    self.totals.grid(row=3, column=0, columnspan = 3, sticky='nsew', padx=10, pady=10)
+
+    # Subtotal
+    subtotal_label = ctk.CTkLabel(self.totals, text="Subtotal", font=("Roboto", 16))
+    subtotal_label.grid(row=0, column=0, padx=10, pady=5)
+    self.subtotal = ctk.CTkLabel(self.totals, text=str(self.total), font=("Roboto", 16))
+    self.subtotal.grid(row=0, column=1, padx=10, pady=5)
+
+  def generate_report(self):
+    self.total += float(self.cds.get())
+    self.total += float(self.one_eighty.get())
+    self.total += float(self.spanish_cds.get())
+    self.total += float(self.dvds.get())
+    self.total += float(self.accessories.get())
+    self.total += float(self.boutique.get())
+    self.total += float(self.posters.get())
+    self.subtotal.configure(textvariable = str(self.total))
 
 
 class SO_Form(ctk.CTkFrame):
@@ -656,8 +773,8 @@ class SO_App(ctk.CTk):
 
     self.special_order_form = SO_Form(self)
     self.previous_orders = Prev_SO(self)
-    self.ai_form = aif.AIApp(self)
-    self.reconciliation_form = None
+    self.ai_form = None
+    self.reconciliation_form = Reconciliation(self)
 
     button_config = {
         "fg_color": "#990000",
@@ -698,7 +815,7 @@ class SO_App(ctk.CTk):
     self.reconciliation_form_button.grid(row=3, column=0)
 
   def hide_all_frames(self):
-    for frame in [self.special_order_form, self.previous_orders, self.ai_form]:
+    for frame in [self.special_order_form, self.previous_orders, self.reconciliation_form]:
       frame.grid_forget()
     self.enable_buttons()
 
@@ -727,7 +844,7 @@ class SO_App(ctk.CTk):
   def show_ai_form(self):
     self.hide_all_frames()
     self.geometry("1125x600")
-    self.ai_form.grid(row=0, column=1, sticky='nsew')
+    #self.ai_form.grid(row=0, column=1, sticky='nsew')
     self.ai_form_button.configure(state="disabled")
 
   def show_reconciliation_form(self):
