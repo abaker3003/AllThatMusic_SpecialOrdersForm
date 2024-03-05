@@ -7,8 +7,7 @@ import generators as gn
 import xlfile as xl
 from tkinter import Scrollbar
 
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("blue")
+ctk.set_default_color_theme('C:/Users/abake/OneDrive/Documents/AllThatMusic_SpecialOrdersForm/red.json')
 
 class Reconciliation(ctk.CTkFrame):
   
@@ -341,7 +340,7 @@ class SO_Form(ctk.CTkFrame):
                               text_color="#FFFFFF",
                               font=("Roboto", 16))
     clerk_text.grid(row=row_offset, column=3)
-    clerk_input = ctk.CTkEntry(self)
+    clerk_input = ctk.CTkEntry(self, placeholder_text="Clerk Name")
     clerk_input.grid(row=row_offset, column=4, sticky="ew", padx=10)
 
     self.shipping_data = []
@@ -544,7 +543,7 @@ class SO_Form(ctk.CTkFrame):
                                  text_color="#FFFFFF",
                                  font=("Roboto", 16))
     cx_name_title.grid(row=row_offset, column=2)
-    cx_name_input = ctk.CTkEntry(self)
+    cx_name_input = ctk.CTkEntry(self, placeholder_text="No numbers")
     cx_name_input.grid(row=row_offset + 1, column=2, padx=10)
 
     # CX phone number input
@@ -553,7 +552,7 @@ class SO_Form(ctk.CTkFrame):
                                   text_color="#FFFFFF",
                                   font=("Roboto", 16))
     cx_phone_title.grid(row=row_offset, column=4)
-    cx_phone_input = ctk.CTkEntry(self)
+    cx_phone_input = ctk.CTkEntry(self, placeholder_text="10 digits, no symbols")
     cx_phone_input.grid(row=row_offset + 1, column=4, padx=10)
 
     row_offset += 2  # Increment row offset
@@ -849,9 +848,6 @@ class SO_App(ctk.CTk):
     self.reconciliation_form = Reconciliation(self)
 
     button_config = {
-        "fg_color": "#990000",
-        "hover_color": "#6e0303",
-        "border_color": "red",
         "font": ("Arial", 30),
         "text_color": "#FFFFFF",
         "corner_radius": 10,
@@ -891,13 +887,14 @@ class SO_App(ctk.CTk):
         self.special_order_form_button, self.previous_orders_button, self.reconciliation_form_button
     ]:
       buttons.configure(state="normal")
+      buttons.configure(fg_color="#d31313")
 
   def show_special_order_form(self):
     self.special_order_form = SO_Form(self)
     self.geometry("1065x460")
-    self.configure(background="#ffced0")
     self.hide_all_frames()
     self.special_order_form.grid(row=0, column=1, sticky='nsew')
+    self.special_order_form_button.configure(fg_color="#000000")
     self.special_order_form_button.configure(state="disabled")
 
   def show_previous_orders(self):
@@ -905,17 +902,19 @@ class SO_App(ctk.CTk):
     self.geometry("1015x400")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
+    self.previous_orders_button.configure(fg_color="#000000")
     self.previous_orders_button.configure(state="disabled")
 
   def show_reconciliation_form(self):
     self.hide_all_frames()
     self.geometry("1100x500")
     self.reconciliation_form.grid(row=0, column=1, sticky='nsew')
+    self.reconciliation_form_button.configure(fg_color="#000000")
     self.reconciliation_form_button.configure(state="disabled")
 
   def show_main_frame(self):
     self.hide_all_frames()
-    self.geometry("500x500")
+    self.geometry("270x300")
     # Show the main application frame
     self.enable_buttons()
 
