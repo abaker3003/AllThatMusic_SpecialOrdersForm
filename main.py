@@ -18,103 +18,108 @@ class Reconciliation(ctk.CTkFrame):
   def __init__(self, *args, header_name="Reconciliation Form", **kwargs):
     super().__init__(*args, **kwargs)
     self.header_name = header_name
-    self.header = ctk.CTkLabel(self, text=header_name, font=("Roboto", 20))
-    self.header.grid(row=0, column=0, sticky='nsew', rowspan=8)
+    self.master.title(header_name)
+    '''self.header = ctk.CTkLabel(self, text=header_name, font=("Roboto", 20))
+    self.header.grid(row=0, column=0, sticky='nsew', rowspan=8)'''
 
     self.total = 0.0
 
-    # --- First Frame --- #
+    # --- > First Frame < --- #
 
     self.vendor_info = ctk.CTkFrame(self)
-    self.vendor_info.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+    self.vendor_info.grid(row=0, column=0, columnspan=4, rowspan=2, sticky='nsew', padx=10, pady=10)
 
     # Vendor Name
     vendor_name_label = ctk.CTkLabel(self.vendor_info, text="Vendor Name", font=("Roboto", 16))
     vendor_name_label.grid(row=0, column=0, padx=10, pady=5)
     
-    self.vend_name = ctk.CTkEntry(self.vendor_info)
+    self.vend_name = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16))
     self.vend_name.grid(row=0, column=1, padx=10, pady=5)
 
     # Packing Slip 
     pack_slip_label = ctk.CTkLabel(self.vendor_info, text="Packing Slip", font=("Roboto", 16))
     pack_slip_label.grid(row=1, column=0, padx=10, pady=5)
-    pack_slip = ctk.CTkEntry(self.vendor_info)
+    pack_slip = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16))
     pack_slip.grid(row=1, column=1, padx=10, pady=5)
 
     date_label = ctk.CTkLabel(self.vendor_info, text="Date", font=("Roboto", 16))
     date_label.grid(row=0, column=3, padx=10, pady=5)
-    date = ctk.CTkEntry(self.vendor_info)
+    date = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16))
     date.grid(row=0, column=4, padx=10, pady=5)
 
     # Received by
     received_by_label = ctk.CTkLabel(self.vendor_info, text="Received By", font=("Roboto", 16))
     received_by_label.grid(row=1, column=3, padx=10, pady=5)
-    self.received_by = ctk.CTkEntry(self.vendor_info)
+    self.received_by = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16))
     self.received_by.grid(row=1, column=4, padx=10, pady=5)
 
 
-    # --- Second Frame --- #
+    # --- > Second Frame < --- #
 
     self.details = ctk.CTkFrame(self)
-    self.details.grid(row=2, column=0, sticky='nsew', padx=10, pady=10)
+    self.details.grid(row=2, column=0, columnspan=4, sticky='nsew', padx=10, pady=10)
     
     # CDs
     cds_label = ctk.CTkLabel(self.details, text="10 - CDs", font=("Roboto", 16))
     cds_label.grid(row=0, column=0, padx=10, pady=5)
     self.cds = ctk.DoubleVar(self.details, value=0)
-    cds_entry = ctk.CTkEntry(self.details, textvariable=self.cds)
+    cds_entry = ctk.CTkEntry(self.details, textvariable=self.cds, font=("Roboto", 16))
     cds_entry.grid(row=0, column=1, padx=10, pady=5)
+    self.cds.trace_add('write', self.update_totals)
 
-    # 180s
-    one_eighty_label = ctk.CTkLabel(self.details, text="15 - 180s", font=("Roboto", 16))
+    # 180g
+    one_eighty_label = ctk.CTkLabel(self.details, text="15 - 180g", font=("Roboto", 16))
     one_eighty_label.grid(row=1, column=0, padx=10, pady=5)
     self.one_eighty = ctk.DoubleVar(self.details, value=0)
-    one_eighty_entry = ctk.CTkEntry(self.details, textvariable=self.one_eighty)
+    one_eighty_entry = ctk.CTkEntry(self.details, textvariable=self.one_eighty, font=("Roboto", 16))
     one_eighty_entry.grid(row=1, column=1, padx=10, pady=5)
+    self.one_eighty.trace_add('write', self.update_totals)
 
     # Spanish CDs
     spanish_cds_label = ctk.CTkLabel(self.details, text="20 - Spanish CDs", font=("Roboto", 16))
     spanish_cds_label.grid(row=2, column=0, padx=10, pady=5)
     self.spanish_cds = ctk.DoubleVar(self.details, value=0)
-    spanish_cds_entry = ctk.CTkEntry(self.details, textvariable=self.spanish_cds)
+    spanish_cds_entry = ctk.CTkEntry(self.details, textvariable=self.spanish_cds, font=("Roboto", 16))
     spanish_cds_entry.grid(row=2, column=1, padx=10, pady=5)
+    self.spanish_cds.trace_add('write', self.update_totals)
 
     # DVDs
     dvds_label = ctk.CTkLabel(self.details, text="40 - DVDs", font=("Roboto", 16))
     dvds_label.grid(row=3, column=0, padx=10, pady=5)
     self.dvds = ctk.DoubleVar(self.details, value=0)
-    dvds_entry = ctk.CTkEntry(self.details, textvariable=self.dvds)
+    dvds_entry = ctk.CTkEntry(self.details, textvariable=self.dvds, font=("Roboto", 16))
     dvds_entry.grid(row=3, column=1, padx=10, pady=5)
+    self.dvds.trace_add('write', self.update_totals)
 
     # Accessories 
     accessories_label = ctk.CTkLabel(self.details, text="50 - Accessories", font=("Roboto", 16))
     accessories_label.grid(row=0, column=3, padx=10, pady=5)
     self.accessories = ctk.DoubleVar(self.details, value=0)
-    accessories_entry = ctk.CTkEntry(self.details, textvariable=self.accessories)
+    accessories_entry = ctk.CTkEntry(self.details, textvariable=self.accessories, font=("Roboto", 16))
     accessories_entry.grid(row=0, column=4, padx=10, pady=5)
+    self.accessories.trace_add('write', self.update_totals)
 
     # Boutique
     boutique_label = ctk.CTkLabel(self.details, text="60 - Boutique", font=("Roboto", 16))
     boutique_label.grid(row=1, column=3, padx=10, pady=5)
     self.boutique = ctk.DoubleVar(self.details, value=0.0)
-    boutique_entry = ctk.CTkEntry(self.details, textvariable=self.boutique)
+    boutique_entry = ctk.CTkEntry(self.details, textvariable=self.boutique, font=("Roboto", 16))
     boutique_entry.grid(row=1, column=4, padx=10, pady=5)
+    self.boutique.trace_add('write', self.update_totals)
 
     # Posters
     posters_label = ctk.CTkLabel(self.details, text="65 - Posters", font=("Roboto", 16))
     posters_label.grid(row=2, column=3, padx=10, pady=5)
     self.posters = ctk.DoubleVar(self.details, value=0)
-    posters_entry = ctk.CTkEntry(self.details, textvariable=self.posters)
+    posters_entry = ctk.CTkEntry(self.details, textvariable=self.posters, font=("Roboto", 16))
     posters_entry.grid(row=2, column=4, padx=10, pady=5)
+    self.posters.trace_add('write', self.update_totals)
     
-
-    generate_btn = ctk.CTkButton(self.details, text="Generate", command=self.generate_report, font=("Roboto", 16))
-    generate_btn.grid(row=3, column=3, columnspan=2, padx=10, pady=10)
     
-    # --- Third Frame --- #
+    # --- > Third Frame < --- #
 
     self.totals = ctk.CTkFrame(self)
-    self.totals.grid(row=3, column=0, columnspan = 3, sticky='nsew', padx=10, pady=10)
+    self.totals.grid(row=3, column=0, columnspan = 2, sticky='nsew', padx=10, pady=10)
 
     # Subtotal
     subtotal_label = ctk.CTkLabel(self.totals, text="Subtotal", font=("Roboto", 16))
@@ -122,7 +127,76 @@ class Reconciliation(ctk.CTkFrame):
     self.subtotal = ctk.CTkLabel(self.totals, text=str(self.total), font=("Roboto", 16))
     self.subtotal.grid(row=0, column=1, padx=10, pady=5)
 
-  def generate_report(self):
+    # Taxes
+    taxes_label = ctk.CTkLabel(self.totals, text="Taxes", font=("Roboto", 16))
+    taxes_label.grid(row=1, column=0, padx=10, pady=5)
+    self.taxes = ctk.DoubleVar(self.totals, value=0.0)
+    taxes_entry = ctk.CTkEntry(self.totals, textvariable=self.taxes, font=("Roboto", 16), justify='center', width=60)
+    taxes_entry.grid(row=1, column=1, padx=10, pady=5)
+    self.taxes.trace_add('write', self.update_totals)
+
+    # Shipping
+    shipping_label = ctk.CTkLabel(self.totals, text="Shipping", font=("Roboto", 16))
+    shipping_label.grid(row=2, column=0, padx=10, pady=5)
+    self.shipping = ctk.DoubleVar(self.totals, value=0.0)
+    shipping_entry = ctk.CTkEntry(self.totals, textvariable=self.shipping, font=("Roboto", 16), justify='center', width=60)
+    shipping_entry.grid(row=2, column=1, padx=10, pady=5)
+    self.shipping.trace_add('write', self.update_totals)
+
+    self.grand_total_amount = (self.total + self.taxes.get() + self.shipping.get())
+
+    # Total 
+    grand_total_label = ctk.CTkLabel(self.totals, text="Total", font=("Roboto", 16))
+    grand_total_label.grid(row=3, column=0, padx=10, pady=5)
+    self.grand_total = ctk.CTkLabel(self.totals, text=str(self.grand_total_amount), font=("Roboto", 16))
+    self.grand_total.grid(row=3, column=1, padx=10, pady=5)
+
+
+    # --- > Fourth Frame < --- #
+
+    # Paid by (ck # / cc checkbox options)
+    self.payment = ctk.CTkFrame(self)
+    self.payment.grid(row=3, column=2, columnspan=2, sticky='nsew', padx=10, pady=10)
+
+    # -- Checkboxes -- #
+    # Check
+    self.ck = ctk.BooleanVar(self.payment, value=False)
+    self.ck_checkbox = ctk.CTkCheckBox(self.payment, text="Check", variable=self.ck, font=("Roboto", 16))
+    self.ck_checkbox.grid(row=0, column=0, padx=10, pady=20, sticky='ew')
+
+    # Check Number Entry
+    self.ck_number = ctk.IntVar(self.payment)
+    self.ck_number_entry = ctk.CTkEntry(self.payment)
+
+    # Credit Card
+    self.cc = ctk.BooleanVar(self.payment, value=False)
+    self.cc_checkbox = ctk.CTkCheckBox(self.payment, text="Credit Card", variable=self.cc, font=("Roboto", 16))
+    self.cc_checkbox.grid(row=1, column=0, padx=10, pady=20, sticky='ew')
+
+    def toggle_ck_number():
+      if self.ck.get():
+        self.ck_number_entry.grid(row=0, column=1, padx=10, pady=20, sticky='ew')
+      else:
+        self.ck_number_entry.grid_forget()
+
+    self.ck_checkbox.bind("<Button-1>", lambda event: toggle_ck_number())
+
+
+    # --- > Fifth Frame < --- #
+
+    # Notes
+    self.notes = ctk.CTkFrame(self)
+    self.notes.grid(row=0, column=5, rowspan=4, sticky='nsew', padx=10, pady=10)
+    self.note_label = ctk.CTkLabel(self.notes, text="Notes", font=("Roboto", 16))
+    self.note_label.grid(row=0, column=0, padx=10, pady=5)
+    self.note_text = ctk.CTkTextbox(self.notes, width=180, height=420, font=("Roboto", 15), wrap='word')
+    self.note_text.grid(row=1, column=0, padx=10, pady=5)
+
+
+
+
+  def update_totals(self, *args):
+    self.total = 0.0
     self.total += float(self.cds.get())
     self.total += float(self.one_eighty.get())
     self.total += float(self.spanish_cds.get())
@@ -130,7 +204,8 @@ class Reconciliation(ctk.CTkFrame):
     self.total += float(self.accessories.get())
     self.total += float(self.boutique.get())
     self.total += float(self.posters.get())
-    self.subtotal.configure(textvariable = str(self.total))
+    self.subtotal.configure(text = str(self.total))
+    self.grand_total.configure(text = str(self.total + self.taxes.get() + self.shipping.get()))
 
 
 class SO_Form(ctk.CTkFrame):
