@@ -6,6 +6,7 @@ from matplotlib import artist
 import generators as gn
 import xlfile as xl
 from tkinter import Scrollbar
+import re
 
 ctk.set_default_color_theme('C:/Users/abake/OneDrive/Documents/AllThatMusic_SpecialOrdersForm/red.json')
 
@@ -230,7 +231,6 @@ class Reconciliation(ctk.CTkFrame):
     self.subtotal.configure(text = str(self.total))
     self.grand_total.configure(text = str(self.total  + self.shipping.get()))
 
-
 class SO_Form(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Special Order Form", **kwargs):
@@ -253,6 +253,13 @@ class SO_Form(ctk.CTkFrame):
                      sticky='w',
                      pady=(10, 20),
                      padx=10)
+    
+    # Date
+    date_text = ctk.CTkLabel(self,
+                             text="Date: " + todays_date,
+                             text_color="#FFFFFF",
+                             font=("Roboto", 16))
+    date_text.grid(row=0, column=3, columnspan=1, pady=(10, 0))
 
     # Adding the current date and ticket number to data list
     data = [todays_date, ticket_num]
@@ -289,13 +296,8 @@ class SO_Form(ctk.CTkFrame):
         errormsg += str(num_of_msgs) + ': Customer name must be all letters.\n'
         proper = False
         num_of_msgs += 1
-      if not cx_phone_input.get().isdigit():
-        errormsg += str(num_of_msgs) + ': Phone number must be numbers only.\n'
-        proper = False
-        num_of_msgs += 1
-      if len(cx_phone_input.get()) != 10:
-        errormsg += str(
-            num_of_msgs) + ": Phone number must be exactly 10 digits long.\n"
+      if not re.match(r'^\d{10}$', re.sub(r'\D', '', cx_phone_input.get())):
+        errormsg += str(num_of_msgs) + ': Phone number must be 10 digits'
         proper = False
         num_of_msgs += 1
       if not deposit_input.get().isdigit() and '.' not in deposit_input.get():
@@ -316,19 +318,22 @@ class SO_Form(ctk.CTkFrame):
     def save_checkbox_value():
 
       if not check_form_complete():
-        ctk.msgbox.showerror("Error", "Please fill out the entire form.")
+        msgbox.showerror("Error", "Please fill out the entire form.")
         return
       proper, msg = check_proper_info()
       if not proper:
-        ctk.msgbox.showwarning("Error", msg)
+        msgbox.showwarning("Error", msg)
         return
 
       data.append(cx_name_input.get())
       data.append(cx_phone_input.get())
+      data.append(text_cx.get())
+      data.append(call_cx.get())
       data.append(artist_input.get())
       data.append(title_input.get())
       data.append(float(deposit_input.get()))
       data.append(float(price_input.get()))
+      data.append(" ")
       data.append(vendors.get())
       data.append(typs.get())
       data.append(clerk_input.get())
@@ -353,21 +358,14 @@ class SO_Form(ctk.CTkFrame):
 
     row_offset = 1  # Initialize row offset for better readability
 
-    # Date
-    date_text = ctk.CTkLabel(self,
-                             text="Date: " + todays_date,
-                             text_color="#FFFFFF",
-                             font=("Roboto", 16))
-    date_text.grid(row=row_offset, column=2, columnspan=1, pady=(10, 0))
-
     # Clerk name input
     clerk_text = ctk.CTkLabel(self,
                               text="Clerk",
                               text_color="#FFFFFF",
                               font=("Roboto", 16))
-    clerk_text.grid(row=row_offset, column=3)
+    clerk_text.grid(row=row_offset, column=1,  padx=(20,0))
     clerk_input = ctk.CTkEntry(self, placeholder_text="Clerk Name")
-    clerk_input.grid(row=row_offset, column=4, sticky="ew", padx=10)
+    clerk_input.grid(row=row_offset, column=2, sticky="ew", padx=(10,20))
 
     self.shipping_data = []
 
@@ -470,10 +468,10 @@ class SO_Form(ctk.CTkFrame):
                                  text="Shipping?",
                                  text_color="#FFFFFF",
                                  font=("Roboto", 16))
-    shipping_text.grid(row=row_offset, column=5)
+    shipping_text.grid(row=row_offset, column=4)
     ship_var = ctk.BooleanVar(self)
     shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var, text=None)
-    shipping_checkb.grid(row=row_offset, column=6, sticky="ew", padx=10)
+    shipping_checkb.grid(row=row_offset, column=5, sticky="ew", padx=10)
 
     # Bind the open_shipping_window function to the checkbox
     def toggle_shipping_window():
@@ -506,11 +504,11 @@ class SO_Form(ctk.CTkFrame):
     # Title for Vendors
     vendors_text = ctk.CTkLabel(self.vendors_buttons,
                                 text="Vendors",
-                                font=("Roboto", 20),
+                                font=("Arial Black", 20),
                                 text_color="#FFFFFF")
-    vendors_text.grid(row=0, column=1, pady=(10, 0), sticky='ew')
+    vendors_text.grid(row=0, column=1, pady=(0, 10), sticky='new')
     # Radio Button for Vendors
-    vendors = ctk.StringVar(self.vendors_buttons, "Vendors")
+    vendors = ctk.StringVar(self.vendors_buttons)
     vendors_values = ["AEC", "AMS", "AMA"]
 
     # Button positioning based on amount of options
@@ -524,13 +522,13 @@ class SO_Form(ctk.CTkFrame):
       rdio_opt.grid(row=1, column=i, sticky='ew')
 
     self.type_buttons = ctk.CTkFrame(self)
-    self.type_buttons.grid(row=row_offset, column=3, columnspan=3, sticky='ew')
+    self.type_buttons.grid(row=row_offset, column=3, columnspan=3)
     # Title for Type
     type_text = ctk.CTkLabel(self.type_buttons,
                              text="Type",
-                             font=("Roboto", 20),
+                             font=("Arial Black", 20),
                              text_color="#FFFFFF")
-    type_text.grid(row=0, column=1, pady=(10, 0))
+    type_text.grid(row=0, column=1, pady=(0, 10), sticky='new')
 
     # Radio Button for Type
     typs = ctk.StringVar(self.type_buttons, "Type")
@@ -578,8 +576,31 @@ class SO_Form(ctk.CTkFrame):
                                   text_color="#FFFFFF",
                                   font=("Roboto", 16))
     cx_phone_title.grid(row=row_offset, column=4)
+
+    text_cx = ctk.CTkCheckBox(self, text="Text?", text_color="#FFFFFF", onvalue="YES", offvalue="NO")
+    text_cx.grid(row=row_offset, column=5, padx=10)
+
     cx_phone_input = ctk.CTkEntry(self, placeholder_text="10 digits, no symbols")
     cx_phone_input.grid(row=row_offset + 1, column=4, padx=10)
+
+    call_cx = ctk.CTkCheckBox(self, text="Call?", text_color="#FFFFFF", onvalue="YES", offvalue="NO")
+    call_cx.grid(row=row_offset + 1, column=5, padx=10)
+
+    def format_phone_number(event):
+        phone_number = cx_phone_input.get()
+        
+        # Add error handling for empty or invalid input
+        if not phone_number or not re.match(r'^\d{10}$', phone_number):
+            cx_phone_input.delete(0, "end")
+            cx_phone_input.insert(0, phone_number)
+            return
+        
+        formatted_number = "({}){}-{}".format(phone_number[:3], phone_number[3:6], phone_number[6:])
+        cx_phone_input.delete(0, "end")
+        cx_phone_input.insert(0, formatted_number)
+
+    # Bind the function to the KeyRelease event
+    cx_phone_input.bind("<KeyRelease>", format_phone_number)
 
     row_offset += 2  # Increment row offset
 
@@ -637,7 +658,6 @@ class SO_Form(ctk.CTkFrame):
                                 font=("Roboto", 16))
     back_button.grid(row=row_offset, column=4, pady=20)
 
-
 class Prev_SO(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Previous Special Orders", **kwargs):
@@ -660,7 +680,7 @@ class Prev_SO(ctk.CTkFrame):
     # Create the Treeview
     self.tree = ttk.Treeview(self.tree_frame,
                              columns=list(self.df.columns),
-                             show="headings")
+                             show="headings", height=20)
     
     self.tree.grid(row=0, column=0, sticky='nsew', padx=10, pady=5)
 
@@ -704,7 +724,8 @@ class Prev_SO(ctk.CTkFrame):
     self.scroll_diag.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
     self.dialog.title("Edit Order")
-    self.entries = {}
+    self.entry_keys = [column for column in self.df.columns]
+    self.entries = {cul: "" for cul in self.entry_keys}
 
     typ_values = ["CD", "DVD", "BLU-RAY", "LP", "OTHER"]
     vendors_values = ["AEC", "AMS", "AMA"]
@@ -717,11 +738,29 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=vendors_values)
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
-      elif column == "DEPOSIT" or column == "PRICE":
+      elif column == "TEXT?" or column == "CALL?":
+        label = ctk.CTkLabel(self.scroll_diag, text=column)
+        label.grid(row=i, column=0, padx=10, pady=5)
+        self.switch = ctk.StringVar(value=values[i])
+        entry = ctk.CTkCheckBox(self.scroll_diag,
+                              variable=self.switch,
+                              onvalue="YES",
+                              offvalue="NO", text="").grid(row=i, column=1, padx=10, pady=5)
+        self.entries[column] = self.switch
+        continue
+      elif column == "DEPOSIT" or column == "RETAIL":
         entry = ctk.DoubleVar(value=values[i])
         entry_num = ctk.CTkEntry(self.scroll_diag)
         entry_num.insert(0, values[i])  # Set to current value or default one
         entry_num.grid(row=i, column=1, padx=10, pady=5)
+      elif column == "TEXT?" or column == "CALL?":
+        self.switch = ctk.StringVar(value=values[i])
+        entry = ctk.CTkSwitch(self.scroll_diag,
+                              variable=self.switch,
+                              onvalue="YES",
+                              offvalue="NO")
+        self.entries[column] = self.switch
+        continue
       elif column == "TYPE":
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=typ_values)
         entry.set(values[i])  # Set to current value or default one
@@ -823,7 +862,7 @@ class Prev_SO(ctk.CTkFrame):
 
   def save(self, item, entries):
     # Update the Treeview and the DataFrame with the new values
-    new_values = [entries[column].get() for column in self.df.columns]
+    new_values = [entries[column].get() if not isinstance(entries[column], str) else entries[column] for column in self.df.columns]
     self.tree.item(item, values=new_values)
 
     item_index = int(item) + 1
@@ -854,7 +893,6 @@ class Prev_SO(ctk.CTkFrame):
     # Repopulate the Treeview with the updated data
     for i, row in self.df.iterrows():
       self.tree.insert('', "end", values=list(row), iid=i)
-
 
 class SO_App(ctk.CTk):
 
