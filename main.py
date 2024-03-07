@@ -1,12 +1,14 @@
 import tkinter as tk
 from tkinter import Scrollbar, ttk
 import tkinter.messagebox as msgbox
+from typing import Tuple
 import customtkinter as ctk
 from matplotlib import artist
 import generators as gn
 import xlfile as xl
 from tkinter import Scrollbar
 import re
+import getpass
 
 ctk.set_default_color_theme('C:/Users/abake/OneDrive/Documents/AllThatMusic_SpecialOrdersForm/red.json')
 
@@ -359,13 +361,14 @@ class SO_Form(ctk.CTkFrame):
     row_offset = 1  # Initialize row offset for better readability
 
     # Clerk name input
+    username = getpass.getuser()
     clerk_text = ctk.CTkLabel(self,
-                              text="Clerk",
+                              text="Clerk: ",
                               text_color="#FFFFFF",
                               font=("Roboto", 16))
-    clerk_text.grid(row=row_offset, column=1,  padx=(20,0))
-    clerk_input = ctk.CTkEntry(self, placeholder_text="Clerk Name")
-    clerk_input.grid(row=row_offset, column=2, sticky="ew", padx=(10,20))
+    clerk_text.grid(row=row_offset, column=1,  padx=(20,5), sticky='e')
+    clerk_input = ctk.CTkLabel(self, text=username, font=("Roboto", 16, "bold"))
+    clerk_input.grid(row=row_offset, column=2, sticky="w", padx=(5,20))
 
     self.shipping_data = []
 
@@ -658,6 +661,115 @@ class SO_Form(ctk.CTkFrame):
                                 font=("Roboto", 16))
     back_button.grid(row=row_offset, column=4, pady=20)
 
+class CX_Call_Frame(ctk.CTkFrame):
+
+  def __init__(self, *args, header_name="Customer Call", **kwargs):
+    super().__init__(*args, **kwargs)
+
+    self.header = ctk.CTkFrame(self)
+    self.header.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10, pady=10)
+
+    date = gn.get_todays_date()
+    user = getpass.getuser()
+
+    date_label = ctk.CTkLabel(self.header, text="Date: " + date, font=("Roboto", 16))
+    date_label.grid(row=0, column=0, pady=5, padx=(5, 20))
+    clerk_label = ctk.CTkLabel(self.header, text="Clerk: " + user, font=("Roboto", 16))
+    clerk_label.grid(row=0, column=3, pady=5, padx=(20,5))
+
+    # search method for finding customer
+
+    self.search_frame = ctk.CTkFrame(self)
+    self.search_frame.grid(row=2, column=0, sticky='nsew', padx=10, pady=10)
+
+    self.results_frame = ctk.CTkFrame(self)
+    self.results_frame.grid(row=3, column=0, sticky='nsew', padx=10, pady=10)
+
+    search_methods = ["Phone Number", "Name", "Ticket Number"]
+    self.input = ctk.CTkEntry(self.search_frame, font=("Roboto", 16))
+    
+
+
+    self.search_method_opt = ctk.StringVar(self.search_frame)
+    for i, method in enumerate(search_methods):
+      self.search_method_opt.set(search_methods[0])  # Set default value
+      search_method_opt = ctk.CTkRadioButton(self.search_frame, text=method, value=method, font=("Roboto", 16), variable=self.search_method_opt)
+      search_method_opt.grid(row=1, column=i, padx=10, pady=5)
+
+    self.input.grid(row=2, column=1, padx=10, pady=5)
+    self.show_uncompleted_orders = ctk.BooleanVar(self.search_frame, value=False)
+    show_uncompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show uncompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
+    show_uncompleted_orders.grid(row=2, column=2, padx=10, pady=5)
+
+    self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get()), font=("Roboto", 16))
+    self.search_button.grid(row=4, column=1, padx=10, pady=20)
+
+    
+
+  def phone(self):
+    phone_label = ctk.CTkLabel(self, text="Phone Number", font=("Roboto", 16))
+    phone_label.grid(row=0, column=0, padx=10, pady=5)
+    phone = ctk.CTkEntry(self, placeholder_text="10 digits, no symbols")
+    phone.grid(row=1, column=0, padx=10)
+
+    def format_phone_number(event):
+        phone_number = phone.get()
+        
+        # Add error handling for empty or invalid input
+        if not phone_number or not re.match(r'^\d{10}$', phone_number):
+            phone.delete(0, "end")
+            phone.insert(0, phone_number)
+            return
+        
+        formatted_number = "({}){}-{}".format(phone_number[:3], phone_number[3:6], phone_number[6:])
+        phone.delete(0, "end")
+        phone.insert(0, formatted_number)
+
+    # Bind the function to the KeyRelease event
+    phone.bind("<KeyRelease>", format_phone_number)
+
+    self.phone = phone
+
+  def search(self, data, type, uncompleted):
+    if type == "Phone Number":
+      data = re.sub(r'\D', '', data)
+      data = "({}){}-{}".format(data[:3], data[3:6], data[6:])
+      return self.search_data(phone=data, uncompleted = uncompleted)
+    elif data[:2] == 'SO' and data[2:].isdigit():
+      return self.search_data(ticket=data, uncompleted = uncompleted)
+    elif data[0].isalpha():
+      return self.search_data(name=data, uncompleted = uncompleted)
+    else:
+      print("Invalid input. Please try again.")
+
+
+  def search_data(self, phone=None, name=None, ticket=None, uncompleted=False):
+    self.df = xl.open_excel_file('SO_Test.xlsx').read_into_dataframe_SO()
+    if phone:
+      matching_rows = self.df[self.df['PHONE'] == phone]
+      if uncompleted:
+        matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
+      self.selection(matching_rows)
+    elif name:
+      matching_rows = self.df[self.df['CX NAME'] == name]
+      if uncompleted:
+        matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
+      self.selection(matching_rows)
+    elif ticket:
+      matching_rows = self.df[self.df['REF NUM'] == ticket]
+      if uncompleted:
+        matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
+      self.selection(matching_rows)
+
+  
+  def selection(self, matching_rows):
+
+    self.final_result = ctk.StringVar(self.results_frame)
+    for idx, row in matching_rows.iterrows():
+      display__text = row['REF NUM'] + " : " + row['CX NAME'] + " - " + row['PHONE']
+      result = ctk.CTkRadioButton(self.results_frame, text=display__text, value=idx, font=("Roboto", 16), variable=self.final_result)
+      result.grid(row=idx, column=0, padx=10, pady=5)
+
 class Prev_SO(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Previous Special Orders", **kwargs):
@@ -899,7 +1011,7 @@ class SO_App(ctk.CTk):
   def __init__(self):
     super().__init__()
     self.title("Special Order")
-    self.geometry("270x300")
+    self.geometry("270x400")
     self.configure(background="#350909")
 
     self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=5)
@@ -907,6 +1019,7 @@ class SO_App(ctk.CTk):
     self.sidebar_menu.grid_rowconfigure(4, weight=1)
 
     self.special_order_form = SO_Form(self)
+    self.cx_call = CX_Call_Frame(self)
     self.previous_orders = Prev_SO(self)
     self.ai_form = None
     self.reconciliation_form = Reconciliation(self)
@@ -921,6 +1034,12 @@ class SO_App(ctk.CTk):
         self.sidebar_menu,
         text="Special Order",
         command=self.show_special_order_form,
+        **button_config)
+    
+    self.cx_call_button = ctk.CTkButton(
+        self.sidebar_menu,
+        text="Customer Call",
+        command=self.show_cx_call,
         **button_config)
 
     self.previous_orders_button = ctk.CTkButton(
@@ -938,33 +1057,43 @@ class SO_App(ctk.CTk):
     self.hide_all_frames()
 
     self.special_order_form_button.grid(row=0, column=0, pady=25)
-    self.previous_orders_button.grid(row=1, column=0, pady=25)
+    self.cx_call_button.grid(row=1, column=0, pady=25)
+    self.previous_orders_button.grid(row=2, column=0, pady=25)
     self.reconciliation_form_button.grid(row=3, column=0, pady=25)
 
   def hide_all_frames(self):
-    for frame in [self.special_order_form, self.previous_orders, self.reconciliation_form]:
+    for frame in [self.special_order_form, self.cx_call, self.previous_orders, self.reconciliation_form]:
       frame.grid_forget()
     self.enable_buttons()
 
   def enable_buttons(self):
     for buttons in [
-        self.special_order_form_button, self.previous_orders_button, self.reconciliation_form_button
+        self.special_order_form_button, self.cx_call_button,  self.previous_orders_button, self.reconciliation_form_button
     ]:
       buttons.configure(state="normal")
       buttons.configure(fg_color="#d31313")
 
   def show_special_order_form(self):
     self.special_order_form = SO_Form(self)
+    self.title("New Special Order")
     self.geometry("1065x460")
     self.hide_all_frames()
     self.special_order_form.grid(row=0, column=1, sticky='nsew')
     self.special_order_form_button.configure(fg_color="#000000")
     self.special_order_form_button.configure(state="disabled")
 
+  def show_cx_call(self):
+    self.geometry("1015x400")
+    self.title("Customer Call")
+    self.hide_all_frames()
+    self.cx_call.grid(row=0, column=1, sticky='nsew')
+    self.cx_call_button.configure(fg_color="#000000")
+    self.cx_call_button.configure(state="disabled")
+
   def show_previous_orders(self):
     self.previous_orders.update_treeview()
     self.geometry("1015x400")
-    self.title("Special Order")
+    self.title("Special Orders")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew')
     self.previous_orders_button.configure(fg_color="#000000")
