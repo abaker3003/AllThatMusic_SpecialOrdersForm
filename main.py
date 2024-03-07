@@ -697,11 +697,11 @@ class CX_Call_Frame(ctk.CTkFrame):
       search_method_opt.grid(row=1, column=i, padx=10, pady=5)
 
     self.input.grid(row=2, column=1, padx=10, pady=5)
-    self.show_uncompleted_orders = ctk.BooleanVar(self.search_frame, value=False)
+    #self.show_uncompleted_orders = ctk.BooleanVar(self.search_frame)
     show_uncompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show uncompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
     show_uncompleted_orders.grid(row=2, column=2, padx=10, pady=5)
 
-    self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get()), font=("Roboto", 16))
+    self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), show_uncompleted_orders.get()), font=("Roboto", 16))
     self.search_button.grid(row=4, column=1, padx=10, pady=20)
 
     
@@ -743,8 +743,9 @@ class CX_Call_Frame(ctk.CTkFrame):
       print("Invalid input. Please try again.")
 
 
-  def search_data(self, phone=None, name=None, ticket=None, uncompleted=False):
+  def search_data(self, phone=None, name=None, ticket=None, uncompleted=None):
     self.df = xl.open_excel_file('SO_Test.xlsx').read_into_dataframe_SO()
+    print(uncompleted)
     if phone:
       matching_rows = self.df[self.df['PHONE'] == phone]
       if uncompleted:
