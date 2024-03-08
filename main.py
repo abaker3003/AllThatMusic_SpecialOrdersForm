@@ -326,6 +326,8 @@ class SO_Form(ctk.CTkFrame):
       if not proper:
         msgbox.showwarning("Error", msg)
         return
+      
+      data.append("NO")
 
       data.append(cx_name_input.get())
       data.append(cx_phone_input.get())
@@ -338,13 +340,14 @@ class SO_Form(ctk.CTkFrame):
       data.append(" ")
       data.append(vendors.get())
       data.append(typs.get())
-      data.append(clerk_input.get())
+      data.append(self.username)
       if ship_var.get() == 1:
-        data.append("YES")
+        data.append("SHIPPING")
         data.extend(self.shipping_data)
       else:
-        data.append("NO")
-        data.extend(["N/A" * len(self.shipping_data)])
+        data.append("PICKUP")
+        data.extend(["N/A"] * len(self.shipping_data))
+        print(data)
       gn.first_SO_of_day(xl_file, int(ticket_num[-3:]))
       xl_file.writeOnXL(data)
       xl_file.close_file()
@@ -361,13 +364,13 @@ class SO_Form(ctk.CTkFrame):
     row_offset = 1  # Initialize row offset for better readability
 
     # Clerk name input
-    username = getpass.getuser()
+    self.username = getpass.getuser()
     clerk_text = ctk.CTkLabel(self,
                               text="Clerk: ",
                               text_color="#FFFFFF",
                               font=("Roboto", 16))
     clerk_text.grid(row=row_offset, column=1,  padx=(20,5), sticky='e')
-    clerk_input = ctk.CTkLabel(self, text=username, font=("Roboto", 16, "bold"))
+    clerk_input = ctk.CTkLabel(self, text=self.username, font=("Roboto", 16, "bold"))
     clerk_input.grid(row=row_offset, column=2, sticky="w", padx=(5,20))
 
     self.shipping_data = []
@@ -473,7 +476,7 @@ class SO_Form(ctk.CTkFrame):
                                  font=("Roboto", 16))
     shipping_text.grid(row=row_offset, column=4)
     ship_var = ctk.BooleanVar(self)
-    shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var, text=None)
+    shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var, text=None, onvalue=1, offvalue=0)
     shipping_checkb.grid(row=row_offset, column=5, sticky="ew", padx=10)
 
     # Bind the open_shipping_window function to the checkbox
@@ -766,10 +769,19 @@ class CX_Call_Frame(ctk.CTkFrame):
   def selection(self, matching_rows):
 
     self.final_result = ctk.StringVar(self.results_frame)
+
+    i = 0
+    
     for idx, row in matching_rows.iterrows():
-      display__text = row['REF NUM'] + " : " + row['CX NAME'] + " - " + row['PHONE']
+      print(idx)
+      display__text = row['REF NUM'] + " : " + row['CX NAME'] + " - " + row['PHONE'] + "\t"
+      if row['COMPLETED'] == 'NO':
+        display__text += " - UNCOMPLETED"
+      else:
+        display__text += " - COMPLETED"
       result = ctk.CTkRadioButton(self.results_frame, text=display__text, value=idx, font=("Roboto", 16), variable=self.final_result)
-      result.grid(row=idx, column=0, padx=10, pady=5)
+      result.grid(row=i, column=0, padx=10, pady=10)
+      i += 1
 
 class Prev_SO(ctk.CTkFrame):
 
@@ -861,6 +873,16 @@ class Prev_SO(ctk.CTkFrame):
                               offvalue="NO", text="").grid(row=i, column=1, padx=10, pady=5)
         self.entries[column] = self.switch
         continue
+      elif column == "COMPLETED":
+        stat = ctk.CTkLabel(self.scroll_diag, text="Order Status: ")
+        stat.grid(row=i, column=0, padx=10, pady=5)
+        label = ctk.CTkLabel(self.scroll_diag, font=("Arial", 10, "bold"))
+        if values[i] == "NO":
+          label.configure(text="Uncompleted")
+        else:
+          label.configure(text="Completed")
+        label.grid(row=i, column=1, padx=10, pady=5)
+        continue
       elif column == "DEPOSIT" or column == "RETAIL":
         entry = ctk.DoubleVar(value=values[i])
         entry_num = ctk.CTkEntry(self.scroll_diag)
@@ -914,7 +936,7 @@ class Prev_SO(ctk.CTkFrame):
             shipping_label.grid_remove()
 
         def on_shipping_option_changed(value):
-          if value == "YES":
+          if value == "SHIPPING":
             show_shipping_info()
           else:
             hide_shipping_info()
@@ -922,9 +944,9 @@ class Prev_SO(ctk.CTkFrame):
         self.switch = ctk.StringVar(value=values[i])
         entry = ctk.CTkSwitch(self.scroll_diag,
                               variable=self.switch,
-                              onvalue="YES",
-                              offvalue="NO")
-        if values[i] == "YES":
+                              onvalue="SHIPPING",
+                              offvalue="PICKUP")
+        if values[i] == "SHIPPING":
           entry._check_state = True
           show_shipping_info()
         entry.grid(row=i, column=1, padx=10, pady=5)
