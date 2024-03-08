@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import Scrollbar, ttk
+import tkinter.ttk as ttk
 import tkinter.messagebox as msgbox
 from typing import Tuple
 import customtkinter as ctk
 from matplotlib import artist
+from ScrollableFrameXY import ScrollableFrame
 import generators as gn
 import xlfile as xl
 from tkinter import Scrollbar
@@ -238,24 +240,38 @@ class SO_Form(ctk.CTkFrame):
   def __init__(self, *args, header_name="Special Order Form", **kwargs):
     super().__init__(*args, **kwargs)
 
-    xl_file = xl.open_excel_file('SO_Test.xlsx')
+    self.xl_file = None
 
+    def open_xl_file():
+      self.xl_file = xl.open_excel_file('SO_Test.xlsx')
+
+
+    open_xl_file()
     # Generating current date
     todays_date = gn.get_todays_date()
 
-    # Generating ticket number
-    ticket_num = gn.ticketnum(xl_file)
+    self.header_name = header_name + " - " 
+    self.ticket_num = ""
 
-    self.header_name = header_name + " - " + ticket_num
+    self.header = ctk.CTkLabel(self, font=("Arial", 20))
 
-    self.header = ctk.CTkLabel(self, text=self.header_name, font=("Arial", 20))
-    self.header.grid(row=0,
-                     column=1,
-                     columnspan=2,
-                     sticky='w',
-                     pady=(10, 20),
-                     padx=10)
-    
+
+    def get_ticket_num():
+      # Generating ticket number
+      self.ticket_num = gn.ticketnum(self.xl_file)
+
+      self.header_name += self.ticket_num
+
+      self.header.configure(text=self.header_name)
+      self.header.grid(row=0,
+                      column=1,
+                      columnspan=2,
+                      sticky='w',
+                      pady=(10, 20),
+                      padx=10)
+      
+    get_ticket_num()
+
     # Date
     date_text = ctk.CTkLabel(self,
                              text="Date: " + todays_date,
@@ -264,7 +280,7 @@ class SO_Form(ctk.CTkFrame):
     date_text.grid(row=0, column=3, columnspan=1, pady=(10, 0))
 
     # Adding the current date and ticket number to data list
-    data = [todays_date, ticket_num]
+    data = [todays_date, self.ticket_num]
 
     # Checks if all input fields are filled
     def check_form_complete():
@@ -348,16 +364,34 @@ class SO_Form(ctk.CTkFrame):
         data.append("PICKUP")
         data.extend(["N/A" for i in range(len(self.shipping_data))])
         print(data)
-      gn.first_SO_of_day(xl_file, int(ticket_num[-3:]))
-      xl_file.writeOnXL(data)
-      xl_file.close_file()
+      gn.first_SO_of_day(self.xl_file, int(self.ticket_num[-3:]))
+      self.xl_file.writeOnXL(data)
+      self.xl_file.close_file()
+      clear_entries()
       save_button.configure(text="Saved!")
       save_button.configure(state="disabled")
       back_button.configure(text="Back")
 
     def go_back():
-      xl_file.close_file()
+      self.xl_file.close_file()
       self.master.show_main_frame()
+
+    def clear_entries():
+      cx_name_input.delete(0, "end")
+      cx_phone_input.delete(0, "end")
+      artist_input.delete(0, "end")
+      title_input.delete(0, "end")
+      deposit_input.delete(0, "end")
+      price_input.delete(0, "end")
+      self.shipping_data = []
+      shipping_checkb.deselect()
+      vendors.set('')
+      typs.set('')
+      text_cx.deselect()
+      call_cx.deselect()
+      open_xl_file()
+      get_ticket_num()
+
 
     #--> DISPLAYED <--#
 
@@ -795,12 +829,12 @@ class Prev_SO(ctk.CTkFrame):
     self.excel_file = xl.open_excel_file('SO_Test.xlsx')
     self.df = self.excel_file.read_into_dataframe_SO()
 
-    self.tree_frame = ctk.CTkScrollableFrame(self,
-                                             width=700,
-                                             height=300,
-                                             orientation='horizontal')
+    self.tree_frame = ctk.CTkScrollableFrame(self, height=300, width=700, orientation='horizontal')
 
     self.tree_frame.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+    
+    self.tree_frame.rowconfigure(0, weight=1)
+    self.tree_frame.columnconfigure(0, weight=1)
 
     style = ttk.Style()
     style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('Calibri', 11)) # Modify the font of the body
@@ -808,12 +842,17 @@ class Prev_SO(ctk.CTkFrame):
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     style.map("mystyle.Treeview", background=[('selected', 'blue')], foreground=[('selected', 'white')])
 
+
     # Create the Treeview
     self.tree = ttk.Treeview(self.tree_frame,
                              columns=list(self.df.columns),
                              show="headings", height=20, style="mystyle.Treeview")
+
+    
     
     self.tree.grid(row=0, column=0, sticky='nsew', padx=10, pady=5)
+    self.tree.grid_columnconfigure(0, weight=1)
+    self.tree.grid_rowconfigure(0, weight=1)
 
     for column in self.df.columns:
       self.tree.heading(column, text=column)
@@ -823,9 +862,12 @@ class Prev_SO(ctk.CTkFrame):
     for i, row in self.df.iterrows():
       self.tree.insert('', "end", values=list(row), iid=i)
 
-    # Configure the grid to expand the treeview with window resizing
-    self.tree.grid_columnconfigure(0, weight=1)
-    self.tree.grid_rowconfigure(0, weight=1)
+
+    self.vert_scroll = ttk.Scrollbar(self, command=lambda e: self.tree.yview(e), orient=tk.VERTICAL)
+    self.vert_scroll.grid(row=1, column=1, sticky='ns')
+    self.tree.configure(yscrollcommand=self.vert_scroll.set)
+    self.vert_scroll.config(command=self.tree.yview)
+
 
     # Back Button with CTk Improvement
     self.back_button = ctk.CTkButton(self,
@@ -1138,7 +1180,7 @@ class SO_App(ctk.CTk):
 
   def show_main_frame(self):
     self.hide_all_frames()
-    self.geometry("270x300")
+    self.geometry("270x400")
     self.title("Special Order")
     # Show the main application frame
     self.enable_buttons()
