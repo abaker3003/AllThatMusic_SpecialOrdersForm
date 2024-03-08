@@ -346,7 +346,7 @@ class SO_Form(ctk.CTkFrame):
         data.extend(self.shipping_data)
       else:
         data.append("PICKUP")
-        data.extend(["N/A"] * len(self.shipping_data))
+        data.extend(["N/A" for i in range(len(self.shipping_data))])
         print(data)
       gn.first_SO_of_day(xl_file, int(ticket_num[-3:]))
       xl_file.writeOnXL(data)
@@ -802,10 +802,16 @@ class Prev_SO(ctk.CTkFrame):
 
     self.tree_frame.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
+    style = ttk.Style()
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('Calibri', 11)) # Modify the font of the body
+    style.configure("mystyle.Treeview.Heading", font=('Calibri', 13,'bold')) # Modify the font of the headings
+    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+    style.map("mystyle.Treeview", background=[('selected', 'blue')], foreground=[('selected', 'white')])
+
     # Create the Treeview
     self.tree = ttk.Treeview(self.tree_frame,
                              columns=list(self.df.columns),
-                             show="headings", height=20)
+                             show="headings", height=20, style="mystyle.Treeview")
     
     self.tree.grid(row=0, column=0, sticky='nsew', padx=10, pady=5)
 
