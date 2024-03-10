@@ -40,6 +40,14 @@ class ExcelFile:
         self.workbook.save(self.filename)
         self.close_file()
 
+    def add_row(self, dict):
+        df = pd.DataFrame([dict])
+        existing_df = self.read_into_dataframe_SO()
+        updated_df = pd.concat([existing_df, df], ignore_index=True)
+        with pd.ExcelWriter(self.filename, engine='openpyxl') as writer:
+            updated_df.to_excel(writer, sheet_name=self.worksheet.title, index=False)
+        self.close_file()
+
 
 
 def open_excel_file(file_name): 
