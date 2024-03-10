@@ -698,9 +698,9 @@ class SO_Form(ctk.CTkFrame):
                                 font=("Roboto", 16))
     back_button.grid(row=row_offset, column=4, pady=20)
 
-class CX_Call_Frame(ctk.CTkFrame):
+class SO_Update_Frame(ctk.CTkFrame):
 
-  def __init__(self, *args, header_name="Customer Call", **kwargs):
+  def __init__(self, *args, header_name="Order Update", **kwargs):
     super().__init__(*args, **kwargs)
 
     self.header = ctk.CTkFrame(self)
@@ -803,7 +803,9 @@ class CX_Call_Frame(ctk.CTkFrame):
   def selection(self, matching_rows):
 
     self.final_result = ctk.StringVar(self.results_frame)
-
+    
+    self.clear_selections()
+    
     i = 0
     
     for idx, row in matching_rows.iterrows():
@@ -816,6 +818,12 @@ class CX_Call_Frame(ctk.CTkFrame):
       result = ctk.CTkRadioButton(self.results_frame, text=display__text, value=idx, font=("Roboto", 16), variable=self.final_result)
       result.grid(row=i, column=0, padx=10, pady=10)
       i += 1
+
+  def clear_selections(self):
+    self.final_result.set("")
+    for widget in self.results_frame.winfo_children():
+        widget.destroy()
+
 
 class Prev_SO(ctk.CTkFrame):
 
@@ -1090,7 +1098,7 @@ class SO_App(ctk.CTk):
     self.sidebar_menu.grid_rowconfigure(4, weight=1)
 
     self.special_order_form = SO_Form(self)
-    self.cx_call = CX_Call_Frame(self)
+    self.cx_call = SO_Update_Frame(self)
     self.previous_orders = Prev_SO(self)
     self.ai_form = None
     self.reconciliation_form = Reconciliation(self)
