@@ -240,42 +240,32 @@ class SO_Form(ctk.CTkFrame):
   def __init__(self, *args, header_name="Special Order Form", **kwargs):
     super().__init__(*args, **kwargs)
 
-    self.xl_file = None
-
-    def open_xl_file():
-      self.xl_file = xl.open_excel_file('SO_Test.xlsx')
+    self.xl_file_name = 'SO_Test.xlsx'
+    self.xl_file = xl.open_excel_file(self.xl_file_name)
 
 
-    open_xl_file()
     # Generating current date
     todays_date = gn.get_todays_date()
 
     self.header_name = header_name + " - " 
-    self.ticket_num = ""
-    self.ticket = ""
 
     self.header = ctk.CTkLabel(self, font=("Arial", 20))
 
+    self.ticket_num = gn.ticketnum(self.xl_file)
 
-    def get_ticket_num():
-      # Generating ticket number
-      self.ticket_num = gn.ticketnum(self.xl_file)
+    if gn.get_todays_entries_count(todays_date, self.xl_file) == 1:
+      self.xl_file.empty_row()
 
-      if gn.get_todays_entries_count(todays_date, self.xl_file) == 1:
-        self.xl_file.empty_row()
+    self.ticket = self.header_name + self.ticket_num
 
-      self.ticket = self.header_name + self.ticket_num
-
-      self.header.configure(text=self.ticket)
-      self.header.grid(row=0,
-                      column=1,
-                      columnspan=2,
-                      sticky='w',
-                      pady=(10, 20),
-                      padx=10)
+    self.header.configure(text=self.ticket)
+    self.header.grid(row=0,
+                    column=1,
+                    columnspan=2,
+                    sticky='w',
+                    pady=(10, 20),
+                    padx=10)
       
-    get_ticket_num()
-
     # Date
     date_text = ctk.CTkLabel(self,
                              text="Date: " + todays_date,
@@ -302,7 +292,6 @@ class SO_Form(ctk.CTkFrame):
         return False
 
       return True
-
     # Checks to see if each field input is correct
     def check_proper_info():
       proper = True
@@ -338,7 +327,6 @@ class SO_Form(ctk.CTkFrame):
         proper = False
         num_of_msgs += 1
       return proper, errormsg
-
     # Executes when save buton is clicked
     def save_checkbox_value():
 
@@ -369,6 +357,7 @@ class SO_Form(ctk.CTkFrame):
         data.update(self.shipping_data)
       else:
         data["SHIPPING?"] = "PICKUP"
+        data.update({"ADDRESS": "N/A", "CITY": "N/A", "STATE": "N/A", "ZIPCODE": "N/A"})
       self.xl_file.add_row(data)
       save_button.configure(text="Saved!")
       save_button.configure(state="disabled")
@@ -400,12 +389,11 @@ class SO_Form(ctk.CTkFrame):
       typs.set('')
       text_cx.deselect()
       call_cx.deselect()
-      self.xl_file = self.xl_file.read_into_dataframe_SO()
+      self.xl_file = xl.open_excel_file(self.xl_file_name)
       self.ticket_num = gn.ticketnum(self.xl_file)
       data["REF NUM"] = self.ticket_num
       self.header.configure(text=self.header_name + self.ticket_num)
       save_button.after(2000, lambda: save_button.configure(text="Save", state="normal"))
-
 
     #--> DISPLAYED <--#
 
@@ -884,7 +872,6 @@ class SO_Update_Frame(ctk.CTkFrame):
   def clear_selections(self):
     for widget in self.results_frame.winfo_children():
         widget.destroy()
-
 
 class Prev_SO(ctk.CTkFrame):
 

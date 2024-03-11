@@ -24,9 +24,11 @@ def get_todays_date():
 
 def get_todays_entries_count(today, excel_file):
 
+    xl_file = xl.ExcelFile(excel_file.filename)
+
     # Set count to 1 to avoid triple 0 entry
     count = 1
-    for row in range(1, excel_file.countRows()+1):
-        if excel_file.worksheet.cell(row=row, column=1).value == today:
+    for row in range(1, xl_file.countRows()+1):
+        if xl_file.worksheet.cell(row=row, column=1).value == today:
             count += 1
     return count

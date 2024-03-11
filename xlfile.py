@@ -42,7 +42,7 @@ class ExcelFile:
 
     def empty_row(self):
         # Empty a row at the end of the excel
-        row = self.countRows() + 1
+        row = self.countRows()
         for i in range(1, self.countColumns() + 1):
             self.worksheet.cell(row=row, column=i).value = " "
         self.workbook.save(self.filename)
