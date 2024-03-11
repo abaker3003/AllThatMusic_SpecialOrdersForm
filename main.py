@@ -766,11 +766,12 @@ class SO_Update_Frame(ctk.CTkFrame):
 
     self.input.grid(row=2, column=1, padx=10, pady=5)
     #self.show_uncompleted_orders = ctk.BooleanVar(self.search_frame)
-    show_uncompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show uncompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
-    show_uncompleted_orders.grid(row=2, column=2, padx=10, pady=5)
+    self.show_uncompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show uncompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
+    self.show_uncompleted_orders.grid(row=2, column=2, padx=10, pady=5)
 
-    self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), show_uncompleted_orders.get()), font=("Roboto", 16))
+    self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get()), font=("Roboto", 16))
     self.search_button.grid(row=4, column=1, padx=10, pady=20)
+    self.confirm = ctk.CTkButton(self.opts_frame)
 
   def search(self, data, type, uncompleted):
     if hasattr(self, 'invalid'):
@@ -852,9 +853,15 @@ class SO_Update_Frame(ctk.CTkFrame):
       opt_label = ctk.CTkLabel(self.opts_frame, text= text, font=("Roboto", 14))
       opt_label.grid(row=i+j+2, column=0, padx=10, pady=10)
 
-    self.confirm = ctk.CTkButton(self.opts_frame, text="Confirm", command=lambda: self.update_row(row, self.selected_opt.get(), value), font=("Roboto", 16))
+    self.confirm.configure(self.opts_frame, text="Confirm", command=lambda: self.update_row(row, self.selected_opt.get(), value), font=("Roboto", 16))
     self.confirm.grid(row=i+1, column=0, padx=10, pady=20)
 
+
+#################################################################################################################
+    ########################################################################################################
+                                 # --->v NEED TO FIX THIS FUNCTION v<--- #
+    ########################################################################################################
+#################################################################################################################
   def update_row(self, row, opt, value):
     self.df.at[value, opt] = "YES"
     # Get the index of the selected column
@@ -870,16 +877,22 @@ class SO_Update_Frame(ctk.CTkFrame):
       self.df.at[value, "COMPLETED"] = "YES"
       self.clear_opts()
       self.clear_selections()
+      self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get())
+      
     
     self.df.to_excel('SO_Test.xlsx', index=False)
 
   def clear_opts(self):
-    for widget in self.opts_frame.winfo_children():
-      widget.destroy()
+    self.confirm.grid_forget()
 
   def clear_selections(self):
     for widget in self.results_frame.winfo_children():
         widget.destroy()
+#################################################################################################################
+    ########################################################################################################
+                                 # --->^ NEED TO FIX THIS FUNCTION ^<--- #
+    ########################################################################################################
+#################################################################################################################
 
 class Prev_SO(ctk.CTkFrame):
 
