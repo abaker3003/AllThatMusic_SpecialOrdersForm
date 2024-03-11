@@ -49,7 +49,7 @@ class ExcelFile:
         self.close_file()
 
     def add_row(self, dict, row_index=0):
-        row_index=self.countRows() + 1
+        row_index=self.countRows()
         df = pd.DataFrame([dict])
         existing_df = self.read_into_dataframe_SO()
         updated_df = pd.concat([existing_df.iloc[:row_index], df, existing_df.iloc[row_index:]], ignore_index=True)

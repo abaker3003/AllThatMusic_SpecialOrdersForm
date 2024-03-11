@@ -250,10 +250,6 @@ class SO_Form(ctk.CTkFrame):
     # Generating current date
     todays_date = gn.get_todays_date()
 
-
-    if gn.get_todays_entries_count(todays_date, self.xl_file) == 1:
-      self.xl_file.empty_row()
-
     self.header_name = header_name + " - " 
     self.ticket_num = ""
     self.ticket = ""
@@ -264,6 +260,9 @@ class SO_Form(ctk.CTkFrame):
     def get_ticket_num():
       # Generating ticket number
       self.ticket_num = gn.ticketnum(self.xl_file)
+
+      if gn.get_todays_entries_count(todays_date, self.xl_file) == 1:
+        self.xl_file.empty_row()
 
       self.ticket = self.header_name + self.ticket_num
 
@@ -371,7 +370,6 @@ class SO_Form(ctk.CTkFrame):
       else:
         data["SHIPPING?"] = "PICKUP"
       self.xl_file.add_row(data)
-      self.xl_file.close_file()
       save_button.configure(text="Saved!")
       save_button.configure(state="disabled")
       back_button.configure(text="Back")
@@ -402,10 +400,11 @@ class SO_Form(ctk.CTkFrame):
       typs.set('')
       text_cx.deselect()
       call_cx.deselect()
-      open_xl_file()
-      get_ticket_num()
-      save_button.configure(text="Save")
-      save_button.configure(state="normal")
+      self.xl_file = self.xl_file.read_into_dataframe_SO()
+      self.ticket_num = gn.ticketnum(self.xl_file)
+      data["REF NUM"] = self.ticket_num
+      self.header.configure(text=self.header_name + self.ticket_num)
+      save_button.after(2000, lambda: save_button.configure(text="Save", state="normal"))
 
 
     #--> DISPLAYED <--#
