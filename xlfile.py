@@ -36,14 +36,23 @@ class ExcelFile:
     def update_excel(self, row, new_values):
         # Update the Excel file with the new values
         for i, value in enumerate(new_values, start=1):
-            self.worksheet.cell(row=row, column=i, value=value)
+            self.worksheet.append(row=row, column=i, value=value)
         self.workbook.save(self.filename)
         self.close_file()
 
-    def add_row(self, dict):
+    def empty_row(self):
+        # Empty a row at the end of the excel
+        row = self.countRows() + 1
+        for i in range(1, self.countColumns() + 1):
+            self.worksheet.cell(row=row, column=i).value = " "
+        self.workbook.save(self.filename)
+        self.close_file()
+
+    def add_row(self, dict, row_index=0):
+        row_index=self.countRows() + 1
         df = pd.DataFrame([dict])
         existing_df = self.read_into_dataframe_SO()
-        updated_df = pd.concat([existing_df, df], ignore_index=True)
+        updated_df = pd.concat([existing_df.iloc[:row_index], df, existing_df.iloc[row_index:]], ignore_index=True)
         with pd.ExcelWriter(self.filename, engine='openpyxl') as writer:
             updated_df.to_excel(writer, sheet_name=self.worksheet.title, index=False)
         self.close_file()

@@ -243,12 +243,16 @@ class SO_Form(ctk.CTkFrame):
     self.xl_file = None
 
     def open_xl_file():
-      return xl.open_excel_file('SO_Test.xlsx')
+      self.xl_file = xl.open_excel_file('SO_Test.xlsx')
 
 
-    self.xl_file = open_xl_file()
+    open_xl_file()
     # Generating current date
     todays_date = gn.get_todays_date()
+
+
+    if gn.get_todays_entries_count(todays_date, self.xl_file) == 1:
+      self.xl_file.empty_row()
 
     self.header_name = header_name + " - " 
     self.ticket_num = ""
@@ -284,7 +288,7 @@ class SO_Form(ctk.CTkFrame):
     self.username = getpass.getuser()
 
     # Adding the current date and ticket number to data list
-    data = {"DATE" : todays_date, "REF NUM": self.ticket_num, "COMPLETED" : "NO", "CLERK NAME" : self.username, "SHIPPING?" : "N/A", "ADDRESS" : "N/A", "CITY" : "N/A", "STATE" : "N/A", "ZIPCODE" : "N/A", "PHONE": "N/A", "EMAIL": "N/A", "TEXT?": "N/A", "CALL?": "N/A", "VENDOR": "N/A", "TYPE": "N/A", "ARTIST": "N/A", "TITLE": "N/A", "DEPOSIT": 0.0, "RETAIL": 0.0, "COG": "", "RECEIVED": "NO", "CALLED": "NO", "MESSAGED": "NO"}
+    data = {"DATE" : todays_date, "REF NUM": self.ticket_num, "COMPLETED" : "NO", "CLERK NAME" : self.username, "SHIPPING?" : "N/A", "ADDRESS" : "N/A", "CITY" : "N/A", "STATE" : "N/A", "ZIPCODE" : "N/A", "PHONE": "N/A", "EMAIL": "N/A", "TEXT?": "N/A", "CALL?": "N/A", "VENDOR": "N/A", "TYPE": "N/A", "ARTIST": "N/A", "TITLE": "N/A", "DEPOSIT": 0.0, "RETAIL": 0.0, "COG": " ", "RECEIVED": "NO", "CALLED": "NO", "MESSAGED": "NO"}
 
     # Checks if all input fields are filled
     def check_form_complete():
@@ -366,13 +370,12 @@ class SO_Form(ctk.CTkFrame):
         data.update(self.shipping_data)
       else:
         data["SHIPPING?"] = "PICKUP"
-      gn.first_SO_of_day(self.xl_file, int(self.ticket_num[-3:]))
       self.xl_file.add_row(data)
       self.xl_file.close_file()
-      clear_entries()
       save_button.configure(text="Saved!")
       save_button.configure(state="disabled")
       back_button.configure(text="Back")
+      clear_entries()
 
     def go_back():
       self.xl_file.close_file()
@@ -393,13 +396,16 @@ class SO_Form(ctk.CTkFrame):
         }
       shipping_checkb.deselect()
       vendors.set('')
-      self.other_vender.set('')
-      self.other_type.set('')
+      self.other_vender.delete(0, "end")
+      self.other_type.delete(0, "end")
+      cx_email_input.delete(0, "end")
       typs.set('')
       text_cx.deselect()
       call_cx.deselect()
       open_xl_file()
       get_ticket_num()
+      save_button.configure(text="Save")
+      save_button.configure(state="normal")
 
 
     #--> DISPLAYED <--#
@@ -869,6 +875,8 @@ class SO_Update_Frame(ctk.CTkFrame):
       self.df.at[value, "COMPLETED"] = "YES"
       self.clear_opts()
       self.clear_selections()
+    
+    self.df.to_excel('SO_Test.xlsx', index=False)
 
   def clear_opts(self):
     for widget in self.opts_frame.winfo_children():
