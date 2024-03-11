@@ -820,7 +820,6 @@ class SO_Update_Frame(ctk.CTkFrame):
     i = 0
     
     for idx, row in matching_rows.iterrows():
-      print(idx)
       display__text = row['REF NUM'] + " : " + row['CX NAME'] + " - " + row['PHONE'] + "\t"
       if row['COMPLETED'] == 'NO':
         display__text += " - UNCOMPLETED"
@@ -839,10 +838,19 @@ class SO_Update_Frame(ctk.CTkFrame):
     options = ['RECEIVED', 'CALLED', 'MESSAGED']
     self.opts_for_row = [opt for opt in options if row[opt] != 'YES']
     self.selected_opt = ctk.StringVar(self.opts_frame)
-    self.selected_opt.set(self.opts_for_row[0])
+    i = 0
+
     for i, opt in enumerate(self.opts_for_row):
       opt_button = ctk.CTkRadioButton(self.opts_frame, text=opt, value=opt, font=("Roboto", 16), variable=self.selected_opt)
       opt_button.grid(row=i, column=0, padx=10, pady=10)
+
+    # Labels of completed options
+    complete_opt = set(options) - set(self.opts_for_row)
+    for j, opt in enumerate(complete_opt):
+      cmp = {opt: row[opt], "DATE": row[opt + " DATE"], "CLERK": row[opt + " CLERK"]} 
+      text = opt + "\nwas completed by " + cmp["CLERK"] + "\non " + cmp["DATE"]
+      opt_label = ctk.CTkLabel(self.opts_frame, text= text, font=("Roboto", 14))
+      opt_label.grid(row=i+j+2, column=0, padx=10, pady=10)
 
     self.confirm = ctk.CTkButton(self.opts_frame, text="Confirm", command=lambda: self.update_row(row, self.selected_opt.get(), value), font=("Roboto", 16))
     self.confirm.grid(row=i+1, column=0, padx=10, pady=20)
@@ -941,7 +949,6 @@ class Prev_SO(ctk.CTkFrame):
   def on_double_click(self, event):
     # Get the selected item
     item = self.tree.selection()[0]
-    print(item)
     values = self.tree.item(item, 'values')
 
     # Create a dialog with entry fields for each column
@@ -967,6 +974,7 @@ class Prev_SO(ctk.CTkFrame):
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=vendors_values)
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
+
       elif column == "TEXT?" or column == "CALL?":
         label = ctk.CTkLabel(self.scroll_diag, text=column)
         label.grid(row=i, column=0, padx=10, pady=5)
@@ -977,6 +985,7 @@ class Prev_SO(ctk.CTkFrame):
                               offvalue="NO", text="").grid(row=i, column=1, padx=10, pady=5)
         self.entries[column] = self.switch
         continue
+
       elif column == "COMPLETED":
         stat = ctk.CTkLabel(self.scroll_diag, text="Order Status: ")
         stat.grid(row=i, column=0, padx=10, pady=5)
@@ -987,11 +996,13 @@ class Prev_SO(ctk.CTkFrame):
           label.configure(text="Completed")
         label.grid(row=i, column=1, padx=10, pady=5)
         continue
+
       elif column == "DEPOSIT" or column == "RETAIL":
         entry = ctk.DoubleVar(value=values[i])
         entry_num = ctk.CTkEntry(self.scroll_diag)
         entry_num.insert(0, values[i])  # Set to current value or default one
         entry_num.grid(row=i, column=1, padx=10, pady=5)
+
       elif column == "TEXT?" or column == "CALL?":
         self.switch = ctk.StringVar(value=values[i])
         entry = ctk.CTkSwitch(self.scroll_diag,
@@ -1000,22 +1011,20 @@ class Prev_SO(ctk.CTkFrame):
                               offvalue="NO")
         self.entries[column] = self.switch
         continue
+
       elif column == "TYPE":
         entry = ctk.CTkOptionMenu(self.scroll_diag, values=typ_values)
         entry.set(values[i])  # Set to current value or default one
         entry.grid(row=i, column=1, padx=10, pady=5)
+
       elif column == "SHIPPING?":
 
         self.shipping_info_entries = ["ADDRESS", "CITY", "STATE", "ZIPCODE"]
-
         shipping_labels = []
-
         self.shipping_entries = []
-
         self.start_row_index = i + 1
 
         def show_shipping_info():
-
           for j, info in enumerate(self.shipping_info_entries):
             label = ctk.CTkLabel(self.scroll_diag,
                                  text=info,
@@ -1050,6 +1059,7 @@ class Prev_SO(ctk.CTkFrame):
                               variable=self.switch,
                               onvalue="SHIPPING",
                               offvalue="PICKUP")
+        
         if values[i] == "SHIPPING":
           entry._check_state = True
           show_shipping_info()
@@ -1076,6 +1086,7 @@ class Prev_SO(ctk.CTkFrame):
         self.dialog,
         text="Save",
         command=lambda: self.save(item, self.entries))
+    
     self.save_changes_button.grid(row=button_start_row_index,
                                   column=0,
                                   columnspan=2,
@@ -1084,6 +1095,7 @@ class Prev_SO(ctk.CTkFrame):
     self.cancel_changes_button = ctk.CTkButton(self.dialog,
                                                text="Cancel",
                                                command=self.dialog.destroy)
+    
     self.cancel_changes_button.grid(row=button_start_row_index + 1,
                                     column=0,
                                     columnspan=2,
@@ -1105,8 +1117,6 @@ class Prev_SO(ctk.CTkFrame):
     self.tree.item(item, values=new_values)
 
     item_index = int(item) + 1
-
-    print("Item index:", item_index)
 
     for column, new_value in zip(self.df.columns, new_values):
       self.df.at[item_index,
@@ -1210,7 +1220,7 @@ class SO_App(ctk.CTk):
     self.special_order_form_button.configure(state="disabled")
 
   def show_cx_call(self):
-    self.geometry("1015x400")
+    self.geometry("1052x460")
     self.title("Order Update")
     self.hide_all_frames()
     self.cx_call.grid(row=0, column=1, sticky='nsew', padx=5, pady=5)
