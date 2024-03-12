@@ -863,15 +863,9 @@ class SO_Update_Frame(ctk.CTkFrame):
     ########################################################################################################
 #################################################################################################################
   def update_row(self, row, opt, value):
-    self.df.at[value, opt] = "YES"
-    # Get the index of the selected column
-    selected_column_index = self.df.columns.get_loc(opt)
 
-    # Update the next two columns
-    next_column_1 = self.df.columns[selected_column_index + 1]
-    next_column_2 = self.df.columns[selected_column_index + 2]
-    self.df.at[value, next_column_1] = self.date
-    self.df.at[value, next_column_2] = self.user
+    for i, _ in enumerate(self.df.columns[self.df.columns.get_loc(opt)+1:]):
+        self.df.loc[value, [opt, f"NextColumn_{i+1}"]] = ["YES", gn.get_todays_date(), self.user]
 
     if opt == "MESSAGED":
       self.df.at[value, "COMPLETED"] = "YES"
