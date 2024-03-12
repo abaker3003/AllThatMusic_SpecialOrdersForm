@@ -1,16 +1,13 @@
 import tkinter as tk
-from tkinter import Scrollbar, ttk
+from tkinter import  ttk
 import tkinter.ttk as ttk
 import tkinter.messagebox as msgbox
-from typing import Tuple
 import customtkinter as ctk
-from matplotlib import artist
-from ScrollableFrameXY import ScrollableFrame
 import generators as gn
 import xlfile as xl
-from tkinter import Scrollbar
 import re
 import getpass
+import pandas as pd
 
 ctk.set_default_color_theme('C:/Users/abake/OneDrive/Documents/AllThatMusic_SpecialOrdersForm/red.json')
 
@@ -240,8 +237,7 @@ class SO_Form(ctk.CTkFrame):
   def __init__(self, *args, header_name="Special Order Form", **kwargs):
     super().__init__(*args, **kwargs)
 
-    self.xl_file_name = 'SO_Test.xlsx'
-    self.xl_file = xl.open_excel_file(self.xl_file_name)
+    self.xl_file = xl.open_excel_file('SO_Test.xlsx')
 
 
     # Generating current date
@@ -389,7 +385,7 @@ class SO_Form(ctk.CTkFrame):
       typs.set('')
       text_cx.deselect()
       call_cx.deselect()
-      self.xl_file = xl.open_excel_file(self.xl_file_name)
+      self.xl_file = xl.open_excel_file('SO_Test.xlsx')
       self.ticket_num = gn.ticketnum(self.xl_file)
       data["REF NUM"] = self.ticket_num
       self.header.configure(text=self.header_name + self.ticket_num)
@@ -756,63 +752,75 @@ class SO_Update_Frame(ctk.CTkFrame):
     search_methods = ["Phone Number", "Name", "Ticket Number"]
     self.input = ctk.CTkEntry(self.search_frame, font=("Roboto", 16))
     
-
-
     self.search_method_opt = ctk.StringVar(self.search_frame)
+    
     for i, method in enumerate(search_methods):
       self.search_method_opt.set(search_methods[0])  # Set default value
       search_method_opt = ctk.CTkRadioButton(self.search_frame, text=method, value=method, font=("Roboto", 16), variable=self.search_method_opt)
       search_method_opt.grid(row=1, column=i, padx=10, pady=5)
 
     self.input.grid(row=2, column=1, padx=10, pady=5)
-    #self.show_uncompleted_orders = ctk.BooleanVar(self.search_frame)
     self.show_uncompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show uncompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
     self.show_uncompleted_orders.grid(row=2, column=2, padx=10, pady=5)
 
     self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get()), font=("Roboto", 16))
     self.search_button.grid(row=4, column=1, padx=10, pady=20)
-    self.confirm = ctk.CTkButton(self.opts_frame)
+
+    self.confirm = ctk.CTkButton(self.opts_frame, text="", command=None, font=("Roboto", 16))
 
   def search(self, data, type, uncompleted):
+
     if hasattr(self, 'invalid'):
-      self.invalid.destroy()
+      self.invalid.grid_forget()
+
     self.invalid = ctk.CTkLabel(self.search_frame, text="Invalid input. Please try again.", font=("Roboto", 16))
+
     self.clear_selections()
-    if type == "Phone Number":
-      if not data.isdigit() or len(data) != 10:
-        self.invalid.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
+
+    if type == "Phone Number" and data.isdigit() and len(data) == 10:
       data = re.sub(r'\D', '', data)
       data = "({}){}-{}".format(data[:3], data[3:6], data[6:])
       self.search_data(phone=data, uncompleted = uncompleted)
+
     elif type == "Ticket Number" and data[:2] == 'SO' and data[2:].isdigit():
       self.search_data(ticket=data, uncompleted = uncompleted)
+
     elif type =="Name" and data[0].isalpha():
       self.search_data(name=data, uncompleted = uncompleted)
+
     else:
       self.invalid.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
 
   def search_data(self, phone=None, name=None, ticket=None, uncompleted=None):
-    self.df = xl.open_excel_file('SO_Test.xlsx').read_into_dataframe_SO()
+
+    self.d = xl.open_excel_file('SO_Test.xlsx')
+    self.df = self.d.read_into_dataframe_SO()
+
     if phone:
       matching_rows = self.df[self.df['PHONE'] == phone]
       if uncompleted:
         matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
       self.selection(matching_rows)
+
     elif name:
       matching_rows = self.df[self.df['CX NAME'] == name]
       if uncompleted:
         matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
       self.selection(matching_rows)
+
     elif ticket:
       matching_rows = self.df[self.df['REF NUM'] == ticket]
       if uncompleted:
         matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
 
-      if matching_rows is None:
-        no_results = ctk.CTkLabel(self.results_frame, text = "No results found. Try again!", font=("Roboto", 16))
-        no_results.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
-      else:
-        self.selection(matching_rows)
+
+    if matching_rows is None:
+      no_results = ctk.CTkLabel(self.results_frame, text = "No results found. Try again!", font=("Roboto", 16))
+      no_results.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
+
+    else:
+      self.selection(matching_rows)
+
 
   def selection(self, matching_rows):
 
@@ -830,31 +838,60 @@ class SO_Update_Frame(ctk.CTkFrame):
       result.grid(row=i, column=0, padx=10, pady=10)
       i += 1
 
+
   def update_opts(self, value):
+
     self.clear_opts()
 
-    self.df = xl.open_excel_file('SO_Test.xlsx').read_into_dataframe_SO()
+    self.df = xl.open_excel_file('SO_Test.xlsx')
+    self.df = self.df.read_into_dataframe_SO()
     row = self.df.loc[value]
 
     options = ['RECEIVED', 'CALLED', 'MESSAGED']
+
     self.opts_for_row = [opt for opt in options if row[opt] != 'YES']
+
+    if row["COMPLETED"] == "YES":
+
+      self.clear_opts()
+
+      self.clear_confirm_button()
+
+      for i, opt in enumerate(options):
+        rem_cols = {opt + " DATE": "",  opt + " CLERK": ""}
+
+        for col in rem_cols:
+          rem_cols[col] = self.df.at[value, col]
+
+        string =  opt + " by " + rem_cols[opt + " CLERK"]  + " \non " + rem_cols[opt + " DATE"]
+        completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+        completed_opt.grid(row=i, column=0, padx=10, pady=10, sticky='ew')
+
+      return  
+
     self.selected_opt = ctk.StringVar(self.opts_frame)
     i = 0
 
     for i, opt in enumerate(self.opts_for_row):
+
       opt_button = ctk.CTkRadioButton(self.opts_frame, text=opt, value=opt, font=("Roboto", 16), variable=self.selected_opt)
       opt_button.grid(row=i, column=0, padx=10, pady=10)
 
     # Labels of completed options
     complete_opt = set(options) - set(self.opts_for_row)
+
+
     for j, opt in enumerate(complete_opt):
+
       cmp = {opt: row[opt], "DATE": row[opt + " DATE"], "CLERK": row[opt + " CLERK"]} 
+
       text = opt + "\nwas completed by " + cmp["CLERK"] + "\non " + cmp["DATE"]
+
       opt_label = ctk.CTkLabel(self.opts_frame, text= text, font=("Roboto", 14))
       opt_label.grid(row=i+j+2, column=0, padx=10, pady=10)
 
-    self.confirm.configure(self.opts_frame, text="Confirm", command=lambda: self.update_row(row, self.selected_opt.get(), value), font=("Roboto", 16))
-    self.confirm.grid(row=i+1, column=0, padx=10, pady=20)
+    self.confirm = ctk.CTkButton(self.opts_frame, text="Confirm", command=lambda: self.update_row(self.selected_opt.get(), value), font=("Roboto", 16))
+    self.confirm.grid(row=i + 1, column=0, padx=10, pady=20)
 
 
 #################################################################################################################
@@ -862,22 +899,52 @@ class SO_Update_Frame(ctk.CTkFrame):
                                  # --->v NEED TO FIX THIS FUNCTION v<--- #
     ########################################################################################################
 #################################################################################################################
-  def update_row(self, row, opt, value):
+  
+  def update_row(self, opt, value):
+     
+    self.df.at[value, opt] = "YES"
+    # Get the index of the selected column
+    selected_column_index = self.df.columns.get_loc(opt)
 
-    for i, _ in enumerate(self.df.columns[self.df.columns.get_loc(opt)+1:]):
-        self.df.loc[value, [opt, f"NextColumn_{i+1}"]] = ["YES", gn.get_todays_date(), self.user]
+    # Update the next two columns
+    next_column_1 = self.df.columns[selected_column_index + 1]
+    next_column_2 = self.df.columns[selected_column_index + 2]
+    self.df.at[value, next_column_1] = self.date
+    self.df.at[value, next_column_2] = self.user
 
+    self.df.to_excel('SO_Test.xlsx', index=False)
+
+
+    #################################################################################################################
+    ########################################################################################################
+                                 # --->v NEED TO FIX THIS FUNCTION v<--- #
+    ########################################################################################################
+#################################################################################################################
+    
+    ##  Remove the MESSAGE part, add function to add other columns if there had been more than one call ##
+    ##  going out, AND add a note entry box for employees to fill out notes on call ##
     if opt == "MESSAGED":
       self.df.at[value, "COMPLETED"] = "YES"
+      self.df.to_excel('SO_Test.xlsx', index=False)
+      self.clear_confirm_button()
       self.clear_opts()
       self.clear_selections()
       self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get())
-      
-    
-    self.df.to_excel('SO_Test.xlsx', index=False)
+
+
+      #################################################################################################################
+    ########################################################################################################
+                                 # --->^ NEED TO FIX THIS FUNCTION ^<--- #
+    ########################################################################################################
+#################################################################################################################
+
+
+  def clear_confirm_button(self):
+    self.confirm.grid_forget()
 
   def clear_opts(self):
-    self.confirm.grid_forget()
+    for widget in self.opts_frame.winfo_children():
+      widget.grid_forget()
 
   def clear_selections(self):
     for widget in self.results_frame.winfo_children():
@@ -888,6 +955,14 @@ class SO_Update_Frame(ctk.CTkFrame):
     ########################################################################################################
 #################################################################################################################
 
+
+
+
+#################################################################################################################
+    ########################################################################################################
+                                 # --->v NEED TO MODIFY THIS CLASS v<--- #
+    ########################################################################################################
+#################################################################################################################
 class Prev_SO(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Previous Special Orders", **kwargs):
@@ -1152,6 +1227,8 @@ class Prev_SO(ctk.CTkFrame):
 
 class SO_App(ctk.CTk):
 
+  ## need to add frame/ button to generate all the orders that have not been [received, called, or completed] ##
+
   def __init__(self):
     super().__init__()
     self.title("Special Order")
@@ -1257,6 +1334,12 @@ class SO_App(ctk.CTk):
     self.title("Special Order")
     # Show the main application frame
     self.enable_buttons()
+
+#################################################################################################################
+    ########################################################################################################
+                                 # --->^ NEED TO MODIFY THIS CLASS ^<--- #
+    ########################################################################################################
+#################################################################################################################
 
 
 window = SO_App()
