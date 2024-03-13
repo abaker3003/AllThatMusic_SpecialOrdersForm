@@ -273,7 +273,7 @@ class SO_Form(ctk.CTkFrame):
     self.username = getpass.getuser()
 
     # Adding the current date and ticket number to data list
-    data = {"DATE" : todays_date, "REF NUM": self.ticket_num, "COMPLETED" : "NO", "CLERK NAME" : self.username, "SHIPPING?" : "N/A", "ADDRESS" : "N/A", "CITY" : "N/A", "STATE" : "N/A", "ZIPCODE" : "N/A", "PHONE": "N/A", "EMAIL": "N/A", "TEXT?": "N/A", "CALL?": "N/A", "VENDOR": "N/A", "TYPE": "N/A", "ARTIST": "N/A", "TITLE": "N/A", "DEPOSIT": 0.0, "RETAIL": 0.0, "COG": " ", "RECEIVED": "NO", "CALLED": "NO", "MESSAGED": "NO"}
+    data = {"DATE" : todays_date, "REF NUM": self.ticket_num, "COMPLETED" : "NO", "CLERK NAME" : self.username, "SHIPPING?" : "N/A", "ADDRESS" : "N/A", "CITY" : "N/A", "STATE" : "N/A", "ZIPCODE" : "N/A", "PHONE": "N/A", "EMAIL": "N/A", "TEXT?": "N/A", "CALL?": "N/A", "VENDOR": "N/A", "TYPE": "N/A", "ARTIST": "N/A", "TITLE": "N/A", "DEPOSIT": 0.0, "RETAIL": 0.0, "COG": " ", "RECEIVED": "NO"}
 
     # Checks if all input fields are filled
     def check_form_complete():
