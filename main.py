@@ -354,6 +354,7 @@ class SO_Form(ctk.CTkFrame):
       else:
         data["SHIPPING?"] = "PICKUP"
         data.update({"ADDRESS": "N/A", "CITY": "N/A", "STATE": "N/A", "ZIPCODE": "N/A"})
+      data["# OF CALLS"] = 0
       self.xl_file.add_row(data)
       save_button.configure(text="Saved!")
       save_button.configure(state="disabled")
@@ -746,7 +747,7 @@ class SO_Update_Frame(ctk.CTkFrame):
     self.results_frame = ctk.CTkScrollableFrame(self, height=120, orientation='vertical')
     self.results_frame.grid(row=3, column=0, sticky='nsew', padx=10, pady=10)
 
-    self.opts_frame = ctk.CTkFrame(self)
+    self.opts_frame = ctk.CTkScrollableFrame(self, height=120, orientation='vertical')
     self.opts_frame.grid(row=2, column=1, rowspan=2, sticky='nsew', padx=10, pady=10)
 
     search_methods = ["Phone Number", "Name", "Ticket Number"]
@@ -841,16 +842,30 @@ class SO_Update_Frame(ctk.CTkFrame):
 
   def update_opts(self, value):
 
+    self.call_entry = ctk.CTkEntry(self.opts_frame, placeholder_text="NOTE", font=("Roboto", 16), width=100)
+
     self.clear_opts()
 
     self.df = xl.open_excel_file('SO_Test.xlsx')
     self.df = self.df.read_into_dataframe_SO()
     row = self.df.loc[value]
 
-    options = ['RECEIVED', 'CALLED', 'COMPLETED']
+    options = ['RECEIVED', 'CALL', 'COMPLETED']
 
-    self.opts_for_row = [opt for opt in options if row[opt] != 'YES']
+    self.opts_for_row = []
 
+    if row["RECEIVED"] != "YES":
+      self.opts_for_row.append("RECEIVED")
+
+    self.opts_for_row.append("CALL")
+
+    if row["COMPLETED"] != "YES":
+      self.opts_for_row.append("COMPLETED")
+
+    num_calls = row["# OF CALLS"]
+    
+
+    ## DISPLAY IF THE ORDER IS COMPLETED
     if row["COMPLETED"] == "YES":
 
       self.clear_opts()
@@ -858,86 +873,100 @@ class SO_Update_Frame(ctk.CTkFrame):
       self.clear_confirm_button()
 
       for i, opt in enumerate(options):
-        rem_cols = {opt + " DATE": "",  opt + " CLERK": ""}
 
-        for col in rem_cols:
-          rem_cols[col] = self.df.at[value, col]
+        if opt == "RECEIVED":        
+          string =  opt + " by " + row[opt + " CLERK"]  + " \non " + row[opt + " DATE"]
+          completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+          completed_opt.grid(row=i, column=0, padx=10, pady=10, sticky='ew')
 
-        string =  opt + " by " + rem_cols[opt + " CLERK"]  + " \non " + rem_cols[opt + " DATE"]
-        completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
-        completed_opt.grid(row=i, column=0, padx=10, pady=10, sticky='ew')
+        elif opt == "CALL":
+          for j in range(1, num_calls + 1):
+            string =  opt + " #" + str(j) + " by " + row[opt + str(j) + " CLERK" ]  + " \non " + row[opt+ str(j) + " DATE"] + " \n" + row[opt + str(j)] 
+            completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+            completed_opt.grid(row=i+j - 1, column=0, padx=10, pady=10, sticky='ew')
+
+        else:
+          string =  opt + " by " + row[opt + " CLERK"]  + " \non " + row[opt + " DATE"]
+          completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+          completed_opt.grid(row=i+num_calls+1, column=0, padx=10, pady=10, sticky='ew')
 
       return  
+
 
     self.selected_opt = ctk.StringVar(self.opts_frame)
     i = 0
 
     for i, opt in enumerate(self.opts_for_row):
-
+        
       opt_button = ctk.CTkRadioButton(self.opts_frame, text=opt, value=opt, font=("Roboto", 16), variable=self.selected_opt)
-      opt_button.grid(row=i, column=0, padx=10, pady=10)
+
+      if opt == "CALL":
+        opt_button.grid(row=i, column=0, padx=10, pady=10)
+        self.call_entry.grid(row=i + 1, column=0, padx=10, pady=10, sticky='ew')
+        i+=1
+      elif opt == "RECEIVED":
+        opt_button.grid(row=i, column=0, padx=10, pady=10)
+      
+      else: 
+        opt_button.grid(row=i + 1, column=0, padx=10, pady=10)
 
     # Labels of completed options
-    complete_opt = set(options) - set(self.opts_for_row)
 
+    for j, opt in enumerate(options):
 
-    for j, opt in enumerate(complete_opt):
+      if opt == "RECEIVED" and row["RECEIVED"] == "YES":        
+        string =  opt + " by " + str(row[opt + " CLERK"])  + " \non " + str(row[opt + " DATE"])
+        completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+        completed_opt.grid(row=j + i + 3, column=0, padx=10, pady=10, sticky='ew')
 
-      cmp = {opt: row[opt], "DATE": row[opt + " DATE"], "CLERK": row[opt + " CLERK"]} 
+      # THIS WILL HAVE A TEXTBOX ENTRY THAT NEEDS TO BE DISPLAYED
+      elif opt == "CALL" and row["# OF CALLS"] > 0:
 
-      text = opt + "\nwas completed by " + cmp["CLERK"] + "\non " + cmp["DATE"]
+        for k in range(1, num_calls + 1):
+          string =  opt + " #" + str(k) + " by " + str(row[opt + str(k) + " CLERK" ])  + " \non " + str(row[opt+ str(k) + " DATE"]) + " \n" + str(row[opt + str(k)]) 
+          completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+          completed_opt.grid(row=j+k + i + 2, column=0, padx=10, pady=10, sticky='ew')
 
-      opt_label = ctk.CTkLabel(self.opts_frame, text= text, font=("Roboto", 14))
-      opt_label.grid(row=i+j+2, column=0, padx=10, pady=10)
+      elif opt == "COMPLETED" and row["COMPLETED"] == "YES":
+        string =  opt + " by " + str(row[opt + " CLERK"])  + " \non " + str(row[opt + " DATE"])
+        completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+        completed_opt.grid(row=j+num_calls+1 + i + 3, column=0, padx=10, pady=10, sticky='ew')
 
     self.confirm = ctk.CTkButton(self.opts_frame, text="Confirm", command=lambda: self.update_row(self.selected_opt.get(), value), font=("Roboto", 16))
-    self.confirm.grid(row=i + 1, column=0, padx=10, pady=20)
+    self.confirm.grid(row=i + + 2, column=0, padx=10, pady=20)
 
 
-#################################################################################################################
-    ########################################################################################################
-                                 # --->v NEED TO FIX THIS FUNCTION v<--- #
-                                 # removed message from options list and excel file #
-    ########################################################################################################
-#################################################################################################################
-  
   def update_row(self, opt, value):
-     
-    self.df.at[value, opt] = "YES"
-    # Get the index of the selected column
-    selected_column_index = self.df.columns.get_loc(opt)
 
-    # Update the next two columns
-    next_column_1 = self.df.columns[selected_column_index + 1]
-    next_column_2 = self.df.columns[selected_column_index + 2]
-    self.df.at[value, next_column_1] = self.date
-    self.df.at[value, next_column_2] = self.user
+    if opt == "RECEIVED":
+      self.df.at[value, opt] = "YES"
+      self.df.at[value, opt + " DATE"] = self.date
+      self.df.at[value, opt + " CLERK"] = self.user
+
+    elif opt == "CALL":
+      num_calls = self.df.at[value, "# OF CALLS"]
+      self.df.at[value, opt + str(num_calls + 1)] = self.call_entry.get()
+      self.df.at[value, opt + str(num_calls + 1) + " DATE"] = self.date
+      self.df.at[value, opt + str(num_calls + 1) + " CLERK"] = self.user
+      self.df.at[value, "# OF CALLS"] = num_calls + 1
+      
+    elif opt == "COMPLETED":
+      self.df.at[value, opt] = "YES"
+      self.df.at[value, opt + " DATE"] = self.date
+      self.df.at[value, opt + " CLERK"] = self.user
 
     self.df.to_excel('SO_Test.xlsx', index=False)
 
 
-    #################################################################################################################
-    ########################################################################################################
-                                 # --->v NEED TO FIX THIS FUNCTION v<--- #
-    ########################################################################################################
-#################################################################################################################
-    
-    ##  Remove the MESSAGE part, add function to add other columns if there had been more than one call ##
-    ##  going out, AND add a note entry box for employees to fill out notes on call ##
-    if opt == "MESSAGED":
-      self.df.at[value, "COMPLETED"] = "YES"
+    self.update_opts(value)
+
+
+    '''if opt == "COMPLETED":
       self.df.to_excel('SO_Test.xlsx', index=False)
       self.clear_confirm_button()
       self.clear_opts()
       self.clear_selections()
-      self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get())
-
-
-      #################################################################################################################
-    ########################################################################################################
-                                 # --->^ NEED TO FIX THIS FUNCTION ^<--- #
-    ########################################################################################################
-#################################################################################################################
+      self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get())'''
 
 
   def clear_confirm_button(self):
@@ -950,20 +979,7 @@ class SO_Update_Frame(ctk.CTkFrame):
   def clear_selections(self):
     for widget in self.results_frame.winfo_children():
         widget.destroy()
-#################################################################################################################
-    ########################################################################################################
-                                 # --->^ NEED TO FIX THIS FUNCTION ^<--- #
-    ########################################################################################################
-#################################################################################################################
 
-
-
-
-#################################################################################################################
-    ########################################################################################################
-                                 # --->v NEED TO MODIFY THIS CLASS v<--- #
-    ########################################################################################################
-#################################################################################################################
 class Prev_SO(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Previous Special Orders", **kwargs):
