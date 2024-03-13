@@ -847,7 +847,7 @@ class SO_Update_Frame(ctk.CTkFrame):
     self.df = self.df.read_into_dataframe_SO()
     row = self.df.loc[value]
 
-    options = ['RECEIVED', 'CALLED', 'MESSAGED']
+    options = ['RECEIVED', 'CALLED', 'COMPLETED']
 
     self.opts_for_row = [opt for opt in options if row[opt] != 'YES']
 
@@ -897,6 +897,7 @@ class SO_Update_Frame(ctk.CTkFrame):
 #################################################################################################################
     ########################################################################################################
                                  # --->v NEED TO FIX THIS FUNCTION v<--- #
+                                 # removed message from options list and excel file #
     ########################################################################################################
 #################################################################################################################
   
