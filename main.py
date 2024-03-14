@@ -566,11 +566,13 @@ class SO_Form(ctk.CTkFrame):
 
   ### ---> NEED TO FIGURE OUT A WAY TO HAVE RADIOBUTTONS SWITCH BETWEEN VENDORS <--- ###
     ### ---> NEED TO TEST <--- ###
-    def switch(opt):
+    def switch():
+      global vendors_switch_var
+      vendors_switch_var = self.vendors_switch_var.get()
       for widget in self.vendors_buttons.winfo_children():
         if widget != vendors_switch and widget != vendors_text:
           widget.grid_remove()
-      if opt == 0:
+      if vendors_switch_var == 0:
         switch_traditional()
       else:
         switch_collectible()
@@ -619,11 +621,10 @@ class SO_Form(ctk.CTkFrame):
     vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text=None, text_color="#FFFFFF", onvalue=1, offvalue=0)
     vendors_switch.grid(row=0, column=2, pady=(0, 10), sticky='new')
 
-    switch_traditional()
+    #switch_traditional()
 
     self.vendors_switch_var.trace_add(
-      "write",
-      lambda *args: switch(self.vendors_switch_var.get()))
+      "write", switch)
     
 
 #################################################################################################################
