@@ -547,34 +547,76 @@ class SO_Form(ctk.CTkFrame):
                               padx=40)
     # Title for Vendors
     vendors_text = ctk.CTkLabel(self.vendors_buttons,
-                                text="Vendors",
-                                font=("Arial Black", 20),
-                                text_color="#FFFFFF")
+                  text="Vendors",
+                  font=("Arial Black", 20),
+                  text_color="#FFFFFF")
     vendors_text.grid(row=0, column=1, pady=(0, 10), sticky='new')
     # Radio Button for Vendors
     vendors = ctk.StringVar(self.vendors_buttons)
-    vendors_values = ["AEC", "AMS", "AMA", "OTHER"]
+    traditional_vendors = ["AEC", "AMS", "AMA", "OTHER"]
+    collectible_vendors = ["Ebay", "AMA", "Discogs", "OTHER"]
+    self.other_vendor = ctk.CTkEntry(self.vendors_buttons, placeholder_text="Vendor Name", width=100)
 
-    # Button positioning based on amount of options
-    for i, vendor in enumerate(vendors_values):
-      if i < 3:
-        rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                      text=vendor,
-                                      variable=vendors,
-                                      value=vendor,
-                                      text_color="#FFFFFF",
-                                      font=("Roboto", 16))
-        rdio_opt.grid(row=1, column=i, sticky='ew', pady=5)
+
+  ### ---> NEED TO FIGURE OUT A WAY TO HAVE RADIOBUTTONS SWITCH BETWEEN VENDORS <--- ###
+    ### ---> NEED TO TEST <--- ###
+    def switch(opt):
+      for widget in self.vendors_buttons.winfo_children():
+        if widget != vendors_switch and widget != vendors_text:
+          widget.grid_remove()
+      if opt == 0:
+        switch_traditional()
       else:
-        rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                      text=vendor,
-                                      variable=vendors,
-                                      value=vendor,
-                                      text_color="#FFFFFF",
-                                      font=("Roboto", 16))
-        rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5)
-    self.other_vender = ctk.CTkEntry(self.vendors_buttons, placeholder_text="Vendor Name", width=100)
-    self.other_vender.grid(row=2, column=1)
+        switch_collectible()
+
+    def switch_collectible():
+      for i, vendor in enumerate(collectible_vendors):
+        if i < 3:
+          rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
+                                        text=vendor,
+                                        variable=vendors,
+                                        value=vendor,
+                                        text_color="#FFFFFF",
+                                        font=("Roboto", 16))
+          rdio_opt.grid(row=1, column=i, sticky='ew', pady=5)
+        else:
+          rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
+                                        text=vendor,
+                                        variable=vendors,
+                                        value=vendor,
+                                        text_color="#FFFFFF",
+                                        font=("Roboto", 16))
+          rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5)
+      self.other_vendor.grid(row=2, column=1)
+    def switch_traditional():
+      for i, vendor in enumerate(traditional_vendors):
+        if i < 2:
+          rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
+                                        text=vendor,
+                                        variable=vendors,
+                                        value=vendor,
+                                        text_color="#FFFFFF",
+                                        font=("Roboto", 16))
+          rdio_opt.grid(row=1, column=i, sticky='ew', pady=5)
+        else:
+          rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
+                                        text=vendor,
+                                        variable=vendors,
+                                        value=vendor,
+                                        text_color="#FFFFFF",
+                                        font=("Roboto", 16))
+          rdio_opt.grid(row=2, column=i - 2, sticky='ew', pady=5)
+      self.other_vendor.grid(row=2, column=1)
+
+    self.vendors_switch_var = ctk.IntVar(self.vendors_buttons, value=0)
+    vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text=None, text_color="#FFFFFF", onvalue=1, offvalue=0)
+    vendors_switch.grid(row=0, column=1, pady=(0, 10), sticky='new')
+
+    self.vendors_switch_var.trace_add(
+            "write",
+            lambda *args: switch(self.vendors_switch_var.get()))
+
+
 
     self.type_buttons = ctk.CTkFrame(self)
     self.type_buttons.grid(row=row_offset, column=3, columnspan=3,
