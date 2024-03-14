@@ -780,20 +780,28 @@ class SO_Update_Frame(ctk.CTkFrame):
     self.invalid = ctk.CTkLabel(self.search_frame, text="Invalid input. Please try again.", font=("Roboto", 16))
 
     self.clear_selections()
+    
+    ## --> Need to test search refresh functionality <-- ##
+    self.current_search = {}
 
     if type == "Phone Number" and data.isdigit() and len(data) == 10:
       data = re.sub(r'\D', '', data)
       data = "({}){}-{}".format(data[:3], data[3:6], data[6:])
-      self.search_data(phone=data, uncompleted = uncompleted)
+      #self.search_data(phone=data, uncompleted = uncompleted)
+      self.current_search = {'phone': data, 'uncompleted': uncompleted}
 
     elif type == "Ticket Number" and data[:2] == 'SO' and data[2:].isdigit():
-      self.search_data(ticket=data, uncompleted = uncompleted)
+      #self.search_data(ticket=data, uncompleted = uncompleted)
+      self.current_search = {'ticket': data, 'uncompleted': uncompleted}
 
     elif type =="Name" and data[0].isalpha():
-      self.search_data(name=data, uncompleted = uncompleted)
+      #self.search_data(name=data, uncompleted = uncompleted)
+      self.current_search = {'name': data, 'uncompleted': uncompleted}
 
     else:
       self.invalid.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
+    
+    self.search_data(**self.current_search)
 
   def search_data(self, phone=None, name=None, ticket=None, uncompleted=None):
 
@@ -961,7 +969,8 @@ class SO_Update_Frame(ctk.CTkFrame):
     self.df.to_excel('SO_Test.xlsx', index=False)
     
 ## Need to 'refresh' the search results to present the updated order stat ##
-
+    ## --> Test search results Refresh <-- ##
+    self.search_data(**self.current_search)
 
     self.update_opts(value)
 
