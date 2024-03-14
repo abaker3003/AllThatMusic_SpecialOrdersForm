@@ -883,23 +883,27 @@ class SO_Update_Frame(ctk.CTkFrame):
 
       self.clear_confirm_button()
 
+      string = "ORDER PLACES by " + str(row["CLERK"])  + " \non " + str(row["DATE"])
+      completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+      completed_opt.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
+
       for i, opt in enumerate(options):
 
         if opt == "RECEIVED":        
-          string =  opt + " by " + row[opt + " CLERK"]  + " \non " + row[opt + " DATE"]
+          string =  opt + " by " + str(row[opt + " CLERK"])  + " \non " + str(row[opt + " DATE"])
           completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
-          completed_opt.grid(row=i, column=0, padx=10, pady=10, sticky='ew')
+          completed_opt.grid(row=i + 1, column=0, padx=10, pady=10, sticky='ew')
 
         elif opt == "CALL":
           for j in range(1, num_calls + 1):
-            string =  opt + " #" + str(j) + " by " + row[opt + str(j) + " CLERK" ]  + " \non " + row[opt+ str(j) + " DATE"] + " \n" + row[opt + str(j)] 
+            string =  opt + " #" + str(j) + " by " + str(row[opt + str(j) + " CLERK" ])  + " \non " + str(row[opt+ str(j) + " DATE"]) + " \n" + str(row[opt + str(j)])
             completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
-            completed_opt.grid(row=i+j - 1, column=0, padx=10, pady=10, sticky='ew')
+            completed_opt.grid(row=i+j, column=0, padx=10, pady=10, sticky='ew')
 
         else:
-          string =  opt + " by " + row[opt + " CLERK"]  + " \non " + row[opt + " DATE"]
+          string =  opt + " by " + str(row[opt + " CLERK"])  + " \non " + str(row[opt + " DATE"])
           completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
-          completed_opt.grid(row=i+num_calls+1, column=0, padx=10, pady=10, sticky='ew')
+          completed_opt.grid(row=i+num_calls+2, column=0, padx=10, pady=10, sticky='ew')
 
       return  
 
@@ -968,19 +972,10 @@ class SO_Update_Frame(ctk.CTkFrame):
 
     self.df.to_excel('SO_Test.xlsx', index=False)
     
-## Need to 'refresh' the search results to present the updated order stat ##
-    ## --> Test search results Refresh <-- ##
+    self.clear_selections()
     self.search_data(**self.current_search)
 
     self.update_opts(value)
-
-
-    '''if opt == "COMPLETED":
-      self.df.to_excel('SO_Test.xlsx', index=False)
-      self.clear_confirm_button()
-      self.clear_opts()
-      self.clear_selections()
-      self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get())'''
 
 
   def clear_confirm_button(self):
