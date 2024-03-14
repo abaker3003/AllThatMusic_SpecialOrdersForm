@@ -538,10 +538,16 @@ class SO_Form(ctk.CTkFrame):
 
     row_offset += 1  # Increment row offset
 
+#################################################################################################################
+    ########################################################################################################
+                                 # --->v NEED TO MODIFY THIS CLASS v<--- #
+    ########################################################################################################
+#################################################################################################################
+
     self.vendors_buttons = ctk.CTkFrame(self)
     self.vendors_buttons.grid(row=row_offset,
-                              column=1,
-                              columnspan=2,
+                              column=0,
+                              columnspan=3,
                               sticky='e',
                               pady=5,
                               padx=40)
@@ -573,48 +579,58 @@ class SO_Form(ctk.CTkFrame):
       for i, vendor in enumerate(collectible_vendors):
         if i < 3:
           rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                        text=vendor,
-                                        variable=vendors,
-                                        value=vendor,
-                                        text_color="#FFFFFF",
-                                        font=("Roboto", 16))
+                          text=vendor,
+                          variable=vendors,
+                          value=vendor,
+                          text_color="#FFFFFF",
+                          font=("Roboto", 16))
           rdio_opt.grid(row=1, column=i, sticky='ew', pady=5)
         else:
           rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                        text=vendor,
-                                        variable=vendors,
-                                        value=vendor,
-                                        text_color="#FFFFFF",
-                                        font=("Roboto", 16))
+                          text=vendor,
+                          variable=vendors,
+                          value=vendor,
+                          text_color="#FFFFFF",
+                          font=("Roboto", 16))
           rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5)
       self.other_vendor.grid(row=2, column=1)
+
     def switch_traditional():
       for i, vendor in enumerate(traditional_vendors):
-        if i < 2:
+        if i < 3:
           rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                        text=vendor,
-                                        variable=vendors,
-                                        value=vendor,
-                                        text_color="#FFFFFF",
-                                        font=("Roboto", 16))
+                          text=vendor,
+                          variable=vendors,
+                          value=vendor,
+                          text_color="#FFFFFF",
+                          font=("Roboto", 16))
           rdio_opt.grid(row=1, column=i, sticky='ew', pady=5)
         else:
           rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
-                                        text=vendor,
-                                        variable=vendors,
-                                        value=vendor,
-                                        text_color="#FFFFFF",
-                                        font=("Roboto", 16))
-          rdio_opt.grid(row=2, column=i - 2, sticky='ew', pady=5)
+                          text=vendor,
+                          variable=vendors,
+                          value=vendor,
+                          text_color="#FFFFFF",
+                          font=("Roboto", 16))
+          rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5)
       self.other_vendor.grid(row=2, column=1)
 
-    self.vendors_switch_var = ctk.IntVar(self.vendors_buttons, value=0)
+    self.vendors_switch_var = ctk.IntVar(value=0)
     vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text=None, text_color="#FFFFFF", onvalue=1, offvalue=0)
-    vendors_switch.grid(row=0, column=1, pady=(0, 10), sticky='new')
+    vendors_switch.grid(row=0, column=2, pady=(0, 10), sticky='new')
+
+    switch_traditional()
 
     self.vendors_switch_var.trace_add(
-            "write",
-            lambda *args: switch(self.vendors_switch_var.get()))
+      "write",
+      lambda *args: switch(self.vendors_switch_var.get()))
+    
+
+#################################################################################################################
+    ########################################################################################################
+                                 # --->^ NEED TO MODIFY THIS CLASS ^<--- #
+    ########################################################################################################
+#################################################################################################################
 
 
 
