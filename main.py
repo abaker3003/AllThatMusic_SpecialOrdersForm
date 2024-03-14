@@ -11,6 +11,7 @@ import pandas as pd
 
 ctk.set_default_color_theme('C:/Users/abake/OneDrive/Documents/AllThatMusic_SpecialOrdersForm/red.json')
 
+## need to add part for SO ##
 class Reconciliation(ctk.CTkFrame):
   
   def __init__(self, *args, header_name="Reconciliation Form", **kwargs):
@@ -769,6 +770,8 @@ class SO_Update_Frame(ctk.CTkFrame):
 
     self.confirm = ctk.CTkButton(self.opts_frame, text="", command=None, font=("Roboto", 16))
 
+  ## Need to fix the 'Uncompleted' filter ##
+  ### as well as that grammatical error ##
   def search(self, data, type, uncompleted):
 
     if hasattr(self, 'invalid'):
@@ -956,6 +959,8 @@ class SO_Update_Frame(ctk.CTkFrame):
       self.df.at[value, opt + " CLERK"] = self.user
 
     self.df.to_excel('SO_Test.xlsx', index=False)
+    
+## Need to 'refresh' the search results to present the updated order stat ##
 
 
     self.update_opts(value)
