@@ -883,7 +883,7 @@ class SO_Update_Frame(ctk.CTkFrame):
 
       self.clear_confirm_button()
 
-      string = "ORDER PLACES by " + str(row["CLERK"])  + " \non " + str(row["DATE"])
+      string = "ORDER PLACED by " + str(row["CLERK NAME"])  + " \non " + str(row["DATE"])
       completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
       completed_opt.grid(row=0, column=0, padx=10, pady=10, sticky='ew')
 
@@ -926,13 +926,16 @@ class SO_Update_Frame(ctk.CTkFrame):
         opt_button.grid(row=i + 1, column=0, padx=10, pady=10)
 
     # Labels of completed options
+    string = "ORDER PLACED by " + str(row["CLERK NAME"])  + " \non " + str(row["DATE"])
+    completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
+    completed_opt.grid(row=i+3, column=0, padx=10, pady=10, sticky='ew')
 
     for j, opt in enumerate(options):
 
       if opt == "RECEIVED" and row["RECEIVED"] == "YES":        
         string =  opt + " by " + str(row[opt + " CLERK"])  + " \non " + str(row[opt + " DATE"])
         completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
-        completed_opt.grid(row=j + i + 3, column=0, padx=10, pady=10, sticky='ew')
+        completed_opt.grid(row=j + i + 4, column=0, padx=10, pady=10, sticky='ew')
 
       # THIS WILL HAVE A TEXTBOX ENTRY THAT NEEDS TO BE DISPLAYED
       elif opt == "CALL" and row["# OF CALLS"] > 0:
@@ -940,15 +943,15 @@ class SO_Update_Frame(ctk.CTkFrame):
         for k in range(1, num_calls + 1):
           string =  opt + " #" + str(k) + " by " + str(row[opt + str(k) + " CLERK" ])  + " \non " + str(row[opt+ str(k) + " DATE"]) + " \n" + str(row[opt + str(k)]) 
           completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
-          completed_opt.grid(row=j+k + i + 2, column=0, padx=10, pady=10, sticky='ew')
+          completed_opt.grid(row=j+k + i + 3, column=0, padx=10, pady=10, sticky='ew')
 
       elif opt == "COMPLETED" and row["COMPLETED"] == "YES":
         string =  opt + " by " + str(row[opt + " CLERK"])  + " \non " + str(row[opt + " DATE"])
         completed_opt = ctk.CTkLabel(self.opts_frame, text=string, font=("Roboto", 16))
-        completed_opt.grid(row=j+num_calls+1 + i + 3, column=0, padx=10, pady=10, sticky='ew')
+        completed_opt.grid(row=j+num_calls+1 + i + 4, column=0, padx=10, pady=10, sticky='ew')
 
     self.confirm = ctk.CTkButton(self.opts_frame, text="Confirm", command=lambda: self.update_row(self.selected_opt.get(), value), font=("Roboto", 16))
-    self.confirm.grid(row=i + + 2, column=0, padx=10, pady=20)
+    self.confirm.grid(row=i + 2, column=0, padx=10, pady=20)
 
 
   def update_row(self, opt, value):
