@@ -583,7 +583,7 @@ class SO_Form(ctk.CTkFrame):
     # Radio Button for Vendors
     vendors = ctk.StringVar(self.vendors_buttons)
     traditional_vendors = ["AEC", "AMS", "OTHER"]
-    collectible_vendors = ["Ebay", "AMA", "Discogs", "OTHER"]
+    collectible_vendors = ["eBay", "AMA", "Discogs", "OTHER"]
     self.other_vendor = ctk.CTkEntry(self.vendors_buttons, placeholder_text="Vendor Name", width=100)
 
     def switch():
