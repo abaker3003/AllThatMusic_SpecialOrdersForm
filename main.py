@@ -323,6 +323,18 @@ class SO_Form(ctk.CTkFrame):
         ) + ": Price amount should not contain any other symbols except decimal.\n"
         proper = False
         num_of_msgs += 1
+      if vendors.get() == "OTHER" and not self.other_vendor.get():
+        errormsg += str(num_of_msgs) + ": Please enter a vendor name.\n"
+        proper = False
+        num_of_msgs += 1
+      if typs.get() == "OTHER" and not self.other_type.get():
+        errormsg += str(num_of_msgs) + ": Please enter a type.\n"
+        proper = False
+        num_of_msgs += 1
+      if cx_email_input.get() and ("@" not in cx_email_input.get() and "." not in cx_email_input.get()):
+        errormsg += str(num_of_msgs) + ": Invalid email address.\n"
+        proper = False
+        num_of_msgs += 1
       return proper, errormsg
     # Executes when save buton is clicked
     def save_checkbox_value():
@@ -346,7 +358,7 @@ class SO_Form(ctk.CTkFrame):
       data["VENDOR"] = vendors.get()
       data["TYPE"] = typs.get()
       if vendors.get() == "OTHER":
-        data["VENDOR"] = self.other_vender.get()
+        data["VENDOR"] = self.other_vendor.get()
       if typs.get() == "OTHER":
         data["TYPE"] = self.other_type.get()
       if ship_var.get() == 1:
@@ -381,7 +393,7 @@ class SO_Form(ctk.CTkFrame):
         }
       shipping_checkb.deselect()
       vendors.set('')
-      self.other_vender.delete(0, "end")
+      self.other_vendor.delete(0, "end")
       self.other_type.delete(0, "end")
       cx_email_input.delete(0, "end")
       typs.set('')
@@ -552,11 +564,15 @@ class SO_Form(ctk.CTkFrame):
                               pady=5,
                               padx=40)
     # Title for Vendors
-    vendors_text = ctk.CTkLabel(self.vendors_buttons,
-                  text="Vendors",
-                  font=("Arial Black", 20),
+    traditional_vendors_text = ctk.CTkLabel(self.vendors_buttons,
+                  text="Traditional Vendors",
+                  font=("Arial Black", 20, "underline"),
                   text_color="#FFFFFF")
-    vendors_text.grid(row=0, column=1, pady=(0, 10), sticky='new')
+    collectible_vendors_text = ctk.CTkLabel(self.vendors_buttons,
+                  text="Collectible Vendors",
+                  font=("Arial Black", 20, "underline"),
+                  text_color="#FFFFFF")
+    
     # Radio Button for Vendors
     vendors = ctk.StringVar(self.vendors_buttons)
     traditional_vendors = ["AEC", "AMS", "OTHER"]
@@ -566,11 +582,13 @@ class SO_Form(ctk.CTkFrame):
     def switch():
       vendors_switch_var = self.vendors_switch_var.get()
       for widget in self.vendors_buttons.winfo_children():
-        if widget != vendors_switch and widget != vendors_text:
+        if widget != vendors_switch:
           widget.grid_forget()
       if vendors_switch_var == "0":
+        traditional_vendors_text.grid(row=0, column=0, columnspan=2, pady=(0, 10), padx = (10,5), sticky='new')
         switch_traditional()
       else:
+        collectible_vendors_text.grid(row=0, column=0, columnspan=2, pady=(0, 10), padx = (10,5), sticky='new')
         switch_collectible()
 
     def switch_collectible():
@@ -614,8 +632,8 @@ class SO_Form(ctk.CTkFrame):
       self.other_vendor.grid(row=2, column=1)
 
     self.vendors_switch_var = ctk.StringVar(value="0")
-    vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text = "", variable= self.vendors_switch_var, command=switch, onvalue="1", offvalue="0", width=60)
-    vendors_switch.grid(row=0, column=2, pady=(0, 10), sticky='new')
+    vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text = "", variable= self.vendors_switch_var, command=switch, onvalue="1", offvalue="0", width=85)
+    vendors_switch.grid(row=0, column=2, pady=(0, 10), padx=10, sticky='new')
 
     switch()
 
