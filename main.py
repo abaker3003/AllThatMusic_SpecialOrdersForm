@@ -559,20 +559,16 @@ class SO_Form(ctk.CTkFrame):
     vendors_text.grid(row=0, column=1, pady=(0, 10), sticky='new')
     # Radio Button for Vendors
     vendors = ctk.StringVar(self.vendors_buttons)
-    traditional_vendors = ["AEC", "AMS", "AMA", "OTHER"]
+    traditional_vendors = ["AEC", "AMS", "OTHER"]
     collectible_vendors = ["Ebay", "AMA", "Discogs", "OTHER"]
     self.other_vendor = ctk.CTkEntry(self.vendors_buttons, placeholder_text="Vendor Name", width=100)
 
-
-  ### ---> NEED TO FIGURE OUT A WAY TO HAVE RADIOBUTTONS SWITCH BETWEEN VENDORS <--- ###
-    ### ---> NEED TO TEST <--- ###
     def switch():
-      global vendors_switch_var
       vendors_switch_var = self.vendors_switch_var.get()
       for widget in self.vendors_buttons.winfo_children():
         if widget != vendors_switch and widget != vendors_text:
-          widget.grid_remove()
-      if vendors_switch_var == 0:
+          widget.grid_forget()
+      if vendors_switch_var == "0":
         switch_traditional()
       else:
         switch_collectible()
@@ -599,7 +595,7 @@ class SO_Form(ctk.CTkFrame):
 
     def switch_traditional():
       for i, vendor in enumerate(traditional_vendors):
-        if i < 3:
+        if i < 2:
           rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
                           text=vendor,
                           variable=vendors,
@@ -614,26 +610,14 @@ class SO_Form(ctk.CTkFrame):
                           value=vendor,
                           text_color="#FFFFFF",
                           font=("Roboto", 16))
-          rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5)
+          rdio_opt.grid(row=2, column=i - 2, sticky='ew', pady=5)
       self.other_vendor.grid(row=2, column=1)
 
-    self.vendors_switch_var = ctk.IntVar(value=0)
-    vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text=None, text_color="#FFFFFF", onvalue=1, offvalue=0)
+    self.vendors_switch_var = ctk.StringVar(value="0")
+    vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text = "", variable= self.vendors_switch_var, command=switch, onvalue="1", offvalue="0", width=60)
     vendors_switch.grid(row=0, column=2, pady=(0, 10), sticky='new')
 
-    #switch_traditional()
-
-    self.vendors_switch_var.trace_add(
-      "write", switch)
-    
-
-#################################################################################################################
-    ########################################################################################################
-                                 # --->^ NEED TO MODIFY THIS CLASS ^<--- #
-    ########################################################################################################
-#################################################################################################################
-
-
+    switch()
 
     self.type_buttons = ctk.CTkFrame(self)
     self.type_buttons.grid(row=row_offset, column=3, columnspan=3,
