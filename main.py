@@ -267,7 +267,7 @@ class SO_Form(ctk.CTkFrame):
     date_text = ctk.CTkLabel(self,
                              text="Date: " + todays_date,
                              text_color="#FFFFFF",
-                             font=("Roboto", 16))
+                             font=("Roboto", 20 ))
     date_text.grid(row=0, column=3, columnspan=1, pady=(10, 0))
 
     # Clerk name via Computer's user account
@@ -331,7 +331,7 @@ class SO_Form(ctk.CTkFrame):
         errormsg += str(num_of_msgs) + ": Please enter a type.\n"
         proper = False
         num_of_msgs += 1
-      if cx_email_input.get() and ("@" not in cx_email_input.get() and "." not in cx_email_input.get()):
+      if cx_email_input.get() and ("@" not in cx_email_input.get() or "." not in cx_email_input.get()):
         errormsg += str(num_of_msgs) + ": Invalid email address.\n"
         proper = False
         num_of_msgs += 1
@@ -413,9 +413,11 @@ class SO_Form(ctk.CTkFrame):
     clerk_text = ctk.CTkLabel(self,
                               text="Clerk: ",
                               text_color="#FFFFFF",
-                              font=("Roboto", 16))
+                              font=("Roboto", 20))
+    # row 1
     clerk_text.grid(row=row_offset, column=1,  padx=(20,5), sticky='e')
-    clerk_input = ctk.CTkLabel(self, text=self.username, font=("Roboto", 16, "bold"))
+    clerk_input = ctk.CTkLabel(self, text=self.username, font=("Roboto", 20, "bold"))
+    # row 1
     clerk_input.grid(row=row_offset, column=2, sticky="w", padx=(5,20))
 
     self.shipping_data = {
@@ -523,10 +525,12 @@ class SO_Form(ctk.CTkFrame):
     shipping_text = ctk.CTkLabel(self,
                                  text="Shipping?",
                                  text_color="#FFFFFF",
-                                 font=("Roboto", 16))
-    shipping_text.grid(row=row_offset, column=3)
+                                 font=("Roboto", 20))
+    # row 1
+    shipping_text.grid(row=row_offset, column=3, padx=(20,5), sticky='e')
     ship_var = ctk.BooleanVar(self)
     shipping_checkb = ctk.CTkCheckBox(self, variable=ship_var, text=None, onvalue=1, offvalue=0)
+    # row 1
     shipping_checkb.grid(row=row_offset, column=4, sticky="e", padx=(0,10))
 
     # Bind the open_shipping_window function to the checkbox
@@ -546,17 +550,13 @@ class SO_Form(ctk.CTkFrame):
     # Divider
     #divider = ttk.Separator(self, orient='horizontal')
     divider = ctk.CTkFrame(self, height=2, fg_color="gray")
+    # row 2
     divider.grid(row=row_offset, column=1, columnspan=6, sticky='ew', pady=10)
 
     row_offset += 1  # Increment row offset
 
-#################################################################################################################
-    ########################################################################################################
-                                 # --->v NEED TO MODIFY THIS CLASS v<--- #
-    ########################################################################################################
-#################################################################################################################
-
     self.vendors_buttons = ctk.CTkFrame(self)
+    # row 3
     self.vendors_buttons.grid(row=row_offset,
                               column=0,
                               columnspan=3,
@@ -638,6 +638,7 @@ class SO_Form(ctk.CTkFrame):
     switch()
 
     self.type_buttons = ctk.CTkFrame(self)
+    # row 3
     self.type_buttons.grid(row=row_offset, column=3, columnspan=3,
                               sticky='w',
                               pady=5,
@@ -645,7 +646,7 @@ class SO_Form(ctk.CTkFrame):
     # Title for Type
     type_text = ctk.CTkLabel(self.type_buttons,
                              text="Type",
-                             font=("Arial Black", 20),
+                             font=("Arial Black", 20, "underline"),
                              text_color="#FFFFFF")
     type_text.grid(row=0, column=1, pady=(0, 10), sticky='new')
 
@@ -679,6 +680,7 @@ class SO_Form(ctk.CTkFrame):
     # Divider
     #divider = ttk.Separator(self, orient='horizontal')
     divider = ctk.CTkFrame(self, height=2, fg_color="gray")
+    # row 5
     divider.grid(row=row_offset, column=0, columnspan=7, sticky='ew', pady=10)
     row_offset += 2  # Increment row offset
 
@@ -686,31 +688,39 @@ class SO_Form(ctk.CTkFrame):
     cx_name_title = ctk.CTkLabel(self,
                                  text="Name",
                                  text_color="#FFFFFF",
-                                 font=("Roboto", 16))
+                                 font=("Roboto", 18))
+    # row 7
     cx_name_title.grid(row=row_offset, column=1)
     cx_name_input = ctk.CTkEntry(self, placeholder_text="No numbers")
+    # row 8
     cx_name_input.grid(row=row_offset + 1, column=1, padx=10)
 
     # CX email
-    cx_email_title = ctk.CTkLabel(self, text="Email", text_color="#FFFFFF", font=("Roboto", 16))
-    cx_email_title.grid(row=row_offset, column=2)
+    cx_email_title = ctk.CTkLabel(self, text="Email", text_color="#FFFFFF", font=("Roboto", 18))
+    # row 7
+    cx_email_title.grid(row=row_offset, column=2, columnspan=2)
     cx_email_input = ctk.CTkEntry(self, placeholder_text="example@domain.com", width=200)
-    cx_email_input.grid(row=row_offset + 1, column=2, padx=10)
+    # row 8
+    cx_email_input.grid(row=row_offset + 1, column=2, columnspan=2, padx=10)
 
     # CX phone number input
     cx_phone_title = ctk.CTkLabel(self,
                                   text="Phone",
                                   text_color="#FFFFFF",
-                                  font=("Roboto", 16))
+                                  font=("Roboto", 18))
+    # row 7
     cx_phone_title.grid(row=row_offset, column=3)
 
-    text_cx = ctk.CTkCheckBox(self, text="Text?", text_color="#FFFFFF", onvalue="YES", offvalue="NO")
+    text_cx = ctk.CTkCheckBox(self, text="Text?", text_color="#FFFFFF", onvalue="YES", offvalue="NO", font=("Roboto", 18))
+    # row 7
     text_cx.grid(row=row_offset, column=4, padx=10)
 
     cx_phone_input = ctk.CTkEntry(self, placeholder_text="10 digits, no symbols")
+    # row 8
     cx_phone_input.grid(row=row_offset + 1, column=3, padx=10)
 
-    call_cx = ctk.CTkCheckBox(self, text="Call?", text_color="#FFFFFF", onvalue="YES", offvalue="NO")
+    call_cx = ctk.CTkCheckBox(self, text="Call?", text_color="#FFFFFF", onvalue="YES", offvalue="NO", font=("Roboto", 18))
+    # row 8
     call_cx.grid(row=row_offset + 1, column=4, padx=10)
 
     def format_phone_number(event):
@@ -735,18 +745,22 @@ class SO_Form(ctk.CTkFrame):
     artist_title = ctk.CTkLabel(self,
                                 text="Artist",
                                 text_color="#FFFFFF",
-                                font=("Roboto", 16))
+                                font=("Roboto", 18))
+    # row 9
     artist_title.grid(row=row_offset, column=1)
     artist_input = ctk.CTkEntry(self)
+    # row 10
     artist_input.grid(row=row_offset + 1, column=1, padx=10)
 
     # Title input
     title_title = ctk.CTkLabel(self,
                                text="Title",
                                text_color="#FFFFFF",
-                               font=("Roboto", 16))
+                               font=("Roboto", 18))
+    # row 9
     title_title.grid(row=row_offset, column=3)
     title_input = ctk.CTkEntry(self)
+    # row 10
     title_input.grid(row=row_offset + 1, column=3, padx=10)
 
     row_offset += 2  # Increment row offset
@@ -755,18 +769,22 @@ class SO_Form(ctk.CTkFrame):
     deposit_title = ctk.CTkLabel(self,
                                  text="Deposit",
                                  text_color="#FFFFFF",
-                                 font=("Roboto", 16))
+                                 font=("Roboto", 18))
+    # row 11
     deposit_title.grid(row=row_offset, column=1)
     deposit_input = ctk.CTkEntry(self)
+    # row 12
     deposit_input.grid(row=row_offset + 1, column=1, padx=10)
 
     # Price input
     price_title = ctk.CTkLabel(self,
                                text="Retail Price",
                                text_color="#FFFFFF",
-                               font=("Roboto", 16))
+                               font=("Roboto", 18))
+    # row 11
     price_title.grid(row=row_offset, column=3)
     price_input = ctk.CTkEntry(self)
+    # row 12
     price_input.grid(row=row_offset + 1, column=3, padx=10)
 
     row_offset += 2  # Increment row offset
@@ -775,14 +793,16 @@ class SO_Form(ctk.CTkFrame):
                                 text="Save",
                                 command=save_checkbox_value,
                                 text_color="#FFFFFF",
-                                font=("Roboto", 16))
+                                font=("Roboto", 18))
+    # row 13
     save_button.grid(row=row_offset, column=1, pady=20)
 
     back_button = ctk.CTkButton(self,
                                 text="Cancel",
                                 command=go_back,
                                 text_color="#FFFFFF",
-                                font=("Roboto", 16))
+                                font=("Roboto", 18))
+    # row 13
     back_button.grid(row=row_offset, column=3, pady=20)
 
 class SO_Update_Frame(ctk.CTkFrame):
@@ -1317,8 +1337,6 @@ class Prev_SO(ctk.CTkFrame):
 
 class SO_App(ctk.CTk):
 
-  ## need to add frame/ button to generate all the orders that have not been [received, called, or completed] ##
-
   def __init__(self):
     super().__init__()
     self.title("Special Order")
@@ -1424,12 +1442,6 @@ class SO_App(ctk.CTk):
     self.title("Special Order")
     # Show the main application frame
     self.enable_buttons()
-
-#################################################################################################################
-    ########################################################################################################
-                                 # --->^ NEED TO MODIFY THIS CLASS ^<--- #
-    ########################################################################################################
-#################################################################################################################
 
 
 window = SO_App()
