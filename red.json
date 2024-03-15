@@ -260,7 +260,7 @@
     ],
     "button_hover_color": [
       "gray40",
-      "gray53"
+      "#6e0303"
     ]
   },
   "CTkSegmentedButton": {
@@ -327,6 +327,10 @@
     "label_fg_color": [
       "gray80",
       "gray21"
+    ],
+    "button_hover_color": [
+      "gray40",
+      "#6e0303"
     ]
   },
   "DropdownMenu": {

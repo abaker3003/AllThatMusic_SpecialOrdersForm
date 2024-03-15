@@ -237,6 +237,13 @@ class SO_Form(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Special Order Form", **kwargs):
     super().__init__(*args, **kwargs)
+    
+    
+    def focusin_fg_color(widget):
+      widget.configure(fg_color="#222222")
+
+    def focusout_fg_color(widget):
+      widget.configure(fg_color="#343638")
 
     self.xl_file = xl.open_excel_file('SO_Test.xlsx')
 
@@ -609,7 +616,7 @@ class SO_Form(ctk.CTkFrame):
                           text_color="#FFFFFF",
                           font=("Roboto", 16))
           rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5)
-      self.other_vendor.grid(row=2, column=1)
+      self.other_vendor.grid(row=2, column=1, padx=(0, 10))
 
     def switch_traditional():
       for i, vendor in enumerate(traditional_vendors):
@@ -629,7 +636,7 @@ class SO_Form(ctk.CTkFrame):
                           text_color="#FFFFFF",
                           font=("Roboto", 16))
           rdio_opt.grid(row=2, column=i - 2, sticky='ew', pady=5)
-      self.other_vendor.grid(row=2, column=1)
+      self.other_vendor.grid(row=2, column=1, padx=(0, 10))
 
     self.vendors_switch_var = ctk.StringVar(value="0")
     vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text = "", variable= self.vendors_switch_var, command=switch, onvalue="1", offvalue="0", width=85)
@@ -684,6 +691,9 @@ class SO_Form(ctk.CTkFrame):
     divider.grid(row=row_offset, column=0, columnspan=7, sticky='ew', pady=10)
     row_offset += 2  # Increment row offset
 
+    
+
+
     # CX name inpput
     cx_name_title = ctk.CTkLabel(self,
                                  text="Name",
@@ -692,16 +702,23 @@ class SO_Form(ctk.CTkFrame):
     # row 7
     cx_name_title.grid(row=row_offset, column=1)
     cx_name_input = ctk.CTkEntry(self, placeholder_text="No numbers")
+    # focus in/out color change
+    cx_name_input.bind("<FocusIn>", lambda event: focusin_fg_color(cx_name_input))
+    cx_name_input.bind("<FocusOut>", lambda event: focusout_fg_color(cx_name_input))
     # row 8
     cx_name_input.grid(row=row_offset + 1, column=1, padx=10)
+
 
     # CX email
     cx_email_title = ctk.CTkLabel(self, text="Email", text_color="#FFFFFF", font=("Roboto", 18))
     # row 7
-    cx_email_title.grid(row=row_offset, column=2, columnspan=2)
-    cx_email_input = ctk.CTkEntry(self, placeholder_text="example@domain.com", width=200)
+    cx_email_title.grid(row=row_offset, column=2)
+    cx_email_input = ctk.CTkEntry(self, placeholder_text="example@domain.com", width=220)
+    # focus in/out color change
+    cx_email_input.bind("<FocusIn>", lambda event: focusin_fg_color(cx_email_input))
+    cx_email_input.bind("<FocusOut>", lambda event: focusout_fg_color(cx_email_input))
     # row 8
-    cx_email_input.grid(row=row_offset + 1, column=2, columnspan=2, padx=10)
+    cx_email_input.grid(row=row_offset + 1, column=2, padx=10)
 
     # CX phone number input
     cx_phone_title = ctk.CTkLabel(self,
@@ -716,6 +733,10 @@ class SO_Form(ctk.CTkFrame):
     text_cx.grid(row=row_offset, column=4, padx=10)
 
     cx_phone_input = ctk.CTkEntry(self, placeholder_text="10 digits, no symbols")
+    # focus in/out color change
+    cx_phone_input.bind("<FocusIn>", lambda event: focusin_fg_color(cx_phone_input))
+    cx_phone_input.bind("<FocusOut>", lambda event: focusout_fg_color(cx_phone_input))
+  
     # row 8
     cx_phone_input.grid(row=row_offset + 1, column=3, padx=10)
 
@@ -749,6 +770,9 @@ class SO_Form(ctk.CTkFrame):
     # row 9
     artist_title.grid(row=row_offset, column=1)
     artist_input = ctk.CTkEntry(self)
+    # focus in/out color change
+    artist_input.bind("<FocusIn>", lambda event: focusin_fg_color(artist_input))
+    artist_input.bind("<FocusOut>", lambda event: focusout_fg_color(artist_input))
     # row 10
     artist_input.grid(row=row_offset + 1, column=1, padx=10)
 
@@ -760,6 +784,9 @@ class SO_Form(ctk.CTkFrame):
     # row 9
     title_title.grid(row=row_offset, column=3)
     title_input = ctk.CTkEntry(self)
+    # focus in/out color change
+    title_input.bind("<FocusIn>", lambda event: focusin_fg_color(title_input))
+    title_input.bind("<FocusOut>", lambda event: focusout_fg_color(title_input))
     # row 10
     title_input.grid(row=row_offset + 1, column=3, padx=10)
 
@@ -772,7 +799,10 @@ class SO_Form(ctk.CTkFrame):
                                  font=("Roboto", 18))
     # row 11
     deposit_title.grid(row=row_offset, column=1)
-    deposit_input = ctk.CTkEntry(self)
+    deposit_input = ctk.CTkEntry(self, placeholder_text="$")
+    # focus in/out color change
+    deposit_input.bind("<FocusIn>", lambda event: focusin_fg_color(deposit_input))
+    deposit_input.bind("<FocusOut>", lambda event: focusout_fg_color(deposit_input))
     # row 12
     deposit_input.grid(row=row_offset + 1, column=1, padx=10)
 
@@ -783,7 +813,10 @@ class SO_Form(ctk.CTkFrame):
                                font=("Roboto", 18))
     # row 11
     price_title.grid(row=row_offset, column=3)
-    price_input = ctk.CTkEntry(self)
+    price_input = ctk.CTkEntry(self, placeholder_text="$")
+    # focus in/out color change
+    price_input.bind("<FocusIn>", lambda event: focusin_fg_color(price_input))
+    price_input.bind("<FocusOut>", lambda event: focusout_fg_color(price_input))
     # row 12
     price_input.grid(row=row_offset + 1, column=3, padx=10)
 
@@ -843,17 +876,16 @@ class SO_Update_Frame(ctk.CTkFrame):
       search_method_opt.grid(row=1, column=i, padx=10, pady=5)
 
     self.input.grid(row=2, column=1, padx=10, pady=5)
-    self.show_uncompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show uncompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
-    self.show_uncompleted_orders.grid(row=2, column=2, padx=10, pady=5)
+    self.show_incompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show incompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
+    self.show_incompleted_orders.grid(row=2, column=2, padx=10, pady=5)
 
-    self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), self.show_uncompleted_orders.get()), font=("Roboto", 16))
+    self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), self.show_incompleted_orders.get()), font=("Roboto", 16))
     self.search_button.grid(row=4, column=1, padx=10, pady=20)
 
     self.confirm = ctk.CTkButton(self.opts_frame, text="", command=None, font=("Roboto", 16))
 
-  ## Need to fix the 'Uncompleted' filter ##
-  ### as well as that grammatical error ##
-  def search(self, data, type, uncompleted):
+  ## Need to fix the 'incompleted' filter ##
+  def search(self, data, type, incompleted):
 
     if hasattr(self, 'invalid'):
       self.invalid.grid_forget()
@@ -868,42 +900,39 @@ class SO_Update_Frame(ctk.CTkFrame):
     if type == "Phone Number" and data.isdigit() and len(data) == 10:
       data = re.sub(r'\D', '', data)
       data = "({}){}-{}".format(data[:3], data[3:6], data[6:])
-      #self.search_data(phone=data, uncompleted = uncompleted)
-      self.current_search = {'phone': data, 'uncompleted': uncompleted}
+      self.current_search = {'phone': data, 'incompleted': incompleted}
 
     elif type == "Ticket Number" and data[:2] == 'SO' and data[2:].isdigit():
-      #self.search_data(ticket=data, uncompleted = uncompleted)
-      self.current_search = {'ticket': data, 'uncompleted': uncompleted}
+      self.current_search = {'ticket': data, 'incompleted': incompleted}
 
     elif type =="Name" and data[0].isalpha():
-      #self.search_data(name=data, uncompleted = uncompleted)
-      self.current_search = {'name': data, 'uncompleted': uncompleted}
+      self.current_search = {'name': data, 'incompleted': incompleted}
 
     else:
       self.invalid.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
     
     self.search_data(**self.current_search)
 
-  def search_data(self, phone=None, name=None, ticket=None, uncompleted=None):
+  def search_data(self, phone=None, name=None, ticket=None, incompleted=None):
 
     self.d = xl.open_excel_file('SO_Test.xlsx')
     self.df = self.d.read_into_dataframe_SO()
 
     if phone:
       matching_rows = self.df[self.df['PHONE'] == phone]
-      if uncompleted:
+      if incompleted:
         matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
       self.selection(matching_rows)
 
     elif name:
       matching_rows = self.df[self.df['CX NAME'] == name]
-      if uncompleted:
+      if incompleted:
         matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
       self.selection(matching_rows)
 
     elif ticket:
       matching_rows = self.df[self.df['REF NUM'] == ticket]
-      if uncompleted:
+      if incompleted:
         matching_rows = matching_rows[matching_rows['COMPLETED'] == 'NO']
 
 
@@ -924,7 +953,7 @@ class SO_Update_Frame(ctk.CTkFrame):
     for idx, row in matching_rows.iterrows():
       display__text = row['REF NUM'] + " : " + row['CX NAME'] + " - " + row['PHONE'] + "\t"
       if row['COMPLETED'] == 'NO':
-        display__text += " - UNCOMPLETED"
+        display__text += " - UNFULFILLED"
       else:
         display__text += " - COMPLETED"
       result = ctk.CTkRadioButton(self.results_frame, text=display__text, value=idx, font=("Roboto", 16), variable=self.final_result, command=lambda idx=idx: self.update_opts(idx))
@@ -1183,7 +1212,7 @@ class Prev_SO(ctk.CTkFrame):
         stat.grid(row=i, column=0, padx=10, pady=5)
         label = ctk.CTkLabel(self.scroll_diag, font=("Arial", 10, "bold"))
         if values[i] == "NO":
-          label.configure(text="Uncompleted")
+          label.configure(text="incompleted")
         else:
           label.configure(text="Completed")
         label.grid(row=i, column=1, padx=10, pady=5)
