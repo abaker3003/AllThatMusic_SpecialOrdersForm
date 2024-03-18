@@ -13,6 +13,13 @@ ctk.set_default_color_theme('C:/Users/abake/OneDrive/Documents/AllThatMusic_Spec
 
 ## need to add part for SO ##
 class Reconciliation(ctk.CTkFrame):
+
+  def focusin_fg_color(self,widget):
+      widget.configure(fg_color= ["#717171", "#222222"])
+
+  def focusout_fg_color(self, widget):
+    widget.configure(fg_color=["#FFFFFF","#343638"])
+
   
   def __init__(self, *args, header_name="Reconciliation Form", **kwargs):
     super().__init__(*args, **kwargs)
@@ -38,6 +45,9 @@ class Reconciliation(ctk.CTkFrame):
 
     self.vend_name = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16), width=100)
 
+    self.vend_name.bind("<FocusIn>", lambda event: self.focusin_fg_color(self.vend_name))
+    self.vend_name.bind("<FocusOut>", lambda event: self.focusout_fg_color(self.vend_name))
+
 
     # Packing Slip 
     pack_slip_label = ctk.CTkLabel(self.vendor_info, text="Packing Slip", font=("Roboto", 16))
@@ -45,16 +55,26 @@ class Reconciliation(ctk.CTkFrame):
     pack_slip = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16), width=100)
     pack_slip.grid(row=1, column=1, padx=10, pady=5)
 
+    pack_slip.bind("<FocusIn>", lambda event: self.focusin_fg_color(pack_slip))
+    pack_slip.bind("<FocusOut>", lambda event: self.focusout_fg_color(pack_slip))
+
     date_label = ctk.CTkLabel(self.vendor_info, text="Date", font=("Roboto", 16))
     date_label.grid(row=0, column=4, padx=10, pady=5)
     date = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16))
     date.grid(row=0, column=5, padx=10, pady=5)
+
+    date.bind("<FocusIn>", lambda event: self.focusin_fg_color(date))
+    date.bind("<FocusOut>", lambda event: self.focusout_fg_color(date))
 
     # Received by
     received_by_label = ctk.CTkLabel(self.vendor_info, text="Received By", font=("Roboto", 16))
     received_by_label.grid(row=1, column=4, padx=10, pady=5)
     self.received_by = ctk.CTkEntry(self.vendor_info, font=("Roboto", 16))
     self.received_by.grid(row=1, column=5, padx=10, pady=5)
+
+    
+    self.received_by.bind("<FocusIn>", lambda event: self.focusin_fg_color(self.received_by))
+    self.received_by.bind("<FocusOut>", lambda event: self.focusout_fg_color(self.received_by))
 
 
     # --- > Second Frame < --- #
@@ -69,6 +89,7 @@ class Reconciliation(ctk.CTkFrame):
     cds_entry = ctk.CTkEntry(self.details, textvariable=self.cds, font=("Roboto", 16))
     cds_entry.grid(row=0, column=1, padx=10, pady=5)
     self.cds.trace_add('write', self.update_totals)
+    
 
     # 180g
     one_eighty_label = ctk.CTkLabel(self.details, text="15 - 180g", font=("Roboto", 16))
@@ -134,26 +155,26 @@ class Reconciliation(ctk.CTkFrame):
 
     # Subtotal
     subtotal_label = ctk.CTkLabel(self.totals, text="Subtotal", font=("Roboto", 20))
-    subtotal_label.grid(row=0, column=0, padx=10, pady=5)
+    subtotal_label.grid(row=0, column=0, padx=20, pady=15, sticky='ew')
     self.subtotal = ctk.CTkLabel(self.totals, text=str(self.total), font=("Roboto", 20))
-    self.subtotal.grid(row=0, column=1, padx=10, pady=5)
+    self.subtotal.grid(row=0, column=1, padx=20, pady=15, sticky='ew')
 
 
     # Shipping
     shipping_label = ctk.CTkLabel(self.totals, text="Shipping", font=("Roboto", 20))
-    shipping_label.grid(row=2, column=0, padx=10, pady=5)
+    shipping_label.grid(row=2, column=0, padx=20, pady=15, sticky='ew')
     self.shipping = ctk.DoubleVar(self.totals, value=0.0)
     shipping_entry = ctk.CTkEntry(self.totals, textvariable=self.shipping, font=("Roboto", 20), justify='center', width=60)
-    shipping_entry.grid(row=2, column=1, padx=10, pady=5)
+    shipping_entry.grid(row=2, column=1, padx=20, pady=15, sticky='ew')
     self.shipping.trace_add('write', self.update_totals)
 
     self.grand_total_amount = (self.total + self.shipping.get())
 
     # Total 
     grand_total_label = ctk.CTkLabel(self.totals, text="Total", font=("Roboto", 20))
-    grand_total_label.grid(row=3, column=0, padx=10, pady=5)
+    grand_total_label.grid(row=3, column=0, padx=20, pady=15, sticky='ew')
     self.grand_total = ctk.CTkLabel(self.totals, text=str(self.grand_total_amount), font=("Roboto", 20))
-    self.grand_total.grid(row=3, column=1, padx=10, pady=5)
+    self.grand_total.grid(row=3, column=1, padx=20, pady=15, sticky='ew')
 
 
     # --- > Fourth Frame < --- #
@@ -205,10 +226,10 @@ class Reconciliation(ctk.CTkFrame):
 
     # Notes
     self.notes = ctk.CTkFrame(self)
-    self.notes.grid(row=0, column=5, rowspan=4, sticky='nsew', padx=10, pady=10)
+    self.notes.grid(row=0, column=5, rowspan=4, sticky='nsew', padx=5, pady=10)
     self.note_label = ctk.CTkLabel(self.notes, text="Notes", font=("Roboto", 16))
     self.note_label.grid(row=0, column=0, padx=10, pady=5)
-    self.note_text = ctk.CTkTextbox(self.notes, width=180, height=350, font=("Roboto", 15), wrap='word')
+    self.note_text = ctk.CTkTextbox(self.notes, width=190, height=350, font=("Roboto", 15), wrap='word')
     self.note_text.grid(row=1, column=0, padx=10, pady=5)
 
     self.save = ctk.CTkButton(self.notes, text="Save", command=None, font=("Roboto", 16))
@@ -240,10 +261,10 @@ class SO_Form(ctk.CTkFrame):
     
     
     def focusin_fg_color(widget):
-      widget.configure(fg_color="#222222")
+      widget.configure(fg_color= ["#717171", "#222222"])
 
     def focusout_fg_color(widget):
-      widget.configure(fg_color="#343638")
+      widget.configure(fg_color=["#FFFFFF","#343638"])
 
     self.xl_file = xl.open_excel_file('SO_Test.xlsx')
 
@@ -273,7 +294,6 @@ class SO_Form(ctk.CTkFrame):
     # Date
     date_text = ctk.CTkLabel(self,
                              text="Date: " + todays_date,
-                             text_color="#FFFFFF",
                              font=("Roboto", 20 ))
     date_text.grid(row=0, column=3, columnspan=1, pady=(10, 0))
 
@@ -419,7 +439,6 @@ class SO_Form(ctk.CTkFrame):
     # Clerk name
     clerk_text = ctk.CTkLabel(self,
                               text="Clerk: ",
-                              text_color="#FFFFFF",
                               font=("Roboto", 20))
     # row 1
     clerk_text.grid(row=row_offset, column=1,  padx=(20,5), sticky='e')
@@ -490,48 +509,42 @@ class SO_Form(ctk.CTkFrame):
       # Address
       address_text = ctk.CTkLabel(self.shipping_window,
                                   text="Address",
-                                  text_color="#FFFFFF",
                                   font=("Roboto", 16))
-      address_text.grid(row=0, column=0, pady=(10, 0))
+      address_text.grid(row=0, column=0, pady=(10, 0), padx=10)
       address_input = ctk.CTkEntry(self.shipping_window)
       address_input.grid(row=0, column=1, sticky="ew", padx=10)
       # City
       city_text = ctk.CTkLabel(self.shipping_window,
                                text="City",
-                               text_color="#FFFFFF",
                                font=("Roboto", 16))
-      city_text.grid(row=1, column=0, pady=(10, 0))
+      city_text.grid(row=1, column=0, pady=(10, 0), padx=10)
       city_input = ctk.CTkEntry(self.shipping_window)
       city_input.grid(row=1, column=1)
       # Zip Code
       zipcode_text = ctk.CTkLabel(self.shipping_window,
                                   text="Zip Code",
-                                  text_color="#FFFFFF",
                                   font=("Roboto", 16))
-      zipcode_text.grid(row=2, column=0, pady=(10, 0))
+      zipcode_text.grid(row=3, column=0, pady=(10, 0), padx=10)
       zipcode_input = ctk.CTkEntry(self.shipping_window)
-      zipcode_input.grid(row=2, column=1)
+      zipcode_input.grid(row=3, column=1)
       # State
       state_text = ctk.CTkLabel(self.shipping_window,
                                 text="State",
-                                text_color="#FFFFFF",
                                 font=("Roboto", 16))
-      state_text.grid(row=3, column=0)
+      state_text.grid(row=2, column=0, pady=(10, 0), padx=10)
       state_select = ctk.CTkEntry(self.shipping_window)
-      state_select.grid(row=3, column=1, sticky="ew", padx=10)
+      state_select.grid(row=2, column=1, sticky="ew", padx=10)
 
       # Submit button
       submit_button = ctk.CTkButton(self.shipping_window,
                                     text="Submit",
                                     command=save_shipping_info,
-                                    text_color="#FFFFFF",
                                     font=("Roboto", 16))
-      submit_button.grid(row=4, column=0, columnspan=2, pady=20, sticky='ew')
+      submit_button.grid(row=4, column=0, columnspan=2, pady=20, sticky='ew', padx=20)
 
     # Shipping Option checkbox
     shipping_text = ctk.CTkLabel(self,
                                  text="Shipping?",
-                                 text_color="#FFFFFF",
                                  font=("Roboto", 20))
     # row 1
     shipping_text.grid(row=row_offset, column=3, padx=(20,5), sticky='e')
@@ -556,7 +569,7 @@ class SO_Form(ctk.CTkFrame):
 
     # Divider
     #divider = ttk.Separator(self, orient='horizontal')
-    divider = ctk.CTkFrame(self, height=2, fg_color="gray")
+    divider = ctk.CTkFrame(self, height=2, fg_color=["#000000","gray"])
     # row 2
     divider.grid(row=row_offset, column=1, columnspan=6, sticky='ew', pady=10)
 
@@ -573,12 +586,10 @@ class SO_Form(ctk.CTkFrame):
     # Title for Vendors
     traditional_vendors_text = ctk.CTkLabel(self.vendors_buttons,
                   text="Traditional Vendors",
-                  font=("Arial Black", 20, "underline"),
-                  text_color="#FFFFFF")
+                  font=("Arial Black", 20, "underline"))
     collectible_vendors_text = ctk.CTkLabel(self.vendors_buttons,
                   text="Collectible Vendors",
-                  font=("Arial Black", 20, "underline"),
-                  text_color="#FFFFFF")
+                  font=("Arial Black", 20, "underline"))
     
     # Radio Button for Vendors
     vendors = ctk.StringVar(self.vendors_buttons)
@@ -592,10 +603,10 @@ class SO_Form(ctk.CTkFrame):
         if widget != vendors_switch:
           widget.grid_forget()
       if vendors_switch_var == "0":
-        traditional_vendors_text.grid(row=0, column=0, columnspan=2, pady=(0, 10), padx = (10,5), sticky='new')
+        traditional_vendors_text.grid(row=0, column=0, columnspan=2, pady=(5, 10), padx = (10,5), sticky='new')
         switch_traditional()
       else:
-        collectible_vendors_text.grid(row=0, column=0, columnspan=2, pady=(0, 10), padx = (10,5), sticky='new')
+        collectible_vendors_text.grid(row=0, column=0, columnspan=2, pady=(5, 10), padx = (10,5), sticky='new')
         switch_collectible()
 
     def switch_collectible():
@@ -605,18 +616,16 @@ class SO_Form(ctk.CTkFrame):
                           text=vendor,
                           variable=vendors,
                           value=vendor,
-                          text_color="#FFFFFF",
                           font=("Roboto", 16))
-          rdio_opt.grid(row=1, column=i, sticky='ew', pady=5)
+          rdio_opt.grid(row=1, column=i, sticky='ew', pady=5, padx=5)
         else:
           rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
                           text=vendor,
                           variable=vendors,
                           value=vendor,
-                          text_color="#FFFFFF",
                           font=("Roboto", 16))
-          rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5)
-      self.other_vendor.grid(row=2, column=1, padx=(0, 10))
+          rdio_opt.grid(row=2, column=i - 3, sticky='ew', pady=5, padx=5)
+      self.other_vendor.grid(row=2, column=1, padx=(0, 10), pady=5)
 
     def switch_traditional():
       for i, vendor in enumerate(traditional_vendors):
@@ -625,22 +634,20 @@ class SO_Form(ctk.CTkFrame):
                           text=vendor,
                           variable=vendors,
                           value=vendor,
-                          text_color="#FFFFFF",
                           font=("Roboto", 16))
-          rdio_opt.grid(row=1, column=i, sticky='ew', pady=5)
+          rdio_opt.grid(row=1, column=i, sticky='ew', pady=5, padx=5)
         else:
           rdio_opt = ctk.CTkRadioButton(self.vendors_buttons,
                           text=vendor,
                           variable=vendors,
                           value=vendor,
-                          text_color="#FFFFFF",
                           font=("Roboto", 16))
-          rdio_opt.grid(row=2, column=i - 2, sticky='ew', pady=5)
-      self.other_vendor.grid(row=2, column=1, padx=(0, 10))
+          rdio_opt.grid(row=2, column=i - 2, sticky='ew', pady=5, padx=5)
+      self.other_vendor.grid(row=2, column=1, padx=(0, 10), pady=5)
 
     self.vendors_switch_var = ctk.StringVar(value="0")
     vendors_switch = ctk.CTkSwitch(self.vendors_buttons, text = "", variable= self.vendors_switch_var, command=switch, onvalue="1", offvalue="0", width=85)
-    vendors_switch.grid(row=0, column=2, pady=(0, 10), padx=10, sticky='new')
+    vendors_switch.grid(row=0, column=2, pady=(5, 10), padx=10, sticky='new')
 
     switch()
 
@@ -653,9 +660,8 @@ class SO_Form(ctk.CTkFrame):
     # Title for Type
     type_text = ctk.CTkLabel(self.type_buttons,
                              text="Type",
-                             font=("Arial Black", 20, "underline"),
-                             text_color="#FFFFFF")
-    type_text.grid(row=0, column=1, pady=(0, 10), sticky='new')
+                             font=("Arial Black", 20, "underline"))
+    type_text.grid(row=0, column=1, pady=(5, 10), sticky='new')
 
     # Radio Button for Type
     typs = ctk.StringVar(self.type_buttons, "Type")
@@ -668,19 +674,17 @@ class SO_Form(ctk.CTkFrame):
                                       text=typ,
                                       variable=typs,
                                       value=typ,
-                                      text_color="#FFFFFF",
                                       font=("Roboto", 16))
-        rdio_typ.grid(row=1, column=i, sticky='ew', pady=5)
+        rdio_typ.grid(row=1, column=i, sticky='ew', pady=5, padx=5)
       else:
         rdio_typ = ctk.CTkRadioButton(self.type_buttons,
                                       text=typ,
                                       variable=typs,
                                       value=typ,
-                                      text_color="#FFFFFF",
                                       font=("Roboto", 16))
-        rdio_typ.grid(row=2, column=i - 3, sticky='ew', pady=5)
+        rdio_typ.grid(row=2, column=i - 3, sticky='ew', pady=5, padx=5)
     self.other_type = ctk.CTkEntry(self.type_buttons, placeholder_text="Type", width=100)
-    self.other_type.grid(row=2, column=2)
+    self.other_type.grid(row=2, column=2, padx=(0, 10), pady=5)
 
     row_offset += 2  # Increment row offset
 
@@ -697,7 +701,6 @@ class SO_Form(ctk.CTkFrame):
     # CX name inpput
     cx_name_title = ctk.CTkLabel(self,
                                  text="Name",
-                                 text_color="#FFFFFF",
                                  font=("Roboto", 18))
     # row 7
     cx_name_title.grid(row=row_offset, column=1)
@@ -710,7 +713,7 @@ class SO_Form(ctk.CTkFrame):
 
 
     # CX email
-    cx_email_title = ctk.CTkLabel(self, text="Email", text_color="#FFFFFF", font=("Roboto", 18))
+    cx_email_title = ctk.CTkLabel(self, text="Email", font=("Roboto", 18))
     # row 7
     cx_email_title.grid(row=row_offset, column=2)
     cx_email_input = ctk.CTkEntry(self, placeholder_text="example@domain.com", width=220)
@@ -723,12 +726,11 @@ class SO_Form(ctk.CTkFrame):
     # CX phone number input
     cx_phone_title = ctk.CTkLabel(self,
                                   text="Phone",
-                                  text_color="#FFFFFF",
                                   font=("Roboto", 18))
     # row 7
     cx_phone_title.grid(row=row_offset, column=3)
 
-    text_cx = ctk.CTkCheckBox(self, text="Text?", text_color="#FFFFFF", onvalue="YES", offvalue="NO", font=("Roboto", 18))
+    text_cx = ctk.CTkCheckBox(self, text="Text?", onvalue="YES", offvalue="NO", font=("Roboto", 18))
     # row 7
     text_cx.grid(row=row_offset, column=4, padx=10)
 
@@ -740,7 +742,7 @@ class SO_Form(ctk.CTkFrame):
     # row 8
     cx_phone_input.grid(row=row_offset + 1, column=3, padx=10)
 
-    call_cx = ctk.CTkCheckBox(self, text="Call?", text_color="#FFFFFF", onvalue="YES", offvalue="NO", font=("Roboto", 18))
+    call_cx = ctk.CTkCheckBox(self, text="Call?", onvalue="YES", offvalue="NO", font=("Roboto", 18))
     # row 8
     call_cx.grid(row=row_offset + 1, column=4, padx=10)
 
@@ -765,7 +767,6 @@ class SO_Form(ctk.CTkFrame):
     # Artist input
     artist_title = ctk.CTkLabel(self,
                                 text="Artist",
-                                text_color="#FFFFFF",
                                 font=("Roboto", 18))
     # row 9
     artist_title.grid(row=row_offset, column=1)
@@ -779,7 +780,6 @@ class SO_Form(ctk.CTkFrame):
     # Title input
     title_title = ctk.CTkLabel(self,
                                text="Title",
-                               text_color="#FFFFFF",
                                font=("Roboto", 18))
     # row 9
     title_title.grid(row=row_offset, column=3)
@@ -795,7 +795,6 @@ class SO_Form(ctk.CTkFrame):
     # Deposit input
     deposit_title = ctk.CTkLabel(self,
                                  text="Deposit",
-                                 text_color="#FFFFFF",
                                  font=("Roboto", 18))
     # row 11
     deposit_title.grid(row=row_offset, column=1)
@@ -809,7 +808,6 @@ class SO_Form(ctk.CTkFrame):
     # Price input
     price_title = ctk.CTkLabel(self,
                                text="Retail Price",
-                               text_color="#FFFFFF",
                                font=("Roboto", 18))
     # row 11
     price_title.grid(row=row_offset, column=3)
@@ -825,7 +823,6 @@ class SO_Form(ctk.CTkFrame):
     save_button = ctk.CTkButton(self,
                                 text="Save",
                                 command=save_checkbox_value,
-                                text_color="#FFFFFF",
                                 font=("Roboto", 18))
     # row 13
     save_button.grid(row=row_offset, column=1, pady=20)
@@ -833,7 +830,6 @@ class SO_Form(ctk.CTkFrame):
     back_button = ctk.CTkButton(self,
                                 text="Cancel",
                                 command=go_back,
-                                text_color="#FFFFFF",
                                 font=("Roboto", 18))
     # row 13
     back_button.grid(row=row_offset, column=3, pady=20)
@@ -876,7 +872,7 @@ class SO_Update_Frame(ctk.CTkFrame):
       search_method_opt.grid(row=1, column=i, padx=10, pady=5)
 
     self.input.grid(row=2, column=1, padx=10, pady=5)
-    self.show_incompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only show incompleted orders", font=("Roboto", 14), onvalue=True, offvalue=False)
+    self.show_incompleted_orders = ctk.CTkCheckBox(self.search_frame, text="Only display\nunfulfilled orders", font=("Roboto", 14), onvalue=True, offvalue=False)
     self.show_incompleted_orders.grid(row=2, column=2, padx=10, pady=5)
 
     self.search_button = ctk.CTkButton(self.search_frame, text="Search", command=lambda: self.search(self.input.get(), self.search_method_opt.get(), self.show_incompleted_orders.get()), font=("Roboto", 16))
@@ -1106,6 +1102,7 @@ class Prev_SO(ctk.CTkFrame):
 
   def __init__(self, *args, header_name="Previous Special Orders", **kwargs):
     super().__init__(*args, **kwargs)
+    self.configure(corner_radius = 6, border_color= ["#505050", "gray28"])
     self.header_name = header_name
     self.header = ctk.CTkLabel(self, text=header_name, font=("Roboto", 20))
     self.header.grid(row=0, column=0, sticky='nsew', rowspan=8)
@@ -1157,9 +1154,8 @@ class Prev_SO(ctk.CTkFrame):
     # Back Button with CTk Improvement
     self.back_button = ctk.CTkButton(self,
                                      text="Back",
-                                     command=self.master.show_main_frame,
-                                     text_color="#FFFFFF")
-    self.back_button.grid(row=3, column=0, padx=10, pady=20, sticky='w')
+                                     command=self.master.show_main_frame)
+    self.back_button.grid(row=3, column=0, padx=20, pady=33, sticky='w')
 
     # Bind the double-click event
     self.tree.bind('<Double-1>', self.on_double_click)
@@ -1369,10 +1365,10 @@ class SO_App(ctk.CTk):
   def __init__(self):
     super().__init__()
     self.title("Special Order")
-    self.geometry("248x375")
+    self.geometry("268x455")
     self.configure(background="#350909")
 
-    self.sidebar_menu = ctk.CTkFrame(self, width=140, corner_radius=5)
+    self.sidebar_menu = ctk.CTkFrame(self, corner_radius=5)
     self.sidebar_menu.grid(row=0, column=0, sticky='nsew', rowspan=4, padx=5, pady=5)
     self.sidebar_menu.grid_rowconfigure(4, weight=1)
 
@@ -1387,6 +1383,10 @@ class SO_App(ctk.CTk):
         "corner_radius": 10,
         "anchor": "center",
     }
+    self.light_dark_var = ctk.StringVar(value="Dark")
+    self.light_or_dark = ctk.CTkSwitch(self.sidebar_menu, text="Dark/Light", onvalue="Light", offvalue="Dark", font=("Roboto", 18), variable=self.light_dark_var, command=self.change_theme)
+
+    self.change_theme()
 
     self.special_order_form_button = ctk.CTkButton(
         self.sidebar_menu,
@@ -1414,10 +1414,18 @@ class SO_App(ctk.CTk):
 
     self.hide_all_frames()
 
-    self.special_order_form_button.grid(row=0, column=0, pady=25)
-    self.cx_call_button.grid(row=1, column=0, pady=25)
-    self.previous_orders_button.grid(row=2, column=0, pady=25)
-    self.reconciliation_form_button.grid(row=3, column=0, pady=25)
+    self.light_or_dark.grid(row=0, column=0, pady=25, padx= 10)
+    self.special_order_form_button.grid(row=1, column=0, pady=25, padx=10)
+    self.cx_call_button.grid(row=2, column=0, pady=25, padx=10)
+    self.previous_orders_button.grid(row=3, column=0, pady=25, padx=10)
+    self.reconciliation_form_button.grid(row=4, column=0, pady=25, padx=10)
+
+  def change_theme(self):
+      if self.light_dark_var.get() == "Light":
+        ctk.set_appearance_mode("light")
+      else:
+        ctk.set_appearance_mode("dark")
+
 
   def hide_all_frames(self):
     for frame in [self.special_order_form, self.cx_call, self.previous_orders, self.reconciliation_form]:
@@ -1434,14 +1442,14 @@ class SO_App(ctk.CTk):
   def show_special_order_form(self):
     self.special_order_form = SO_Form(self)
     self.title("New Special Order")
-    self.geometry("1025x475")
+    self.geometry("1100x498")
     self.hide_all_frames()
     self.special_order_form.grid(row=0, column=1, sticky='nsew', padx=5, pady=5)
     self.special_order_form_button.configure(fg_color="#000000")
     self.special_order_form_button.configure(state="disabled")
 
   def show_cx_call(self):
-    self.geometry("1052x460")
+    self.geometry("1005x465")
     self.title("Order Update")
     self.hide_all_frames()
     self.cx_call.grid(row=0, column=1, sticky='nsew', padx=5, pady=5)
@@ -1450,7 +1458,7 @@ class SO_App(ctk.CTk):
 
   def show_previous_orders(self):
     self.previous_orders.update_treeview()
-    self.geometry("1015x400")
+    self.geometry("1028x450")
     self.title("Special Orders")
     self.hide_all_frames()
     self.previous_orders.grid(row=0, column=1, sticky='nsew', padx=5, pady=5)
@@ -1459,7 +1467,7 @@ class SO_App(ctk.CTk):
 
   def show_reconciliation_form(self):
     self.hide_all_frames()
-    self.geometry("1100x500")
+    self.geometry("1110x500")
     self.title("Reconciliation Form")
     self.reconciliation_form.grid(row=0, column=1, sticky='nsew', padx=5, pady=5)
     self.reconciliation_form_button.configure(fg_color="#000000")
@@ -1467,7 +1475,7 @@ class SO_App(ctk.CTk):
 
   def show_main_frame(self):
     self.hide_all_frames()
-    self.geometry("248x375")
+    self.geometry("268x455")
     self.title("Special Order")
     # Show the main application frame
     self.enable_buttons()

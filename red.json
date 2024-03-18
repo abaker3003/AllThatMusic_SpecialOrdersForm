@@ -13,7 +13,7 @@
   },
   "CTkFrame": {
     "corner_radius": 6,
-    "border_width": 0,
+    "border_width": 1,
     "fg_color": [
       "gray90",
       "gray13"
@@ -23,7 +23,7 @@
       "gray16"
     ],
     "border_color": [
-      "gray65",
+      "#505050",
       "gray28"
     ]
   },
@@ -31,11 +31,11 @@
     "corner_radius": 6,
     "border_width": 0,
     "fg_color": [
-      "#3a7ebf",
+      "#d31313",
       "#d31313"
     ],
     "hover_color": [
-      "#325882",
+      "#6e0303",
       "#6e0303"
     ],
     "border_color": [
@@ -55,7 +55,7 @@
     "corner_radius": 0,
     "fg_color": "transparent",
     "text_color": [
-      "gray14",
+      "#000000",
       "#F9F9FA"
     ]
   },
@@ -83,7 +83,7 @@
     "corner_radius": 6,
     "border_width": 3,
     "fg_color": [
-      "#3a7ebf",
+      "#d31313",
       "#d31313"
     ],
     "border_color": [
@@ -91,7 +91,7 @@
       "#949A9F"
     ],
     "hover_color": [
-      "#325882",
+      "#6e0303",
       "#6e0303"
     ],
     "checkmark_color": [
@@ -116,7 +116,7 @@
       "#4A4D50"
     ],
     "progress_color": [
-      "#3a7ebf",
+      "#d31313",
       "#d31313"
     ],
     "button_color": [
@@ -124,7 +124,7 @@
       "#D5D9DE"
     ],
     "button_hover_color": [
-      "gray20",
+      "#6e0303",
       "#6e0303"
     ],
     "text_color": [
@@ -141,7 +141,7 @@
     "border_width_checked": 6,
     "border_width_unchecked": 3,
     "fg_color": [
-      "#3a7ebf",
+      "#d31313",
       "#d31313"
     ],
     "border_color": [
@@ -149,7 +149,7 @@
       "#949A9F"
     ],
     "hover_color": [
-      "#325882",
+      "#6e0303",
       "#6e0303"
     ],
     "text_color": [
@@ -202,15 +202,15 @@
   "CTkOptionMenu": {
     "corner_radius": 6,
     "fg_color": [
-      "#3a7ebf",
+      "#d31313",
       "#d31313"
     ],
     "button_color": [
-      "#325882",
+      "#9c0202",
       "#9c0202"
     ],
     "button_hover_color": [
-      "#234567",
+      "#6e0303",
       "#6e0303"
     ],
     "text_color": [
@@ -259,7 +259,7 @@
       "gray41"
     ],
     "button_hover_color": [
-      "gray40",
+      "#6e0303",
       "#6e0303"
     ]
   },
@@ -329,7 +329,7 @@
       "gray21"
     ],
     "button_hover_color": [
-      "gray40",
+      "#6e0303",
       "#6e0303"
     ]
   },
