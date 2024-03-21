@@ -9,13 +9,13 @@ import re
 import getpass
 import pandas as pd
 
-ctk.set_default_color_theme('C:/Users/abake/OneDrive/Documents/AllThatMusic_SpecialOrdersForm/red.json')
+ctk.set_default_color_theme('red.json')
 
 ## need to add part for SO ##
 class Reconciliation(ctk.CTkFrame):
 
   def focusin_fg_color(self,widget):
-      widget.configure(fg_color= ["#717171", "#222222"])
+    widget.configure(fg_color= ["#717171", "#222222"])
 
   def focusout_fg_color(self, widget):
     widget.configure(fg_color=["#FFFFFF","#343638"])
