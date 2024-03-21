@@ -1261,7 +1261,10 @@ class Prev_SO(ctk.CTkFrame):
 
         def hide_shipping_info():
           for shipping_widget in self.shipping_entries:
-            shipping_widget.grid_remove()
+            if isinstance(shipping_widget, ctk.StringVar):
+              shipping_widget.set("")
+            else:
+              shipping_widget.grid_remove()
           for shipping_label in shipping_labels:
             shipping_label.grid_remove()
 

@@ -36,7 +36,7 @@ class ExcelFile:
     def update_excel(self, row, new_values):
         # Update the Excel file with the new values
         for i, value in enumerate(new_values, start=1):
-            self.worksheet.append(row=row, column=i, value=value)
+            self.worksheet.cell(row=row, column=i, value=value)
         self.workbook.save(self.filename)
         self.close_file()
 
